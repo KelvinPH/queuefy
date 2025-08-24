@@ -82,8 +82,8 @@
   }
   
   .ssq-item[data-hover="glow"]:hover {
-    box-shadow: 0 0 var(--glow) var(--glow-color);
-    filter: drop-shadow(0 0 var(--glow) var(--glow-color));
+    box-shadow: var(--hover-glow);
+    filter: var(--hover-glow-filter);
   }
   
   .ssq-item[data-hover="slide"]:hover {
@@ -107,7 +107,7 @@
   .ssq-item.ssq-now-playing { 
     background: linear-gradient(135deg, var(--accent), rgba(29, 185, 84, 0.3));
     border-color: var(--accent);
-    box-shadow: 0 0 var(--glow) var(--accent);
+    box-shadow: var(--now-playing-glow);
   }
   
   .ssq-art-thumb { 

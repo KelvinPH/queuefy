@@ -52,6 +52,9 @@
       --opacity: ${opacity}% !important;
       --blur: ${blur}px !important;
       --glow: ${glow}px !important;
+      --now-playing-glow: ${glow === '0' ? 'none' : `0 0 ${glow}px ${accentColor}`} !important;
+      --hover-glow: ${glow === '0' ? 'none' : `0 0 ${glow}px ${glowColor}`} !important;
+      --hover-glow-filter: ${glow === '0' ? 'none' : `drop-shadow(0 0 ${glow}px ${glowColor})`} !important;
       --card: ${cardColor} !important;
       --text: ${textColor} !important;
       --muted: ${mutedColor} !important;
