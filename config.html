@@ -895,100 +895,275 @@
                </div>
                <div class="card-body">
                  <div class="form-section">
-                   <div class="form-row">
-                     <div class="form-group">
-                       <label class="form-label">Theme</label>
-                       <select id="queueTheme" class="form-select">
-                         <option value="">(default)</option>
-                         <option value="minimal">Minimal</option>
-                         <option value="obsdark">OBS Dark</option>
-                         <option value="elegant">Elegant</option>
-                       </select>
-                     </div>
-                     <div class="form-group">
-                       <label class="form-label">Card Radius</label>
-                       <div class="range-group">
-                         <input id="queueRadius" class="range-input" type="range" min="0" max="24" step="1" value="12" oninput="queueRadiusOut.textContent=this.value"/>
-                         <div class="range-value"><span id="queueRadiusOut">12</span>px</div>
-                       </div>
-                     </div>
-                   </div>
-                   <div class="form-row">
-                     <div class="form-group">
-                       <label class="form-label">Card Shadow</label>
-                       <select id="queueShadow" class="form-select">
-                         <option value="1">On</option>
-                         <option value="0">Off</option>
-                       </select>
-                     </div>
-                     <div class="form-group">
-                       <label class="form-label">Item Gap</label>
-                       <div class="range-group">
-                         <input id="queueGap" class="range-input" type="range" min="2" max="16" step="1" value="6" oninput="queueGapOut.textContent=this.value"/>
-                         <div class="range-value"><span id="queueGapOut">6</span>px</div>
-                       </div>
-                     </div>
-                   </div>
-                   <div class="form-row">
-                     <div class="form-group">
-                       <label class="form-label">Card Background</label>
-                       <input id="queueCard" type="color" class="color-picker" value="#000000" data-alpha="0.35">
-                     </div>
-                     <div class="form-group">
-                       <label class="form-label">Text Color</label>
-                       <input id="queueText" type="color" class="color-picker" value="#ffffff">
-                     </div>
-                   </div>
-                   <div class="form-row">
-                     <div class="form-group">
-                       <label class="form-label">Muted Color</label>
-                       <input id="queueMuted" type="color" class="color-picker" value="#cfcfcf">
-                     </div>
-                     <div class="form-group">
-                       <label class="form-label">Text Alignment</label>
-                       <select id="queueAlign" class="form-select">
-                         <option value="left">Left</option>
-                         <option value="center">Center</option>
-                         <option value="right">Right</option>
-                       </select>
-                     </div>
-                   </div>
-                   <div class="form-row">
-                     <div class="form-group">
-                       <label class="form-label">Title Size</label>
-                       <div class="range-group">
-                         <input id="queueTitleSize" class="range-input" type="range" min="12" max="24" step="1" value="15" oninput="queueTitleSizeOut.textContent=this.value"/>
-                         <div class="range-value"><span id="queueTitleSizeOut">15</span>px</div>
-                       </div>
-                     </div>
-                     <div class="form-group">
-                       <label class="form-label">Artist Size</label>
-                       <div class="range-group">
-                         <input id="queueArtistSize" class="range-input" type="range" min="10" max="18" step="1" value="12" oninput="queueArtistSizeOut.textContent=this.value"/>
-                         <div class="range-value"><span id="queueArtistSizeOut">12</span>px</div>
-                       </div>
-                     </div>
-                   </div>
-                   <div class="form-row">
-                     <div class="form-group">
-                       <label class="form-label">Font</label>
-                       <select id="queueFont" class="form-select">
-                         <option value="">(default)</option>
-                         <option value="inter">Inter</option>
-                         <option value="rubik">Rubik</option>
-                         <option value="montserrat">Montserrat</option>
-                         <option value="poppins">Poppins</option>
-                         <option value="firasans">Fira Sans</option>
-                       </select>
-                     </div>
-                     <div class="form-group">
-                       <label class="form-label">Uppercase</label>
-                       <select id="queueUppercase" class="form-select">
-                         <option value="0">Off</option>
-                         <option value="1">On</option>
-                       </select>
-                     </div>
-                   </div>
+                                       <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Theme</label>
+                        <select id="queueTheme" class="form-select">
+                          <option value="">(default)</option>
+                          <option value="minimal">Minimal</option>
+                          <option value="obsdark">OBS Dark</option>
+                          <option value="elegant">Elegant</option>
+                          <option value="spotify">Spotify</option>
+                          <option value="neon">Neon</option>
+                          <option value="gaming">Gaming</option>
+                          <option value="lofi">Lo-Fi</option>
+                          <option value="retro">Retro Wave</option>
+                          <option value="cyberpunk">Cyberpunk</option>
+                          <option value="sunset">Sunset</option>
+                          <option value="ocean">Ocean</option>
+                          <option value="forest">Forest</option>
+                          <option value="midnight">Midnight</option>
+                          <option value="aurora">Aurora</option>
+                          <option value="gradient">Gradient</option>
+                          <option value="monochrome">Monochrome</option>
+                          <option value="party">Party</option>
+                          <option value="cozy">Cozy</option>
+                          <option value="focus">Focus</option>
+                          <option value="glass">Glass Morphism</option>
+                          <option value="matrix">Matrix</option>
+                          <option value="synthwave">Synthwave</option>
+                          <option value="vaporwave">Vaporwave</option>
+                          <option value="steampunk">Steampunk</option>
+                          <option value="holographic">Holographic</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Card Radius</label>
+                        <div class="range-group">
+                          <input id="queueRadius" class="range-input" type="range" min="0" max="24" step="1" value="12" oninput="queueRadiusOut.textContent=this.value"/>
+                          <div class="range-value"><span id="queueRadiusOut">12</span>px</div>
+                        </div>
+                      </div>
+                    </div>
+                                       <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Card Shadow</label>
+                        <select id="queueShadow" class="form-select">
+                          <option value="1">On</option>
+                          <option value="0">Off</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Item Gap</label>
+                        <div class="range-group">
+                          <input id="queueGap" class="range-input" type="range" min="2" max="16" step="1" value="6" oninput="queueGapOut.textContent=this.value"/>
+                          <div class="range-value"><span id="queueGapOut">6</span>px</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Card Border</label>
+                        <div class="range-group">
+                          <input id="queueBorder" class="range-input" type="range" min="0" max="4" step="1" value="0" oninput="queueBorderOut.textContent=this.value"/>
+                          <div class="range-value"><span id="queueBorderOut">0</span>px</div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Card Opacity</label>
+                        <div class="range-group">
+                          <input id="queueOpacity" class="range-input" type="range" min="20" max="100" step="5" value="100" oninput="queueOpacityOut.textContent=this.value"/>
+                          <div class="range-value"><span id="queueOpacityOut">100</span>%</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Blur Effect</label>
+                        <div class="range-group">
+                          <input id="queueBlur" class="range-input" type="range" min="0" max="20" step="1" value="0" oninput="queueBlurOut.textContent=this.value"/>
+                          <div class="range-value"><span id="queueBlurOut">0</span>px</div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Glow Intensity</label>
+                        <div class="range-group">
+                          <input id="queueGlow" class="range-input" type="range" min="0" max="20" step="1" value="0" oninput="queueGlowOut.textContent=this.value"/>
+                          <div class="range-value"><span id="queueGlowOut">0</span>px</div>
+                        </div>
+                      </div>
+                    </div>
+                                       <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Card Background</label>
+                        <input id="queueCard" type="color" class="color-picker" value="#000000" data-alpha="0.35">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Text Color</label>
+                        <input id="queueText" type="color" class="color-picker" value="#ffffff">
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Muted Color</label>
+                        <input id="queueMuted" type="color" class="color-picker" value="#cfcfcf">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Accent Color</label>
+                        <input id="queueAccent" type="color" class="color-picker" value="#1db954">
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Border Color</label>
+                        <input id="queueBorderColor" type="color" class="color-picker" value="#ffffff">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Glow Color</label>
+                        <input id="queueGlowColor" type="color" class="color-picker" value="#00ff00">
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Text Alignment</label>
+                        <select id="queueAlign" class="form-select">
+                          <option value="left">Left</option>
+                          <option value="center">Center</option>
+                          <option value="right">Right</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Layout Style</label>
+                        <select id="queueLayout" class="form-select">
+                          <option value="list">List</option>
+                          <option value="grid">Grid</option>
+                          <option value="cards">Cards</option>
+                          <option value="compact">Compact</option>
+                          <option value="minimal">Minimal</option>
+                        </select>
+                      </div>
+                    </div>
+                                       <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Title Size</label>
+                        <div class="range-group">
+                          <input id="queueTitleSize" class="range-input" type="range" min="12" max="24" step="1" value="15" oninput="queueTitleSizeOut.textContent=this.value"/>
+                          <div class="range-value"><span id="queueTitleSizeOut">15</span>px</div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Artist Size</label>
+                        <div class="range-group">
+                          <input id="queueArtistSize" class="range-input" type="range" min="10" max="18" step="1" value="12" oninput="queueArtistSizeOut.textContent=this.value"/>
+                          <div class="range-value"><span id="queueArtistSizeOut">12</span>px</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Line Height</label>
+                        <div class="range-group">
+                          <input id="queueLineHeight" class="range-input" type="range" min="1" max="2" step="0.1" value="1.4" oninput="queueLineHeightOut.textContent=this.value"/>
+                          <div class="range-value"><span id="queueLineHeightOut">1.4</span></div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Letter Spacing</label>
+                        <div class="range-group">
+                          <input id="queueLetterSpacing" class="range-input" type="range" min="0" max="2" step="0.1" value="0" oninput="queueLetterSpacingOut.textContent=this.value"/>
+                          <div class="range-value"><span id="queueLetterSpacingOut">0</span>px</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Padding</label>
+                        <div class="range-group">
+                          <input id="queuePadding" class="range-input" type="range" min="4" max="24" step="2" value="12" oninput="queuePaddingOut.textContent=this.value"/>
+                          <div class="range-value"><span id="queuePaddingOut">12</span>px</div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Margin</label>
+                        <div class="range-group">
+                          <input id="queueMargin" class="range-input" type="range" min="0" max="16" step="1" value="4" oninput="queueMarginOut.textContent=this.value"/>
+                          <div class="range-value"><span id="queueMarginOut">4</span>px</div>
+                        </div>
+                      </div>
+                    </div>
+                                       <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Font</label>
+                        <select id="queueFont" class="form-select">
+                          <option value="">(default)</option>
+                          <option value="inter">Inter</option>
+                          <option value="rubik">Rubik</option>
+                          <option value="montserrat">Montserrat</option>
+                          <option value="poppins">Poppins</option>
+                          <option value="firasans">Fira Sans</option>
+                          <option value="roboto">Roboto</option>
+                          <option value="opensans">Open Sans</option>
+                          <option value="lato">Lato</option>
+                          <option value="nunito">Nunito</option>
+                          <option value="quicksand">Quicksand</option>
+                          <option value="raleway">Raleway</option>
+                          <option value="source">Source Sans Pro</option>
+                          <option value="ubuntu">Ubuntu</option>
+                          <option value="oxygen">Oxygen</option>
+                          <option value="cabin">Cabin</option>
+                          <option value="josefin">Josefin Sans</option>
+                          <option value="dancing">Dancing Script</option>
+                          <option value="pacifico">Pacifico</option>
+                          <option value="mono">Monospace</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Font Weight</label>
+                        <select id="queueFontWeight" class="form-select">
+                          <option value="400">Normal (400)</option>
+                          <option value="300">Light (300)</option>
+                          <option value="500">Medium (500)</option>
+                          <option value="600">Semi Bold (600)</option>
+                          <option value="700">Bold (700)</option>
+                          <option value="800">Extra Bold (800)</option>
+                          <option value="900">Black (900)</option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Text Transform</label>
+                        <select id="queueTextTransform" class="form-select">
+                          <option value="none">None</option>
+                          <option value="uppercase">Uppercase</option>
+                          <option value="lowercase">Lowercase</option>
+                          <option value="capitalize">Capitalize</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Text Shadow</label>
+                        <select id="queueTextShadow" class="form-select">
+                          <option value="0">Off</option>
+                          <option value="1">On</option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Animation Speed</label>
+                        <div class="range-group">
+                          <input id="queueAnimSpeed" class="range-input" type="range" min="0.5" max="3" step="0.1" value="1" oninput="queueAnimSpeedOut.textContent=this.value"/>
+                          <div class="range-value"><span id="queueAnimSpeedOut">1</span>x</div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Hover Effect</label>
+                        <select id="queueHoverEffect" class="form-select">
+                          <option value="none">None</option>
+                          <option value="scale">Scale</option>
+                          <option value="glow">Glow</option>
+                          <option value="slide">Slide</option>
+                          <option value="fade">Fade</option>
+                          <option value="bounce">Bounce</option>
+                        </select>
+                      </div>
+                    </div>
                  </div>
                </div>
              </div>
@@ -1271,11 +1446,15 @@
     font:$('font'), shadow:$('shadow'), colorMode:$('colorMode'), accent:$('accent'), text:$('text'), muted:$('muted'),
     transparent:$('transparent'), panelAlpha:$('panelAlpha'), panelColor:$('panelColor'),
     
-    // Queue elements
-    queueMax:$('queueMax'), showArtists:$('showArtists'), ws:$('ws'), pollMs:$('pollMs'),
-    queueTheme:$('queueTheme'), queueRadius:$('queueRadius'), queueShadow:$('queueShadow'), queueGap:$('queueGap'),
-    queueCard:$('queueCard'), queueText:$('queueText'), queueMuted:$('queueMuted'), queueAlign:$('queueAlign'),
-    queueTitleSize:$('queueTitleSize'), queueArtistSize:$('queueArtistSize'), queueFont:$('queueFont'), queueUppercase:$('queueUppercase'),
+         // Queue elements
+     queueMax:$('queueMax'), showArtists:$('showArtists'), ws:$('ws'), pollMs:$('pollMs'),
+     queueTheme:$('queueTheme'), queueRadius:$('queueRadius'), queueShadow:$('queueShadow'), queueGap:$('queueGap'),
+     queueBorder:$('queueBorder'), queueOpacity:$('queueOpacity'), queueBlur:$('queueBlur'), queueGlow:$('queueGlow'),
+     queueCard:$('queueCard'), queueText:$('queueText'), queueMuted:$('queueMuted'), queueAccent:$('queueAccent'),
+     queueBorderColor:$('queueBorderColor'), queueGlowColor:$('queueGlowColor'), queueAlign:$('queueAlign'), queueLayout:$('queueLayout'),
+     queueTitleSize:$('queueTitleSize'), queueArtistSize:$('queueArtistSize'), queueLineHeight:$('queueLineHeight'), queueLetterSpacing:$('queueLetterSpacing'),
+     queuePadding:$('queuePadding'), queueMargin:$('queueMargin'), queueFont:$('queueFont'), queueFontWeight:$('queueFontWeight'),
+     queueTextTransform:$('queueTextTransform'), queueTextShadow:$('queueTextShadow'), queueAnimSpeed:$('queueAnimSpeed'), queueHoverEffect:$('queueHoverEffect'),
     
     // UI elements
     demo:$('demo'), transparentPreset:$('transparentPreset'),
@@ -1332,23 +1511,39 @@
       accent:els.accent.value, text:els.text.value, muted:els.muted.value,
       transparent:+els.transparent.checked, panelAlpha:els.panelAlpha.value, panelColor:els.panelColor.value,
       
-      // Queue state
-      queueMax:els.queueMax?.value || '5',
-      showArtists:els.showArtists?.value || 'true',
-      ws:els.ws?.value || 'ws://localhost:5173',
-      pollMs:els.pollMs?.value || '15000',
-      queueTheme:els.queueTheme?.value || '',
-      queueRadius:els.queueRadius?.value || '12',
-      queueShadow:els.queueShadow?.value || '1',
-      queueGap:els.queueGap?.value || '6',
-      queueCard:els.queueCard?.value || '#000000',
-      queueText:els.queueText?.value || '#ffffff',
-      queueMuted:els.queueMuted?.value || '#cfcfcf',
-      queueAlign:els.queueAlign?.value || 'left',
-      queueTitleSize:els.queueTitleSize?.value || '15',
-      queueArtistSize:els.queueArtistSize?.value || '12',
-      queueFont:els.queueFont?.value || '',
-      queueUppercase:els.queueUppercase?.value || '0',
+             // Queue state
+       queueMax:els.queueMax?.value || '5',
+       showArtists:els.showArtists?.value || 'true',
+       ws:els.ws?.value || 'ws://localhost:5173',
+       pollMs:els.pollMs?.value || '15000',
+       queueTheme:els.queueTheme?.value || '',
+       queueRadius:els.queueRadius?.value || '12',
+       queueShadow:els.queueShadow?.value || '1',
+       queueGap:els.queueGap?.value || '6',
+       queueBorder:els.queueBorder?.value || '0',
+       queueOpacity:els.queueOpacity?.value || '100',
+       queueBlur:els.queueBlur?.value || '0',
+       queueGlow:els.queueGlow?.value || '0',
+       queueCard:els.queueCard?.value || '#000000',
+       queueText:els.queueText?.value || '#ffffff',
+       queueMuted:els.queueMuted?.value || '#cfcfcf',
+       queueAccent:els.queueAccent?.value || '#1db954',
+       queueBorderColor:els.queueBorderColor?.value || '#ffffff',
+       queueGlowColor:els.queueGlowColor?.value || '#00ff00',
+       queueAlign:els.queueAlign?.value || 'left',
+       queueLayout:els.queueLayout?.value || 'list',
+       queueTitleSize:els.queueTitleSize?.value || '15',
+       queueArtistSize:els.queueArtistSize?.value || '12',
+       queueLineHeight:els.queueLineHeight?.value || '1.4',
+       queueLetterSpacing:els.queueLetterSpacing?.value || '0',
+       queuePadding:els.queuePadding?.value || '12',
+       queueMargin:els.queueMargin?.value || '4',
+       queueFont:els.queueFont?.value || '',
+       queueFontWeight:els.queueFontWeight?.value || '400',
+       queueTextTransform:els.queueTextTransform?.value || 'none',
+       queueTextShadow:els.queueTextShadow?.value || '0',
+       queueAnimSpeed:els.queueAnimSpeed?.value || '1',
+       queueHoverEffect:els.queueHoverEffect?.value || 'none',
       
       // UI state
       demo:+els.demo.checked
@@ -1486,29 +1681,45 @@
     if(s.ws && s.ws !== 'ws://localhost:5173') q.set('ws', s.ws);
     if(s.pollMs && s.pollMs !== '15000') q.set('pollMs', s.pollMs);
     
-    // Styling params
-    if(s.queueTheme) q.set('theme', s.queueTheme);
-    if(s.queueRadius && s.queueRadius !== '12') q.set('radius', s.queueRadius);
-    if(s.queueShadow === '0') q.set('shadow', '0');
-    if(s.queueGap && s.queueGap !== '6') q.set('gap', s.queueGap);
-    if(s.queueCard && s.queueCard !== '#000000') {
-      // Convert hex to rgba for card background
-      const hexToRgba = hex => {
-        const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex) || [];
-        const r = parseInt(m[1] || '00', 16);
-        const g = parseInt(m[2] || '00', 16);
-        const b = parseInt(m[3] || '00', 16);
-        return `rgba(${r},${g},${b},0.35)`;
-      };
-      q.set('card', hexToRgba(s.queueCard));
-    }
-    if(s.queueText && s.queueText !== '#ffffff') q.set('text', s.queueText);
-    if(s.queueMuted && s.queueMuted !== '#cfcfcf') q.set('muted', s.queueMuted);
-    if(s.queueTitleSize && s.queueTitleSize !== '15') q.set('titleSize', s.queueTitleSize);
-    if(s.queueArtistSize && s.queueArtistSize !== '12') q.set('artistSize', s.queueArtistSize);
-    if(s.queueUppercase === '1') q.set('uppercase', '1');
-    if(s.queueAlign && s.queueAlign !== 'left') q.set('align', s.queueAlign);
-    if(s.queueFont) q.set('font', s.queueFont);
+         // Styling params
+     if(s.queueTheme) q.set('theme', s.queueTheme);
+     if(s.queueRadius && s.queueRadius !== '12') q.set('radius', s.queueRadius);
+     if(s.queueShadow === '0') q.set('shadow', '0');
+     if(s.queueGap && s.queueGap !== '6') q.set('gap', s.queueGap);
+     if(s.queueBorder && s.queueBorder !== '0') q.set('border', s.queueBorder);
+     if(s.queueOpacity && s.queueOpacity !== '100') q.set('opacity', s.queueOpacity);
+     if(s.queueBlur && s.queueBlur !== '0') q.set('blur', s.queueBlur);
+     if(s.queueGlow && s.queueGlow !== '0') q.set('glow', s.queueGlow);
+     if(s.queueCard && s.queueCard !== '#000000') {
+       // Convert hex to rgba for card background
+       const hexToRgba = hex => {
+         const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex) || [];
+         const r = parseInt(m[1] || '00', 16);
+         const g = parseInt(m[2] || '00', 16);
+         const b = parseInt(m[3] || '00', 16);
+         return `rgba(${r},${g},${b},0.35)`;
+       };
+       q.set('card', hexToRgba(s.queueCard));
+     }
+     if(s.queueText && s.queueText !== '#ffffff') q.set('text', s.queueText);
+     if(s.queueMuted && s.queueMuted !== '#cfcfcf') q.set('muted', s.queueMuted);
+     if(s.queueAccent && s.queueAccent !== '#1db954') q.set('accent', s.queueAccent);
+     if(s.queueBorderColor && s.queueBorderColor !== '#ffffff') q.set('borderColor', s.queueBorderColor);
+     if(s.queueGlowColor && s.queueGlowColor !== '#00ff00') q.set('glowColor', s.queueGlowColor);
+     if(s.queueAlign && s.queueAlign !== 'left') q.set('align', s.queueAlign);
+     if(s.queueLayout && s.queueLayout !== 'list') q.set('layout', s.queueLayout);
+     if(s.queueTitleSize && s.queueTitleSize !== '15') q.set('titleSize', s.queueTitleSize);
+     if(s.queueArtistSize && s.queueArtistSize !== '12') q.set('artistSize', s.queueArtistSize);
+     if(s.queueLineHeight && s.queueLineHeight !== '1.4') q.set('lineHeight', s.queueLineHeight);
+     if(s.queueLetterSpacing && s.queueLetterSpacing !== '0') q.set('letterSpacing', s.queueLetterSpacing);
+     if(s.queuePadding && s.queuePadding !== '12') q.set('padding', s.queuePadding);
+     if(s.queueMargin && s.queueMargin !== '4') q.set('margin', s.queueMargin);
+     if(s.queueFont) q.set('font', s.queueFont);
+     if(s.queueFontWeight && s.queueFontWeight !== '400') q.set('fontWeight', s.queueFontWeight);
+     if(s.queueTextTransform && s.queueTextTransform !== 'none') q.set('textTransform', s.queueTextTransform);
+     if(s.queueTextShadow === '1') q.set('textShadow', '1');
+     if(s.queueAnimSpeed && s.queueAnimSpeed !== '1') q.set('animSpeed', s.queueAnimSpeed);
+     if(s.queueHoverEffect && s.queueHoverEffect !== 'none') q.set('hoverEffect', s.queueHoverEffect);
     
     return u.origin + u.pathname + (q.toString() ? '?' + q.toString() : '');
   }
@@ -1576,29 +1787,45 @@ function render(){
      if(s.queueMax && s.queueMax !== '5') queuePreviewParams.set('queueMax', s.queueMax);
      if(s.showArtists === 'false') queuePreviewParams.set('showArtists', 'false');
      
-     // Apply current queue styling to preview
-     if(s.queueTheme) queuePreviewParams.set('theme', s.queueTheme);
-     if(s.queueRadius && s.queueRadius !== '12') queuePreviewParams.set('radius', s.queueRadius);
-     if(s.queueShadow === '0') queuePreviewParams.set('shadow', '0');
-     if(s.queueGap && s.queueGap !== '6') queuePreviewParams.set('gap', s.queueGap);
-     if(s.queueCard && s.queueCard !== '#000000') {
-       // Convert hex to rgba for card background
-       const hexToRgba = hex => {
-         const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex) || [];
-         const r = parseInt(m[1] || '00', 16);
-         const g = parseInt(m[2] || '00', 16);
-         const b = parseInt(m[3] || '00', 16);
-         return `rgba(${r},${g},${b},0.35)`;
-       };
-       queuePreviewParams.set('card', hexToRgba(s.queueCard));
-     }
-     if(s.queueText && s.queueText !== '#ffffff') queuePreviewParams.set('text', s.queueText);
-     if(s.queueMuted && s.queueMuted !== '#cfcfcf') queuePreviewParams.set('muted', s.queueMuted);
-     if(s.queueTitleSize && s.queueTitleSize !== '15') queuePreviewParams.set('titleSize', s.queueTitleSize);
-     if(s.queueArtistSize && s.queueArtistSize !== '12') queuePreviewParams.set('artistSize', s.queueArtistSize);
-     if(s.queueUppercase === '1') queuePreviewParams.set('uppercase', '1');
-     if(s.queueAlign && s.queueAlign !== 'left') queuePreviewParams.set('align', s.queueAlign);
-     if(s.queueFont) queuePreviewParams.set('font', s.queueFont);
+           // Apply current queue styling to preview
+      if(s.queueTheme) queuePreviewParams.set('theme', s.queueTheme);
+      if(s.queueRadius && s.queueRadius !== '12') queuePreviewParams.set('radius', s.queueRadius);
+      if(s.queueShadow === '0') queuePreviewParams.set('shadow', '0');
+      if(s.queueGap && s.queueGap !== '6') queuePreviewParams.set('gap', s.queueGap);
+      if(s.queueBorder && s.queueBorder !== '0') queuePreviewParams.set('border', s.queueBorder);
+      if(s.queueOpacity && s.queueOpacity !== '100') queuePreviewParams.set('opacity', s.queueOpacity);
+      if(s.queueBlur && s.queueBlur !== '0') queuePreviewParams.set('blur', s.queueBlur);
+      if(s.queueGlow && s.queueGlow !== '0') queuePreviewParams.set('glow', s.queueGlow);
+      if(s.queueCard && s.queueCard !== '#000000') {
+        // Convert hex to rgba for card background
+        const hexToRgba = hex => {
+          const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex) || [];
+          const r = parseInt(m[1] || '00', 16);
+          const g = parseInt(m[2] || '00', 16);
+          const b = parseInt(m[3] || '00', 16);
+          return `rgba(${r},${g},${b},0.35)`;
+        };
+        queuePreviewParams.set('card', hexToRgba(s.queueCard));
+      }
+      if(s.queueText && s.queueText !== '#ffffff') queuePreviewParams.set('text', s.queueText);
+      if(s.queueMuted && s.queueMuted !== '#cfcfcf') queuePreviewParams.set('muted', s.queueMuted);
+      if(s.queueAccent && s.queueAccent !== '#1db954') queuePreviewParams.set('accent', s.queueAccent);
+      if(s.queueBorderColor && s.queueBorderColor !== '#ffffff') queuePreviewParams.set('borderColor', s.queueBorderColor);
+      if(s.queueGlowColor && s.queueGlowColor !== '#00ff00') queuePreviewParams.set('glowColor', s.queueGlowColor);
+      if(s.queueAlign && s.queueAlign !== 'left') queuePreviewParams.set('align', s.queueAlign);
+      if(s.queueLayout && s.queueLayout !== 'list') queuePreviewParams.set('layout', s.queueLayout);
+      if(s.queueTitleSize && s.queueTitleSize !== '15') queuePreviewParams.set('titleSize', s.queueTitleSize);
+      if(s.queueArtistSize && s.queueArtistSize !== '12') queuePreviewParams.set('artistSize', s.queueArtistSize);
+      if(s.queueLineHeight && s.queueLineHeight !== '1.4') queuePreviewParams.set('lineHeight', s.queueLineHeight);
+      if(s.queueLetterSpacing && s.queueLetterSpacing !== '0') queuePreviewParams.set('letterSpacing', s.queueLetterSpacing);
+      if(s.queuePadding && s.queuePadding !== '12') queuePreviewParams.set('padding', s.queuePadding);
+      if(s.queueMargin && s.queueMargin !== '4') queuePreviewParams.set('margin', s.queueMargin);
+      if(s.queueFont) queuePreviewParams.set('font', s.queueFont);
+      if(s.queueFontWeight && s.queueFontWeight !== '400') queuePreviewParams.set('fontWeight', s.queueFontWeight);
+      if(s.queueTextTransform && s.queueTextTransform !== 'none') queuePreviewParams.set('textTransform', s.queueTextTransform);
+      if(s.queueTextShadow === '1') queuePreviewParams.set('textShadow', '1');
+      if(s.queueAnimSpeed && s.queueAnimSpeed !== '1') queuePreviewParams.set('animSpeed', s.queueAnimSpeed);
+      if(s.queueHoverEffect && s.queueHoverEffect !== 'none') queuePreviewParams.set('hoverEffect', s.queueHoverEffect);
      
      const previewUrl = localQueue + '?' + queuePreviewParams.toString();
      console.log('Queue preview URL:', previewUrl); // Debug log
