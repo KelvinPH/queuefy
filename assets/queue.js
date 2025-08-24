@@ -38,34 +38,49 @@
   // Apply theme if specified
   if (theme) document.body.classList.add('theme-'+theme);
 
-  // Apply custom styling via CSS variables
+  // Apply custom styling via CSS variables AFTER theme is applied
   const root = document.documentElement;
-  root.style.setProperty('--radius', radius + 'px');
-  root.style.setProperty('--shadow', shadow ? '0 6px 16px rgba(0,0,0,.25)' : 'none');
-  root.style.setProperty('--gap', gap + 'px');
-  root.style.setProperty('--border', border + 'px');
-  root.style.setProperty('--opacity', opacity + '%');
-  root.style.setProperty('--blur', blur + 'px');
-  root.style.setProperty('--glow', glow + 'px');
-  root.style.setProperty('--card', cardColor);
-  root.style.setProperty('--text', textColor);
-  root.style.setProperty('--muted', mutedColor);
-  root.style.setProperty('--accent', accentColor);
-  root.style.setProperty('--border-color', borderColor);
-  root.style.setProperty('--glow-color', glowColor);
-  root.style.setProperty('--align', align);
-  root.style.setProperty('--layout', layout);
-  root.style.setProperty('--title-size', titleSize + 'px');
-  root.style.setProperty('--artist-size', artistSize + 'px');
-  root.style.setProperty('--line-height', lineHeight);
-  root.style.setProperty('--letter-spacing', letterSpacing + 'px');
-  root.style.setProperty('--padding', padding + 'px');
-  root.style.setProperty('--margin', margin + 'px');
-  root.style.setProperty('--font-weight', fontWeight);
-  root.style.setProperty('--text-transform', textTransform);
-  root.style.setProperty('--text-shadow', textShadow ? '0 1px 3px rgba(0,0,0,0.5)' : 'none');
-  root.style.setProperty('--anim-speed', animSpeed);
-  root.style.setProperty('--hover-effect', hoverEffect);
+  
+  // Force override theme variables by setting them with higher specificity
+  const style = document.createElement('style');
+  style.textContent = `
+    :root {
+      --radius: ${radius}px !important;
+      --shadow: ${shadow ? '0 6px 16px rgba(0,0,0,.25)' : 'none'} !important;
+      --gap: ${gap}px !important;
+      --border: ${border}px !important;
+      --opacity: ${opacity}% !important;
+      --blur: ${blur}px !important;
+      --glow: ${glow}px !important;
+      --card: ${cardColor} !important;
+      --text: ${textColor} !important;
+      --muted: ${mutedColor} !important;
+      --accent: ${accentColor} !important;
+      --border-color: ${borderColor} !important;
+      --glow-color: ${glowColor} !important;
+      --align: ${align} !important;
+      --layout: ${layout} !important;
+      --title-size: ${titleSize}px !important;
+      --artist-size: ${artistSize}px !important;
+      --line-height: ${lineHeight} !important;
+      --letter-spacing: ${letterSpacing}px !important;
+      --padding: ${padding}px !important;
+      --margin: ${margin}px !important;
+      --font-weight: ${fontWeight} !important;
+      --text-transform: ${textTransform} !important;
+      --text-shadow: ${textShadow ? '0 1px 3px rgba(0,0,0,0.5)' : 'none'} !important;
+      --anim-speed: ${animSpeed} !important;
+      --hover-effect: ${hoverEffect} !important;
+    }
+  `;
+  document.head.appendChild(style);
+
+  console.log('CSS variables applied with !important:', {
+    '--radius': radius + 'px',
+    '--card': cardColor,
+    '--text': textColor,
+    '--accent': accentColor
+  });
 
   // Load custom font if specified
   if (font) {
@@ -91,7 +106,7 @@
       'mono': 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace'
     };
     const fontFamily = fontMap[font] || font;
-    root.style.setProperty('--font', `'${fontFamily}', system-ui, -apple-system, Segoe UI, Arial, sans-serif`);
+    document.documentElement.style.setProperty('--font', `'${fontFamily}', system-ui, -apple-system, Segoe UI, Arial, sans-serif`);
     
     // Load Google Font if needed
     if (fontMap[font] && font !== 'mono') {
@@ -171,23 +186,23 @@
       nowPlaying: {
         name: "Midnight Drive",
         artists: [{ name: "Lumen & Co" }],
-        album: { images: [{ url: "assets/demo-albumcover.jpg" }] }
+        album: { images: [{ url: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMzMzIi8+CjxwYXRoIGQ9Ik0xNiAxNkgyNFYzMkgxNlYxNloiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yNCAxNkgyOFYzMkgyNFYxNloiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo=" }] }
       },
       next: [
         { 
           name: "Neon Skyline", 
           artists: [{ name: "City Nights" }],
-          album: { images: [{ url: "assets/demo-albumcover.jpg" }] }
+          album: { images: [{ url: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMzMzIi8+CjxwYXRoIGQ9Ik0xNiAxNkgyNFYzMkgxNlYxNloiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yNCAxNkgyOFYzMkgyNFYxNloiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo=" }] }
         },
         { 
           name: "Rainy Window", 
           artists: [{ name: "Lofigram" }],
-          album: { images: [{ url: "assets/demo-albumcover.jpg" }] }
+          album: { images: [{ url: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMzMzIi8+CjxwYXRoIGQ9Ik0xNiAxNkgyNFYzMkgxNlYxNloiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yNCAxNkgyOFYzMkgyNFYxNloiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo=" }] }
         },
         { 
           name: "Synth Bloom", 
           artists: [{ name: "Vapor Sun" }],
-          album: { images: [{ url: "assets/demo-albumcover.jpg" }] }
+          album: { images: [{ url: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMzMzIi8+CjxwYXRoIGQ9Ik0xNiAxNkgyNFYzMkgxNlYxNloiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yNCAxNkgyOFYzMkgyNFYxNloiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo=" }] }
         }
       ],
       is_playing: true,

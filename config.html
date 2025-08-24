@@ -1423,7 +1423,7 @@
                <div class="preview-title" style="font-size:16px;margin:0;">Queue Preview</div>
                                <div class="badge" id="queuePreviewStatus">🎯 Live preview with demo data - shows exactly how it will look in OBS</div>
              </div>
-             <iframe id="queuePreview" class="preview-iframe" src="" allow="clipboard-read; clipboard-write" loading="lazy"></iframe>
+             <iframe id="queuePreview" class="preview-iframe" src="" allow="clipboard-read; clipboard-write" loading="lazy" onload="console.log('Queue preview iframe loaded:', this.src)"></iframe>
            </div>
          </div>
       </section>
@@ -1829,7 +1829,14 @@ function render(){
      
      const previewUrl = localQueue + '?' + queuePreviewParams.toString();
      console.log('Queue preview URL:', previewUrl); // Debug log
-     els.queuePreview.src = previewUrl;
+     console.log('Queue preview params:', Object.fromEntries(queuePreviewParams)); // Debug log
+     
+     // Force iframe reload by clearing src first
+     els.queuePreview.src = '';
+     setTimeout(() => {
+       els.queuePreview.src = previewUrl;
+       console.log('Queue preview iframe src set to:', previewUrl);
+     }, 10);
    }
 }
 
