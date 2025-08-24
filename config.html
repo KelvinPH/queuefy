@@ -1228,7 +1228,7 @@
         <div class="preview-header">
           <div>
             <h2 class="preview-title">Live Previews</h2>
-            <p class="preview-subtitle">Player preview connects to real Spotify when demo mode is off; Queue preview always shows demo data</p>
+                         <p class="preview-subtitle">Player preview connects to real Spotify when demo mode is off; Queue preview uses demo data when demo mode is on, real data when off (requires local Queuefy server)</p>
           </div>
           <div class="badge">Resize to test different scales</div>
         </div>
@@ -1246,7 +1246,7 @@
            <div style="flex:1;">
              <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px;margin-bottom:8px;">
                <div class="preview-title" style="font-size:16px;margin:0;">Queue Preview</div>
-               <div class="badge">🎯 Live preview with demo data - shows exactly how it will look in OBS</div>
+                               <div class="badge" id="queuePreviewStatus">🎯 Live preview with demo data - shows exactly how it will look in OBS</div>
              </div>
              <iframe id="queuePreview" class="preview-iframe" src="" allow="clipboard-read; clipboard-write" loading="lazy"></iframe>
            </div>
@@ -1527,13 +1527,21 @@ function render(){
   if(els.queueUrl) els.queueUrl.textContent = queueUrl;
   if(els.queueUrlLinks) els.queueUrlLinks.textContent = queueUrl;
   
-  // Update demo status text
-  const demoStatus = document.getElementById('demoStatus');
-  if(demoStatus) {
-    demoStatus.textContent = els.demo.checked ? 
-      'Demo mode: showing sample data' : 
-      'Live mode: connecting to Spotify';
-  }
+     // Update demo status text
+   const demoStatus = document.getElementById('demoStatus');
+   if(demoStatus) {
+     demoStatus.textContent = els.demo.checked ? 
+       'Demo mode: showing sample data' : 
+       'Live mode: connecting to Spotify';
+   }
+   
+   // Update queue preview status text
+   const queuePreviewStatus = document.getElementById('queuePreviewStatus');
+   if(queuePreviewStatus) {
+     queuePreviewStatus.textContent = els.demo.checked ? 
+       '🎯 Demo mode: showing sample queue data' : 
+       '🔗 Live mode: connecting to Queuefy server (requires local server)';
+   }
   
   // Update previews
   if(els.preview) {
@@ -1547,44 +1555,55 @@ function render(){
     }
   }
   
-  // Queue preview: always load local queue.html?demo=true with current styling
-  if(els.queuePreview) {
-    const localQueue = new URL('queue.html', location.href).toString();
-    const queuePreviewParams = new URLSearchParams();
-    queuePreviewParams.set('demo', 'true');
-    
-    // Apply current queue behavior and styling to preview
-    if(s.queueMax && s.queueMax !== '5') queuePreviewParams.set('queueMax', s.queueMax);
-    if(s.showArtists === 'false') queuePreviewParams.set('showArtists', 'false');
-    
-    // Apply current queue styling to preview
-    if(s.queueTheme) queuePreviewParams.set('theme', s.queueTheme);
-    if(s.queueRadius && s.queueRadius !== '12') queuePreviewParams.set('radius', s.queueRadius);
-    if(s.queueShadow === '0') queuePreviewParams.set('shadow', '0');
-    if(s.queueGap && s.queueGap !== '6') queuePreviewParams.set('gap', s.queueGap);
-    if(s.queueCard && s.queueCard !== '#000000') {
-      // Convert hex to rgba for card background
-      const hexToRgba = hex => {
-        const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex) || [];
-        const r = parseInt(m[1] || '00', 16);
-        const g = parseInt(m[2] || '00', 16);
-        const b = parseInt(m[3] || '00', 16);
-        return `rgba(${r},${g},${b},0.35)`;
-      };
-      queuePreviewParams.set('card', hexToRgba(s.queueCard));
-    }
-    if(s.queueText && s.queueText !== '#ffffff') queuePreviewParams.set('text', s.queueText);
-    if(s.queueMuted && s.queueMuted !== '#cfcfcf') queuePreviewParams.set('muted', s.queueMuted);
-    if(s.queueTitleSize && s.queueTitleSize !== '15') queuePreviewParams.set('titleSize', s.queueTitleSize);
-    if(s.queueArtistSize && s.queueArtistSize !== '12') queuePreviewParams.set('artistSize', s.queueArtistSize);
-    if(s.queueUppercase === '1') queuePreviewParams.set('uppercase', '1');
-    if(s.queueAlign && s.queueAlign !== 'left') queuePreviewParams.set('align', s.queueAlign);
-    if(s.queueFont) queuePreviewParams.set('font', s.queueFont);
-    
-    const previewUrl = localQueue + '?' + queuePreviewParams.toString();
-    console.log('Queue preview URL:', previewUrl); // Debug log
-    els.queuePreview.src = previewUrl;
-  }
+     // Queue preview: use demo data when demo mode is on, real data when off
+   if(els.queuePreview) {
+     const localQueue = new URL('queue.html', location.href).toString();
+     const queuePreviewParams = new URLSearchParams();
+     
+     // Use demo mode based on the demo toggle
+     if(els.demo.checked) {
+       queuePreviewParams.set('demo', 'true');
+     } else {
+       // When demo is off, try to connect to real data
+       // Note: This will only work if the user is running the preview locally
+       // or if they have their Queuefy server accessible from the web
+       if(s.ws && s.ws !== 'ws://localhost:5173') {
+         queuePreviewParams.set('ws', s.ws);
+       }
+     }
+     
+     // Apply current queue behavior and styling to preview
+     if(s.queueMax && s.queueMax !== '5') queuePreviewParams.set('queueMax', s.queueMax);
+     if(s.showArtists === 'false') queuePreviewParams.set('showArtists', 'false');
+     
+     // Apply current queue styling to preview
+     if(s.queueTheme) queuePreviewParams.set('theme', s.queueTheme);
+     if(s.queueRadius && s.queueRadius !== '12') queuePreviewParams.set('radius', s.queueRadius);
+     if(s.queueShadow === '0') queuePreviewParams.set('shadow', '0');
+     if(s.queueGap && s.queueGap !== '6') queuePreviewParams.set('gap', s.queueGap);
+     if(s.queueCard && s.queueCard !== '#000000') {
+       // Convert hex to rgba for card background
+       const hexToRgba = hex => {
+         const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex) || [];
+         const r = parseInt(m[1] || '00', 16);
+         const g = parseInt(m[2] || '00', 16);
+         const b = parseInt(m[3] || '00', 16);
+         return `rgba(${r},${g},${b},0.35)`;
+       };
+       queuePreviewParams.set('card', hexToRgba(s.queueCard));
+     }
+     if(s.queueText && s.queueText !== '#ffffff') queuePreviewParams.set('text', s.queueText);
+     if(s.queueMuted && s.queueMuted !== '#cfcfcf') queuePreviewParams.set('muted', s.queueMuted);
+     if(s.queueTitleSize && s.queueTitleSize !== '15') queuePreviewParams.set('titleSize', s.queueTitleSize);
+     if(s.queueArtistSize && s.queueArtistSize !== '12') queuePreviewParams.set('artistSize', s.queueArtistSize);
+     if(s.queueUppercase === '1') queuePreviewParams.set('uppercase', '1');
+     if(s.queueAlign && s.queueAlign !== 'left') queuePreviewParams.set('align', s.queueAlign);
+     if(s.queueFont) queuePreviewParams.set('font', s.queueFont);
+     
+     const previewUrl = localQueue + '?' + queuePreviewParams.toString();
+     console.log('Queue preview URL:', previewUrl); // Debug log
+     els.queuePreview.src = previewUrl;
+   }
 }
 
   // Tab switching
@@ -1706,6 +1725,11 @@ function render(){
 
   // Auto-fill Base URL if empty
   function autoFillBaseUrl() {
+    // Force correct lowercase URL if there's an uppercase version cached
+    if (els.base.value && els.base.value.includes('github.io/Queuefy')) {
+      els.base.value = els.base.value.replace('github.io/Queuefy', 'github.io/queuefy');
+    }
+    
     if (!els.base.value || els.base.value.includes('github.io/SpotiStream') || els.base.value.includes('github.io/queuefy')) {
       const currentUrl = new URL(location.href);
       
@@ -1727,6 +1751,12 @@ function render(){
   
   // Auto-fill Base URL
   autoFillBaseUrl();
+  
+  // Force correct URL and save state
+  if (els.base.value && els.base.value.includes('github.io/Queuefy')) {
+    els.base.value = els.base.value.replace('github.io/Queuefy', 'github.io/queuefy');
+    saveState();
+  }
   
   // Initial render
   render();
