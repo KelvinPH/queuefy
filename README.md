@@ -1,287 +1,117 @@
-# SpotiStream · Professional Spotify Overlay for Content Creators
+# Queuefy
 
-[![Works in](https://img.shields.io/badge/OBS-Browser%20Source-6aa84f)](#-obs-setup)
-[![Hosting](https://img.shields.io/badge/Hosting-GitHub%20Pages-1da1f2)](#-self-hosting--forks)
+A comprehensive streaming overlay system with both Player and Queue overlays for OBS.
 
+## Features
 
-The **most customizable Spotify overlay** for streamers and content creators. Features a stunning vinyl record aesthetic with deep customization options, multiple layouts, visual effects, and professional themes. No server required, no secrets exposed.
+### Player Overlay (overlay.html)
+- Spotify Now Playing display with multiple layout options
+- Real-time track information and progress
+- Customizable themes, colors, and animations
+- Multiple layout presets (Record, Card, Bar, Stacked, etc.)
+- Demo mode for testing without Spotify connection
 
----
+### Queue Overlay (queue.html)
+- Upcoming tracks display
+- WebSocket connection for real-time updates
+- HTTP fallback polling
+- Customizable styling and behavior
+- Demo mode with rotating sample tracks
 
-## 🔗 Quick Access
+### Dashboard (config.html)
+- Unified configuration interface for both overlays
+- Live previews of both Player and Queue overlays
+- Tabbed interface: Player, Queue, Visual, Advanced, Links
+- Local storage for saving settings
+- URL generation for OBS Browser Sources
 
-- **🎛️ Configurator (Start Here):** `https://kelvinph.github.io/SpotiStream/config.html`  
-- **📺 Overlay:** `https://kelvinph.github.io/SpotiStream/overlay.html`  
+## Quick Start
 
-> Use the **Configurator** to design your overlay visually with live preview, then copy the generated URL directly into OBS.
+1. **Open the Dashboard**: Open `config.html` in your browser
+2. **Configure Player Overlay**: Use the Player tab to customize the Spotify overlay
+3. **Configure Queue Overlay**: Use the Queue tab to customize the queue display
+4. **Get URLs**: Use the Links tab to copy both overlay URLs
+5. **Add to OBS**: Add both URLs as Browser Sources in OBS
 
----
+## Player Overlay Configuration
 
-## ✨ Features
+### Layout Options
+- **Record**: Vinyl record style with spinning animation
+- **Card**: Album cover with text overlay
+- **Bar**: Minimal horizontal layout
+- **Stacked**: Centered layout with album art
+- **Compact**: Mini version for small spaces
+- **Wide**: Cinematic wide layout
+- **Split**: Dual-panel layout
+- **Floating**: Overlay-style positioning
+- **Corner**: Tiny corner display
+- **Ticker**: Scrolling text layout
 
-### 🎨 **10 Unique Layouts**
-- **Record (Vinyl)** - Authentic spinning vinyl with grooves and optional tonearm
-- **Card (Cover)** - Clean album artwork with text overlay
-- **Bar (Minimal)** - Ultra-compact text-only strip
-- **Stacked (Center)** - Centered vertical layout perfect for corners
-- **Compact (Mini)** - Small 80px artwork for minimal footprint
-- **Wide (Cinematic)** - Three-column layout with duplicate artwork
-- **Split (Dual)** - Vertical artwork and text stacking
-- **Floating (Overlay)** - Fixed top-right corner overlay
-- **Corner (Tiny)** - Minimal 60px bottom-right widget
-- **Ticker (Scroll)** - Full-width bottom scrolling bar
+### Themes
+- Spotify, OBS Dark, Minimal, Neon, Gaming, Lo-Fi, Retro Wave, Elegant, Cyberpunk, Sunset, Ocean, Forest, Midnight, Aurora, Gradient, Monochrome, Party, Cozy, Focus
 
-### 🎭 **19+ Professional Themes**
-- **Classic**: Spotify, OBS Dark, Minimal, Neon
-- **Creative**: Gaming, Lo-Fi, Cyberpunk, Retro Wave, Elegant
-- **Atmospheric**: Sunset, Ocean, Forest, Midnight, Aurora
-- **Artistic**: Gradient, Monochrome, Party, Cozy, Focus
+### Elements
+- Status pill, Progress bar, Time display, Title, Artist, Next track preview
+- Text scrolling, Auto-accent from album art, Marquee speed control
 
-### 🌟 **Visual Effects**
-- **Particle Effects** - Floating accent-colored particles
-- **Color Breathing** - Gentle hue rotation and brightness pulsing
-- **Waveform Visualizer** - Animated bars that pulse with music
-- **Album Blur Background** - Blurred artwork with hover-to-focus
-- **5 Accent Styles**: Solid, Glow, Gradient, Pulse, Rainbow
+## Queue Overlay Configuration
 
-### 🎯 **Advanced Customization**
-- **Smart Text Alignment** - Auto-follows media position or manual override
-- **Progress Bar Scaling** - Adjustable width (50%-100%)
-- **Typography Control** - 5 Google Fonts + shadow options
-- **Color Modes** - Theme-based or full custom color picker
-- **Precise Sizing** - Media size, corner radius, blur, padding controls
-- **Transparency Options** - Full transparency mode or custom opacity
+### Behavior
+- **Queue Max**: Number of items to display (0-20, default: 5)
+- **Show Artists**: Toggle artist names display
+- **WebSocket URL**: Connection endpoint (default: ws://localhost:5173)
+- **Poll Interval**: HTTP fallback interval in milliseconds (min: 3000, default: 15000)
 
-### 🎵 **Intelligent Features**
-- **Auto-accent Extraction** - Colors from album artwork
-- **Marquee Text Scrolling** - Long titles scroll automatically
-- **Responsive Design** - Scales perfectly in OBS
-- **Demo Mode** - Test styling without Spotify connection
-- **Text Shadows** - Enhanced readability over any background
+### Styling
+- **Theme**: Minimal, OBS Dark, Elegant presets
+- **Card Radius**: Corner radius in pixels
+- **Card Shadow**: Toggle drop shadow
+- **Item Gap**: Vertical spacing between items
+- **Colors**: Card background, text, and muted colors
+- **Typography**: Title size, artist size, font family, uppercase toggle
+- **Alignment**: Left, center, or right alignment
 
----
+## OBS Setup
 
-## 🚀 Quick Start Guide
+1. **Player Overlay**: Add the Player URL as a Browser Source
+2. **Queue Overlay**: Add the Queue URL as a second Browser Source
+3. **Positioning**: Arrange both overlays as desired in your scene
+4. **Testing**: Use demo mode to test without Spotify connection
 
-### 1. **Spotify App Setup**
-1. Visit [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/applications)
-2. **Create App** → Name it anything → **Web API**
-3. **Edit Settings** → **Redirect URIs** → Add exactly:  
-   `https://kelvinph.github.io/SpotiStream/overlay.html`
-4. **Save** → Copy your **Client ID**
+## Queuefy App Integration
 
-### 2. **Design Your Overlay**
-1. Open the [**Configurator**](https://kelvinph.github.io/SpotiStream/config.html)
-2. Enable **Demo Mode** (toggle in header) to preview without login
-3. Choose a **Quick Preset** or customize manually:
-   - **Basic**: Layout, theme, positioning
-   - **Visual**: Effects, animations, accent styles  
-   - **Content**: Elements, text behavior
-   - **Advanced**: Typography, colors, transparency
-4. **Copy URL** when satisfied
+The Queue overlay connects to a local Queuefy app running on the streaming PC:
 
-### 3. **Add to OBS**
-1. **Sources** → **+** → **Browser Source**
-2. **URL**: Paste your copied URL
-3. **Width**: 900, **Height**: 300 (adjust as needed)
-4. **Custom CSS**: Leave blank
-5. **✓ OK**
+- **WebSocket**: Real-time updates via ws://localhost:5173
+- **HTTP Fallback**: Polling via http://localhost:5173/queue.json
+- **Chat Commands**: Use !sr, !queue, !song, !skip to test functionality
 
-### 4. **First-Time Authentication**
-1. **Right-click** Browser Source → **Interact**
-2. **Connect to Spotify** → Paste **Client ID** → **Save**
-3. **Connect to Spotify** → **Allow** in popup
-4. Start playing music in Spotify
-
-> **Important**: Always do the first login **inside OBS** using **Interact** to ensure tokens are stored correctly.
-
----
-
-## 🎛️ Configurator Guide
-
-### **Header Controls**
-- **Demo Mode Toggle** - Preview with sample data
-- **Copy URL** - Get your customized overlay URL
-- **Open Preview** - Test in new window
-- **Reset** - Start over with defaults
-
-### **Tabs Overview**
-
-#### **Basic Tab**
-- **Quick Presets** - 14 pre-designed combinations
-- **Layout & Style** - Choose layout, theme, accent style
-- **Sizing & Positioning** - Media size, progress width, alignment
-- **Behavior** - Spin, tonearm, compact spacing options
-
-#### **Visual Tab**  
-- **Visual Effects** - Particles, color breathing, waveform, album blur
-- **Animations** - Track change effects, animation speed control
-
-#### **Content Tab**
-- **Elements** - Toggle status pill, progress bar, time, title, artist
-- **Text & Motion** - Scrolling, auto-accent, marquee speed
-
-#### **Advanced Tab**
-- **Typography** - Font selection, shadow control
-- **Colors & Custom** - Theme vs custom color mode
-- **Background** - Transparency, panel opacity, background color
-- **Quick Actions** - One-click transparent preset
-
----
-
-## 🎨 Theme Gallery
-
-### **Gaming Themes**
-- **Gaming** - Bright green text on black, perfect for streams
-- **Cyberpunk** - Neon cyan and hot pink, futuristic glow
-- **Neon** - Electric blue accents with dark background
-
-### **Atmospheric Themes**  
-- **Lo-Fi** - Warm browns and oranges, cozy aesthetic
-- **Sunset** - Orange and pink gradients, golden hour vibes
-- **Ocean** - Blue tones with aqua accents, calming
-- **Forest** - Green palette, natural and organic
-- **Midnight** - Purple hues, mysterious night theme
-
-### **Professional Themes**
-- **Elegant** - Clean whites and blues, sophisticated
-- **Minimal** - Pure white on dark, maximum readability
-- **OBS Dark** - Matches OBS interface perfectly
-- **Monochrome** - Black and white, timeless
-
----
-
-## 🎭 Preset Collection
-
-### **Creative Presets**
-- **Record** - Classic Spotify vinyl with spinning animation
-- **Gaming** - Compact layout with particle effects
-- **Lo-Fi** - Wide cinematic with color breathing
-- **Cyberpunk** - Floating overlay with all effects enabled
-- **Elegant** - Split layout with album blur
-- **Party** - Ticker layout with rainbow effects
-
-### **Functional Presets**
-- **Card** - Clean OBS Dark theme for professional streams
-- **Bar** - Ultra-minimal for small overlay areas
-- **Transparent** - See-through for gameplay overlays
-- **Streamer** - Floating neon overlay for corner placement
-- **Focus** - Compact minimal for distraction-free streaming
-- **Ultra Minimal** - Bare-bones text only
-
----
-
-## 🧩 OBS Integration
-
-### **Recommended Settings**
-- **Browser Source Properties**:
-  - **Width**: 900px (scales automatically)
-  - **Height**: 300px (adjust for layout)
-  - **FPS**: 30 (sufficient for smooth animations)
-  - **Custom CSS**: Leave blank
-  - **✓ Shutdown source when not visible**: **OFF**
-  - **✓ Refresh browser when scene becomes active**: **OFF**
-
-### **Positioning Tips**
-- **Bottom Third**: Classic position, doesn't obstruct content
-- **Top Corner**: Use Corner or Floating layouts
-- **Full Width**: Perfect for Ticker layout
-- **Sidebar**: Compact or Split layouts work well
-
-### **Performance Optimization**
-- **Lower-end systems**: Reduce blur, disable particle effects
-- **High refresh rate**: Enable all visual effects
-- **Multiple scenes**: Keep source active to maintain authentication
-
----
-
-## 🔧 Advanced Customization
-
-### **URL Parameters**
-All configurator settings can be controlled via URL parameters:
+## File Structure
 
 ```
-?layout=floating&theme=cyberpunk&particles=1&colorbreathing=1
-&waveform=1&accentstyle=pulse&disc=140&progresswidth=80
-&textalign=center&transparent=1&shadow=0
+Queuefy/
+├── config.html          # Main dashboard
+├── overlay.html         # Player overlay
+├── queue.html          # Queue overlay
+├── assets/
+│   ├── queue.css       # Queue overlay styles
+│   ├── queue.js        # Queue overlay logic
+│   ├── demo-albumcover.jpg
+│   ├── queue.css
+│   └── queue.js
+└── README.md
 ```
 
-### **Key Parameters**
-- `layout` - record, card, bar, stacked, compact, wide, split, floating, corner, ticker
-- `theme` - Any theme name (spotify, gaming, cyberpunk, etc.)
-- `particles` - 1 to enable particle effects
-- `colorbreathing` - 1 to enable color breathing
-- `waveform` - 1 to enable waveform visualizer
-- `accentstyle` - solid, glow, gradient, pulse, rainbow
-- `transparent` - 1 for full transparency
-- `shadow` - 0 to disable text shadows
+## Browser Compatibility
 
-### **Custom Colors**
-```
-?colormode=custom&accent=%23ff0080&text=%23ffffff&muted=%23cccccc
-```
+- Modern browsers with ES6+ support
+- Local file access for testing
+- WebSocket support for real-time updates
+- LocalStorage for settings persistence
 
----
+## Development
 
-## ❓ Troubleshooting
-
-### **Authentication Issues**
-**Problem**: "Redirect URI mismatch"  
-**Solution**: Ensure Spotify app redirect URI is exactly:  
-`https://kelvinph.github.io/SpotiStream/overlay.html`
-
-**Problem**: OBS keeps asking to login  
-**Solution**: Do first authentication **inside OBS** using **Interact**, not in regular browser
-
-### **Display Issues**  
-**Problem**: Shows "Nothing playing"  
-**Solution**: Start music playback on the authenticated Spotify account (Free accounts work)
-
-**Problem**: Overlay doesn't update  
-**Solution**: Hard refresh (Ctrl+F5) or use incognito/private browsing
-
-**Problem**: Visual effects not showing  
-**Solution**: Check if effects are enabled in configurator Visual tab, ensure modern browser
-
-### **Performance Issues**
-**Problem**: Overlay causes frame drops  
-**Solution**: Reduce blur amount, disable particle effects, use simpler layouts
-
-**Problem**: Text hard to read  
-**Solution**: Enable text shadows in Advanced tab, or use higher contrast themes
-
----
-
-## 🔒 Privacy & Security
-
-### **Data Handling**
-- **No Server Required** - Everything runs in your browser
-- **OAuth 2.1 PKCE** - Industry-standard secure authentication
-- **Local Storage Only** - Tokens stored in your browser/OBS environment
-- **No Data Collection** - This project never sees your information
-- **Open Source** - Full code transparency
-
-### **Permissions Used**
-- `user-read-currently-playing` - Get current track info
-- `user-read-playback-state` - Get play/pause status
-
-### **What We Don't Access**
-- Your music library or playlists
-- Personal information or email
-- Listening history or recommendations
-- Account details beyond current playback
-
----
-
-## 🙏 Acknowledgments
-
-- **Spotify Web API** - For the excellent developer platform
-- **OBS Studio** - For Browser Source capability
-- **Google Fonts** - For beautiful typography options
-- **Community** - For feedback and feature suggestions
-
----
-
-**Made with ❤️ for content creators worldwide**
-
-*Transform your streams with the most customizable Spotify overlay available.*
+- No build tools required
+- Vanilla HTML/CSS/JavaScript
+- Local development server recommended for testing
+- File:// protocol works for basic functionality

@@ -102,34 +102,37 @@
     align-items: center;
   }
   
-  .main{
-    max-width: 1600px;
-    margin: 0 auto;
-    padding: 32px;
-    display: grid;
-    grid-template-columns: 480px 1fr;
-    gap: 32px;
-    min-height: calc(100vh - 84px);
-  }
+     .main{
+     max-width: 1600px;
+     margin: 0 auto;
+     padding: 32px;
+     display: grid;
+     grid-template-columns: 480px 1fr;
+     gap: 32px;
+     min-height: calc(100vh - 84px);
+   }
   
-  .sidebar{
-    display: grid;
-    grid-template-rows: auto 1fr;
-    gap: 24px;
-    height: fit-content;
-    position: sticky;
-    top: 116px;
-  }
+     .sidebar{
+     background: var(--bg-secondary);
+     border: 1px solid var(--border);
+     border-radius: var(--radius-lg);
+     padding: 24px;
+     height: fit-content;
+     position: sticky;
+     top: 116px;
+     box-shadow: var(--shadow);
+   }
   
-  .nav-tabs{
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 4px;
-    background: var(--bg);
-    padding: 4px;
-    border-radius: var(--radius);
-    border: 1px solid var(--border-light);
-  }
+     .nav-tabs{
+     display: grid;
+     grid-template-columns: repeat(5, 1fr);
+     gap: 4px;
+     background: var(--bg);
+     padding: 4px;
+     border-radius: var(--radius);
+     border: 1px solid var(--border-light);
+     margin-bottom: 24px;
+   }
   
   .nav-tab{
     appearance: none;
@@ -157,11 +160,11 @@
     background: var(--panel-hover);
   }
   
-  .sidebar-content{
-    overflow-y: auto;
-    overflow-x: hidden;
-    max-height: calc(100vh - 200px);
-  }
+     .sidebar-content{
+     overflow-y: auto;
+     overflow-x: hidden;
+     max-height: calc(100vh - 280px);
+   }
   
   .sidebar-content::-webkit-scrollbar{width: 6px}
   .sidebar-content::-webkit-scrollbar-track{background: transparent}
@@ -447,15 +450,15 @@
     word-break: break-all;
   }
   
-  .preview-area{
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow);
-    display: grid;
-    grid-template-rows: auto 1fr;
-    min-height: 600px;
-  }
+     .preview-area{
+     background: var(--bg-secondary);
+     border: 1px solid var(--border);
+     border-radius: var(--radius-lg);
+     box-shadow: var(--shadow);
+     display: flex;
+     flex-direction: column;
+     min-height: 600px;
+   }
   
   .preview-header{
     display: flex;
@@ -478,20 +481,22 @@
     margin: 4px 0 0 0;
   }
   
-  .preview-content{
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+     .preview-content{
+     padding: 20px;
+     display: flex;
+     flex-direction: column;
+     gap: 20px;
+     flex: 1;
+   }
   
-  .preview-iframe{
-    width: 100%;
-    height: 400px;
-    border: none;
-    border-radius: var(--radius);
-    background: #000;
-  }
+     .preview-iframe{
+     width: 100%;
+     height: 400px;
+     border: none;
+     border-radius: var(--radius);
+     background: #000;
+     min-height: 400px;
+   }
   
   .badge{
     font-size: 12px;
@@ -505,27 +510,31 @@
     margin: 24px 0;
   }
   
-  @media (max-width: 1200px){
-    .main{
-      grid-template-columns: 1fr;
-      gap: 24px;
-    }
-    
-    .sidebar{
-      position: static;
-    }
-    
-    .preview-area{
-      min-height: 400px;
-    }
-  }
+     @media (max-width: 1200px){
+     .main{
+       grid-template-columns: 1fr;
+       gap: 24px;
+     }
+     
+     .sidebar{
+       position: static;
+     }
+     
+     .preview-area{
+       min-height: 400px;
+     }
+     
+     .preview-iframe{
+       height: 300px;
+     }
+   }
 </style>
 </head>
 <body>
   <div class="dashboard">
     <header class="header">
       <div class="header-content">
-        <h1>SpotiStream Configurator</h1>
+        <h1>Queuefy Configurator</h1>
         <div class="header-controls">
           <div class="demo-toggle">
             <label class="toggle-label">
@@ -545,235 +554,450 @@
     <main class="main">
       <aside class="sidebar">
         <nav class="nav-tabs">
-          <button class="nav-tab active" data-tab="basic">Basic</button>
+          <button class="nav-tab active" data-tab="player">Player</button>
+          <button class="nav-tab" data-tab="queue">Queue</button>
           <button class="nav-tab" data-tab="visual">Visual</button>
-          <button class="nav-tab" data-tab="content">Content</button>
           <button class="nav-tab" data-tab="advanced">Advanced</button>
+          <button class="nav-tab" data-tab="links">Links</button>
         </nav>
         
         <div class="sidebar-content">
-          <div class="tab-panel active" id="basic-tab">
-            <div class="card">
-              <div class="card-header">
-                <h2 class="card-title">Quick Start</h2>
-              </div>
-              <div class="card-body">
-                <div class="form-section">
-                  <div class="form-group">
-                    <label class="form-label">Base URL</label>
-                    <input id="base" class="form-input" type="url" placeholder="https://<user>.github.io/SpotiStream/overlay.html" value="https://kelvinph.github.io/SpotiStream/overlay.html"/>
-                  </div>
-                  
-                  <div class="form-group">
-                    <label class="form-label">Quick Presets</label>
-                    <div class="preset-grid">
-                      <button class="btn-outline btn-sm preset-btn" data-preset="record">Record</button>
-                      <button class="btn-outline btn-sm preset-btn" data-preset="card">Card</button>
-                      <button class="btn-outline btn-sm preset-btn" data-preset="bar">Bar</button>
-                      <button class="btn-outline btn-sm preset-btn" data-preset="stacked">Stacked</button>
-                      <button class="btn-outline btn-sm preset-btn" data-preset="transparent">Transparent</button>
-                      <button class="btn-outline btn-sm preset-btn" data-preset="gaming">Gaming</button>
-                      <button class="btn-outline btn-sm preset-btn" data-preset="lofi">Lo-Fi</button>
-                      <button class="btn-outline btn-sm preset-btn" data-preset="cyberpunk">Cyberpunk</button>
-                      <button class="btn-outline btn-sm preset-btn" data-preset="elegant">Elegant</button>
-                      <button class="btn-outline btn-sm preset-btn" data-preset="party">Party</button>
-                      <button class="btn-outline btn-sm preset-btn" data-preset="cozy">Cozy</button>
-                      <button class="btn-outline btn-sm preset-btn" data-preset="streamer">Streamer</button>
-                      <button class="btn-outline btn-sm preset-btn" data-preset="focus">Focus</button>
-                      <button class="btn-outline btn-sm preset-btn" data-preset="ultraminimal">Ultra Minimal</button>
-                    </div>
-                  </div>
-                  
-                  <div class="divider"></div>
-                  
-                  <div class="form-group">
-                    <label class="form-label">Generated URL</label>
-                    <div id="url" class="url-display"></div>
-                    <div class="badge">Copy this URL into OBS → Browser Source</div>
-        </div>
-          </div>
-        </div>
-      </div>
+                     <div class="tab-panel active" id="player-tab">
+             <div class="card">
+               <div class="card-header">
+                 <h2 class="card-title">Quick Start</h2>
+               </div>
+               <div class="card-body">
+                 <div class="form-section">
+                   <div class="form-group">
+                     <label class="form-label">Base URL</label>
+                     <input id="base" class="form-input" type="url" placeholder="https://<user>.github.io/SpotiStream/overlay.html" value="https://kelvinph.github.io/SpotiStream/overlay.html"/>
+                   </div>
+                   
+                   <div class="form-group">
+                     <label class="form-label">Quick Presets</label>
+                     <div class="preset-grid">
+                       <button class="btn-outline btn-sm preset-btn" data-preset="record">Record</button>
+                       <button class="btn-outline btn-sm preset-btn" data-preset="card">Card</button>
+                       <button class="btn-outline btn-sm preset-btn" data-preset="bar">Bar</button>
+                       <button class="btn-outline btn-sm preset-btn" data-preset="stacked">Stacked</button>
+                       <button class="btn-outline btn-sm preset-btn" data-preset="transparent">Transparent</button>
+                       <button class="btn-outline btn-sm preset-btn" data-preset="gaming">Gaming</button>
+                       <button class="btn-outline btn-sm preset-btn" data-preset="lofi">Lo-Fi</button>
+                       <button class="btn-outline btn-sm preset-btn" data-preset="cyberpunk">Cyberpunk</button>
+                       <button class="btn-outline btn-sm preset-btn" data-preset="elegant">Elegant</button>
+                       <button class="btn-outline btn-sm preset-btn" data-preset="party">Party</button>
+                       <button class="btn-outline btn-sm preset-btn" data-preset="cozy">Cozy</button>
+                       <button class="btn-outline btn-sm preset-btn" data-preset="streamer">Streamer</button>
+                       <button class="btn-outline btn-sm preset-btn" data-preset="focus">Focus</button>
+                       <button class="btn-outline btn-sm preset-btn" data-preset="ultraminimal">Ultra Minimal</button>
+                     </div>
+                   </div>
+                   
+                   <div class="divider"></div>
+                   
+                   <div class="form-group">
+                     <label class="form-label">Generated Player URL</label>
+                     <div id="url" class="url-display"></div>
+                     <div class="badge">Copy this URL into OBS → Browser Source</div>
+                   </div>
+                 </div>
+               </div>
+             </div>
 
-            <div class="card">
-              <div class="card-header">
-                <h2 class="card-title">Layout & Style</h2>
-              </div>
-              <div class="card-body">
-                <div class="form-section">
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label class="form-label">Layout</label>
-                      <select id="layout" class="form-select">
-                        <option value="record">Record (Vinyl)</option>
-                        <option value="card">Card (Cover)</option>
-                        <option value="bar">Bar (Minimal)</option>
-                        <option value="stacked">Stacked (Center)</option>
-                        <option value="compact">Compact (Mini)</option>
-                        <option value="wide">Wide (Cinematic)</option>
-                        <option value="split">Split (Dual)</option>
-                        <option value="floating">Floating (Overlay)</option>
-                        <option value="corner">Corner (Tiny)</option>
-                        <option value="ticker">Ticker (Scroll)</option>
-            </select>
-          </div>
-                    <div class="form-group">
-                      <label class="form-label">Media Position</label>
-                      <select id="align" class="form-select">
-                        <option value="left">Left</option>
-                        <option value="right">Right</option>
-                        <option value="center">Center</option>
-                        <option value="top">Top</option>
-                        <option value="bottom">Bottom</option>
-            </select>
-          </div>
-        </div>
-                  
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label class="form-label">Theme</label>
-                      <select id="theme" class="form-select">
-                        <option value="spotify">Spotify</option>
-                        <option value="obsdark">OBS Dark</option>
-                        <option value="minimal">Minimal</option>
-                        <option value="neon">Neon</option>
-                        <option value="gaming">Gaming</option>
-                        <option value="lofi">Lo-Fi</option>
-                        <option value="retro">Retro Wave</option>
-                        <option value="elegant">Elegant</option>
-                        <option value="cyberpunk">Cyberpunk</option>
-                        <option value="sunset">Sunset</option>
-                        <option value="ocean">Ocean</option>
-                        <option value="forest">Forest</option>
-                        <option value="midnight">Midnight</option>
-                        <option value="aurora">Aurora</option>
-                        <option value="gradient">Gradient</option>
-                        <option value="monochrome">Monochrome</option>
-                        <option value="party">Party</option>
-                        <option value="cozy">Cozy</option>
-                        <option value="focus">Focus</option>
-                      </select>
-                    </div>
-                    <div class="form-group">
-                      <label class="form-label">Accent Style</label>
-                      <select id="accentstyle" class="form-select">
-                        <option value="solid">Solid</option>
-                        <option value="glow">Glow</option>
-                        <option value="gradient">Gradient</option>
-                        <option value="pulse">Pulse</option>
-                        <option value="rainbow">Rainbow</option>
-            </select>
-          </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+             <div class="card">
+               <div class="card-header">
+                 <h2 class="card-title">Layout & Style</h2>
+               </div>
+               <div class="card-body">
+                 <div class="form-section">
+                   <div class="form-row">
+                     <div class="form-group">
+                       <label class="form-label">Layout</label>
+                       <select id="layout" class="form-select">
+                         <option value="record">Record (Vinyl)</option>
+                         <option value="card">Card (Cover)</option>
+                         <option value="bar">Bar (Minimal)</option>
+                         <option value="stacked">Stacked (Center)</option>
+                         <option value="compact">Compact (Mini)</option>
+                         <option value="wide">Wide (Cinematic)</option>
+                         <option value="split">Split (Dual)</option>
+                         <option value="floating">Floating (Overlay)</option>
+                         <option value="corner">Corner (Tiny)</option>
+                         <option value="ticker">Ticker (Scroll)</option>
+                       </select>
+                     </div>
+                     <div class="form-group">
+                       <label class="form-label">Media Position</label>
+                       <select id="align" class="form-select">
+                         <option value="left">Left</option>
+                         <option value="right">Right</option>
+                         <option value="center">Center</option>
+                         <option value="top">Top</option>
+                         <option value="bottom">Bottom</option>
+                       </select>
+                     </div>
+                   </div>
+                   
+                   <div class="form-row">
+                     <div class="form-group">
+                       <label class="form-label">Theme</label>
+                       <select id="theme" class="form-select">
+                         <option value="spotify">Spotify</option>
+                         <option value="obsdark">OBS Dark</option>
+                         <option value="minimal">Minimal</option>
+                         <option value="neon">Neon</option>
+                         <option value="gaming">Gaming</option>
+                         <option value="lofi">Lo-Fi</option>
+                         <option value="retro">Retro Wave</option>
+                         <option value="elegant">Elegant</option>
+                         <option value="cyberpunk">Cyberpunk</option>
+                         <option value="sunset">Sunset</option>
+                         <option value="ocean">Ocean</option>
+                         <option value="forest">Forest</option>
+                         <option value="midnight">Midnight</option>
+                         <option value="aurora">Aurora</option>
+                         <option value="gradient">Gradient</option>
+                         <option value="monochrome">Monochrome</option>
+                         <option value="party">Party</option>
+                         <option value="cozy">Cozy</option>
+                         <option value="focus">Focus</option>
+                       </select>
+                     </div>
+                     <div class="form-group">
+                       <label class="form-label">Accent Style</label>
+                       <select id="accentstyle" class="form-select">
+                         <option value="solid">Solid</option>
+                         <option value="glow">Glow</option>
+                         <option value="gradient">Gradient</option>
+                         <option value="pulse">Pulse</option>
+                         <option value="rainbow">Rainbow</option>
+                       </select>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             </div>
 
-            <div class="card">
-              <div class="card-header">
-                <h2 class="card-title">Sizing & Positioning</h2>
-              </div>
-              <div class="card-body">
-                <div class="form-section">
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label class="form-label">Media Size</label>
-                      <div class="range-group">
-                        <input id="disc" class="range-input" type="range" min="120" max="360" step="2" value="200" oninput="discOut.textContent=this.value"/>
-                        <div class="range-value"><span id="discOut">200</span>px</div>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="form-label">Progress Height</label>
-                      <div class="range-group">
-                        <input id="bar" class="range-input" type="range" min="0" max="16" step="1" value="6" oninput="barOut.textContent=this.value"/>
-                        <div class="range-value"><span id="barOut">6</span>px</div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label class="form-label">Progress Width</label>
-                      <div class="range-group">
-                        <input id="progressWidth" class="range-input" type="range" min="50" max="100" step="5" value="100" oninput="progWidthOut.textContent=this.value"/>
-                        <div class="range-value"><span id="progWidthOut">100</span>%</div>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="form-label">Text Alignment</label>
-                      <select id="textAlign" class="form-select">
-                        <option value="auto">Auto (follows media)</option>
-                        <option value="left">Left</option>
-                        <option value="center">Center</option>
-                        <option value="right">Right</option>
-            </select>
-          </div>
-        </div>
-                  
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label class="form-label">Corner Radius</label>
-                      <div class="range-group">
-                        <input id="radius" class="range-input" type="range" min="0" max="24" step="1" value="16" oninput="radOut.textContent=this.value"/>
-                        <div class="range-value"><span id="radOut">16</span>px</div>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="form-label">Blur</label>
-                      <div class="range-group">
-                        <input id="blur" class="range-input" type="range" min="0" max="16" step="1" value="8" oninput="blurOut.textContent=this.value"/>
-                        <div class="range-value"><span id="blurOut">8</span>px</div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label class="form-label">Safe Padding</label>
-                      <div class="range-group">
-                        <input id="pad" class="range-input" type="range" min="0" max="32" step="1" value="16" oninput="padOut.textContent=this.value"/>
-                        <div class="range-value"><span id="padOut">16</span>px</div>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="form-label">Title Outline</label>
-                      <div class="range-group">
-                        <input id="outline" class="range-input" type="range" min="0" max="2" step="1" value="0" oninput="outlineOut.textContent=this.value"/>
-                        <div class="range-value"><span id="outlineOut">0</span>px</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+             <div class="card">
+               <div class="card-header">
+                 <h2 class="card-title">Sizing & Positioning</h2>
+               </div>
+               <div class="card-body">
+                 <div class="form-section">
+                   <div class="form-row">
+                     <div class="form-group">
+                       <label class="form-label">Media Size</label>
+                       <div class="range-group">
+                         <input id="disc" class="range-input" type="range" min="120" max="360" step="2" value="200" oninput="discOut.textContent=this.value"/>
+                         <div class="range-value"><span id="discOut">200</span>px</div>
+                       </div>
+                     </div>
+                     <div class="form-group">
+                       <label class="form-label">Progress Height</label>
+                       <div class="range-group">
+                         <input id="bar" class="range-input" type="range" min="0" max="16" step="1" value="6" oninput="barOut.textContent=this.value"/>
+                         <div class="range-value"><span id="barOut">6</span>px</div>
+                       </div>
+                     </div>
+                   </div>
+                   
+                   <div class="form-row">
+                     <div class="form-group">
+                       <label class="form-label">Progress Width</label>
+                       <div class="range-group">
+                         <input id="progressWidth" class="range-input" type="range" min="50" max="100" step="5" value="100" oninput="progWidthOut.textContent=this.value"/>
+                         <div class="range-value"><span id="progWidthOut">100</span>%</div>
+                       </div>
+                     </div>
+                     <div class="form-group">
+                       <label class="form-label">Text Alignment</label>
+                       <select id="textAlign" class="form-select">
+                         <option value="auto">Auto (follows media)</option>
+                         <option value="left">Left</option>
+                         <option value="center">Center</option>
+                         <option value="right">Right</option>
+                       </select>
+                     </div>
+                   </div>
+                   
+                   <div class="form-row">
+                     <div class="form-group">
+                       <label class="form-label">Corner Radius</label>
+                       <div class="range-group">
+                         <input id="radius" class="range-input" type="range" min="0" max="24" step="1" value="16" oninput="radOut.textContent=this.value"/>
+                         <div class="range-value"><span id="radOut">16</span>px</div>
+                       </div>
+                     </div>
+                     <div class="form-group">
+                       <label class="form-label">Blur</label>
+                       <div class="range-group">
+                         <input id="blur" class="range-input" type="range" min="0" max="16" step="1" value="8" oninput="blurOut.textContent=this.value"/>
+                         <div class="range-value"><span id="blurOut">8</span>px</div>
+                       </div>
+                     </div>
+                   </div>
+                   
+                   <div class="form-row">
+                     <div class="form-group">
+                       <label class="form-label">Safe Padding</label>
+                       <div class="range-group">
+                         <input id="pad" class="range-input" type="range" min="0" max="32" step="1" value="16" oninput="padOut.textContent=this.value"/>
+                         <div class="range-value"><span id="padOut">16</span>px</div>
+                       </div>
+                     </div>
+                     <div class="form-group">
+                       <label class="form-label">Title Outline</label>
+                       <div class="range-group">
+                         <input id="outline" class="range-input" type="range" min="0" max="2" step="1" value="0" oninput="outlineOut.textContent=this.value"/>
+                         <div class="range-value"><span id="outlineOut">0</span>px</div>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             </div>
 
-            <div class="card">
-              <div class="card-header">
-                <h2 class="card-title">Behavior</h2>
-              </div>
-              <div class="card-body">
-                <div class="form-section">
-                  <div class="toggle-group">
-                    <label class="form-label">Compact spacing</label>
-                    <input id="compact" type="checkbox" class="toggle"/>
-                  </div>
-                  <div class="toggle-group">
-                    <label class="form-label">Spin while playing</label>
-                    <input id="spin" type="checkbox" class="toggle" checked/>
-                  </div>
-                  <div class="toggle-group">
-                    <label class="form-label">Keep label upright</label>
-                    <input id="labelStatic" type="checkbox" class="toggle"/>
-                  </div>
-                  <div class="toggle-group">
-                    <label class="form-label">Show tonearm (record)</label>
-                    <input id="tonearm" type="checkbox" class="toggle" checked/>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+             <div class="card">
+               <div class="card-header">
+                 <h2 class="card-title">Behavior</h2>
+               </div>
+               <div class="card-body">
+                 <div class="form-section">
+                   <div class="toggle-group">
+                     <label class="form-label">Compact spacing</label>
+                     <input id="compact" type="checkbox" class="toggle"/>
+                   </div>
+                   <div class="toggle-group">
+                     <label class="form-label">Spin while playing</label>
+                     <input id="spin" type="checkbox" class="toggle" checked/>
+                   </div>
+                   <div class="toggle-group">
+                     <label class="form-label">Keep label upright</label>
+                     <input id="labelStatic" type="checkbox" class="toggle"/>
+                   </div>
+                   <div class="toggle-group">
+                     <label class="form-label">Show tonearm (record)</label>
+                     <input id="tonearm" type="checkbox" class="toggle" checked/>
+                   </div>
+                 </div>
+               </div>
+             </div>
+
+             <div class="card">
+               <div class="card-header">
+                 <h2 class="card-title">Elements</h2>
+               </div>
+               <div class="card-body">
+                 <div class="form-section">
+                   <div class="toggle-group">
+                     <label class="form-label">Status pill</label>
+                     <input id="showStatus" type="checkbox" class="toggle" checked/>
+                   </div>
+                   <div class="toggle-group">
+                     <label class="form-label">Progress bar</label>
+                     <input id="showProgress" type="checkbox" class="toggle" checked/>
+                   </div>
+                   <div class="toggle-group">
+                     <label class="form-label">Time (elapsed/total)</label>
+                     <input id="showTime" type="checkbox" class="toggle" checked/>
+                   </div>
+                   <div class="toggle-group">
+                     <label class="form-label">Title</label>
+                     <input id="showTitle" type="checkbox" class="toggle" checked/>
+                   </div>
+                   <div class="toggle-group">
+                     <label class="form-label">Artist</label>
+                     <input id="showArtist" type="checkbox" class="toggle" checked/>
+                   </div>
+                   <div class="toggle-group">
+                     <label class="form-label">Show Next (stacked)</label>
+                     <input id="showNext" type="checkbox" class="toggle"/>
+                   </div>
+                 </div>
+               </div>
+             </div>
+
+             <div class="card">
+               <div class="card-header">
+                 <h2 class="card-title">Text & Motion</h2>
+               </div>
+               <div class="card-body">
+                 <div class="form-section">
+                   <div class="toggle-group">
+                     <label class="form-label">Scroll long text</label>
+                     <input id="scroll" type="checkbox" class="toggle" checked/>
+                   </div>
+                   <div class="toggle-group">
+                     <label class="form-label">Auto-accent from album art</label>
+                     <input id="autoAccent" type="checkbox" class="toggle"/>
+                   </div>
+                   <div class="form-group">
+                     <label class="form-label">Marquee Speed</label>
+                     <div class="range-group">
+                       <input id="marq" class="range-input" type="range" min="8" max="30" step="1" value="18" oninput="marqOut.textContent=this.value"/>
+                       <div class="range-value"><span id="marqOut">18</span>s</div>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             </div>
+           </div>
+
+           <!-- Queue Tab Panel -->
+           <div class="tab-panel" id="queue-tab">
+             <div class="card">
+               <div class="card-header">
+                 <h2 class="card-title">Queue Behavior</h2>
+               </div>
+               <div class="card-body">
+                 <div class="form-section">
+                   <div class="form-row">
+                     <div class="form-group">
+                       <label class="form-label">Queue Max (items)</label>
+                       <input id="queueMax" class="form-input" type="number" min="0" max="20" value="5">
+                     </div>
+                     <div class="form-group">
+                       <label class="form-label">Show Artists</label>
+                       <select id="showArtists" class="form-select">
+                         <option value="true">Yes</option>
+                         <option value="false">No</option>
+                       </select>
+                     </div>
+                   </div>
+                   <div class="form-row">
+                     <div class="form-group">
+                       <label class="form-label">WebSocket URL</label>
+                       <input id="ws" class="form-input" placeholder="ws://localhost:5173" value="ws://localhost:5173">
+                     </div>
+                     <div class="form-group">
+                       <label class="form-label">Poll Interval (ms)</label>
+                       <input id="pollMs" class="form-input" type="number" min="3000" value="15000">
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             </div>
+
+             <div class="card">
+               <div class="card-header">
+                 <h2 class="card-title">Queue Styling</h2>
+               </div>
+               <div class="card-body">
+                 <div class="form-section">
+                   <div class="form-row">
+                     <div class="form-group">
+                       <label class="form-label">Theme</label>
+                       <select id="queueTheme" class="form-select">
+                         <option value="">(default)</option>
+                         <option value="minimal">Minimal</option>
+                         <option value="obsdark">OBS Dark</option>
+                         <option value="elegant">Elegant</option>
+                       </select>
+                     </div>
+                     <div class="form-group">
+                       <label class="form-label">Card Radius</label>
+                       <div class="range-group">
+                         <input id="queueRadius" class="range-input" type="range" min="0" max="24" step="1" value="12" oninput="queueRadiusOut.textContent=this.value"/>
+                         <div class="range-value"><span id="queueRadiusOut">12</span>px</div>
+                       </div>
+                     </div>
+                   </div>
+                   <div class="form-row">
+                     <div class="form-group">
+                       <label class="form-label">Card Shadow</label>
+                       <select id="queueShadow" class="form-select">
+                         <option value="1">On</option>
+                         <option value="0">Off</option>
+                       </select>
+                     </div>
+                     <div class="form-group">
+                       <label class="form-label">Item Gap</label>
+                       <div class="range-group">
+                         <input id="queueGap" class="range-input" type="range" min="2" max="16" step="1" value="6" oninput="queueGapOut.textContent=this.value"/>
+                         <div class="range-value"><span id="queueGapOut">6</span>px</div>
+                       </div>
+                     </div>
+                   </div>
+                   <div class="form-row">
+                     <div class="form-group">
+                       <label class="form-label">Card Background</label>
+                       <input id="queueCard" type="color" class="color-picker" value="#000000" data-alpha="0.35">
+                     </div>
+                     <div class="form-group">
+                       <label class="form-label">Text Color</label>
+                       <input id="queueText" type="color" class="color-picker" value="#ffffff">
+                     </div>
+                   </div>
+                   <div class="form-row">
+                     <div class="form-group">
+                       <label class="form-label">Muted Color</label>
+                       <input id="queueMuted" type="color" class="color-picker" value="#cfcfcf">
+                     </div>
+                     <div class="form-group">
+                       <label class="form-label">Text Alignment</label>
+                       <select id="queueAlign" class="form-select">
+                         <option value="left">Left</option>
+                         <option value="center">Center</option>
+                         <option value="right">Right</option>
+                       </select>
+                     </div>
+                   </div>
+                   <div class="form-row">
+                     <div class="form-group">
+                       <label class="form-label">Title Size</label>
+                       <div class="range-group">
+                         <input id="queueTitleSize" class="range-input" type="range" min="12" max="24" step="1" value="15" oninput="queueTitleSizeOut.textContent=this.value"/>
+                         <div class="range-value"><span id="queueTitleSizeOut">15</span>px</div>
+                       </div>
+                     </div>
+                     <div class="form-group">
+                       <label class="form-label">Artist Size</label>
+                       <div class="range-group">
+                         <input id="queueArtistSize" class="range-input" type="range" min="10" max="18" step="1" value="12" oninput="queueArtistSizeOut.textContent=this.value"/>
+                         <div class="range-value"><span id="queueArtistSizeOut">12</span>px</div>
+                       </div>
+                     </div>
+                   </div>
+                   <div class="form-row">
+                     <div class="form-group">
+                       <label class="form-label">Font</label>
+                       <select id="queueFont" class="form-select">
+                         <option value="">(default)</option>
+                         <option value="inter">Inter</option>
+                         <option value="rubik">Rubik</option>
+                         <option value="montserrat">Montserrat</option>
+                         <option value="poppins">Poppins</option>
+                         <option value="firasans">Fira Sans</option>
+                       </select>
+                     </div>
+                     <div class="form-group">
+                       <label class="form-label">Uppercase</label>
+                       <select id="queueUppercase" class="form-select">
+                         <option value="0">Off</option>
+                         <option value="1">On</option>
+                       </select>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             </div>
+
+             <div class="card">
+               <div class="card-header">
+                 <h2 class="card-title">Queue URL</h2>
+               </div>
+               <div class="card-body">
+                 <div class="form-section">
+                   <div class="form-group">
+                     <label class="form-label">Generated Queue URL</label>
+                     <div id="queueUrl" class="url-display"></div>
+                     <div class="badge">Add this URL to OBS → Browser Source</div>
+                   </div>
+                 </div>
+               </div>
+             </div>
+           </div>
 
           <div class="tab-panel" id="visual-tab">
             <div class="card">
@@ -833,68 +1057,45 @@
         </div>
           </div>
 
-          <div class="tab-panel" id="content-tab">
+          <div class="tab-panel" id="links-tab">
             <div class="card">
               <div class="card-header">
-                <h2 class="card-title">Elements</h2>
+                <h2 class="card-title">OBS URLs</h2>
               </div>
               <div class="card-body">
                 <div class="form-section">
-                  <div class="toggle-group">
-                    <label class="form-label">Status pill</label>
-                    <input id="showStatus" type="checkbox" class="toggle" checked/>
-                  </div>
-                  <div class="toggle-group">
-                    <label class="form-label">Progress bar</label>
-                    <input id="showProgress" type="checkbox" class="toggle" checked/>
-                  </div>
-                  <div class="toggle-group">
-                    <label class="form-label">Time (elapsed/total)</label>
-                    <input id="showTime" type="checkbox" class="toggle" checked/>
-                  </div>
-                  <div class="toggle-group">
-                    <label class="form-label">Title</label>
-                    <input id="showTitle" type="checkbox" class="toggle" checked/>
-                  </div>
-                  <div class="toggle-group">
-                    <label class="form-label">Artist</label>
-                    <input id="showArtist" type="checkbox" class="toggle" checked/>
-                  </div>
-                  <div class="toggle-group">
-                    <label class="form-label">Show Next (stacked)</label>
-                    <input id="showNext" type="checkbox" class="toggle"/>
-          </div>
-        </div>
-        </div>
-      </div>
-
-            <div class="card">
-              <div class="card-header">
-                <h2 class="card-title">Text & Motion</h2>
-              </div>
-              <div class="card-body">
-                <div class="form-section">
-                  <div class="toggle-group">
-                    <label class="form-label">Scroll long text</label>
-                    <input id="scroll" type="checkbox" class="toggle" checked/>
-                  </div>
-                  <div class="toggle-group">
-                    <label class="form-label">Auto-accent from album art</label>
-                    <input id="autoAccent" type="checkbox" class="toggle"/>
+                  <div class="form-group">
+                    <label class="form-label">Player URL</label>
+                    <div id="playerUrl" class="url-display"></div>
+                    <div class="badge">Add this URL to OBS → Browser Source</div>
                   </div>
                   <div class="form-group">
-                    <label class="form-label">Marquee Speed</label>
-                    <div class="range-group">
-                      <input id="marq" class="range-input" type="range" min="8" max="30" step="1" value="18" oninput="marqOut.textContent=this.value"/>
-                      <div class="range-value"><span id="marqOut">18</span>s</div>
-                    </div>
-        </div>
-        </div>
-        </div>
-      </div>
+                    <label class="form-label">Queue URL</label>
+                    <div id="queueUrlLinks" class="url-display"></div>
+                    <div class="badge">Add as a second Browser Source in OBS</div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-            
-      </div>
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">How to Use</h2>
+              </div>
+              <div class="card-body">
+                <div class="form-section">
+                  <div class="form-group">
+                    <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
+                      <li>Install/Run Queuefy app on the streaming PC</li>
+                      <li>Add Player URL to OBS (Browser Source)</li>
+                      <li>Add Queue URL to OBS (Browser Source)</li>
+                      <li>Use chat commands (!sr, !queue, !song, !skip) to test</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <div class="tab-panel" id="advanced-tab">
             <div class="card">
@@ -1006,14 +1207,30 @@
       <section class="preview-area">
         <div class="preview-header">
           <div>
-            <h2 class="preview-title">Live Preview</h2>
-            <p class="preview-subtitle">Turn off demo mode to connect to Spotify</p>
-      </div>
+            <h2 class="preview-title">Live Previews</h2>
+            <p class="preview-subtitle">Player preview uses demo mode; Queue preview always shows demo data</p>
+          </div>
           <div class="badge">Resize to test different scales</div>
-      </div>
-        <div class="preview-content">
-          <iframe id="preview" class="preview-iframe" src="" allow="clipboard-read; clipboard-write"></iframe>
-    </div>
+        </div>
+                 <div class="preview-content">
+           <!-- Player preview -->
+           <div style="flex:1;">
+             <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px;margin-bottom:8px;">
+               <div class="preview-title" style="font-size:16px;margin:0;">Player Preview</div>
+               <div class="badge">Turn off demo mode to connect to Spotify</div>
+             </div>
+             <iframe id="preview" class="preview-iframe" src="" allow="clipboard-read; clipboard-write" loading="lazy"></iframe>
+           </div>
+           
+           <!-- Queue preview -->
+           <div style="flex:1;">
+             <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px;margin-bottom:8px;">
+               <div class="preview-title" style="font-size:16px;margin:0;">Queue Preview</div>
+               <div class="badge">Uses demo data; add as a separate Browser Source in OBS</div>
+             </div>
+             <iframe id="queuePreview" class="preview-iframe" src="" allow="clipboard-read; clipboard-write" loading="lazy"></iframe>
+           </div>
+         </div>
       </section>
     </main>
   </div>
@@ -1021,6 +1238,7 @@
 <script>
   const $ = id => document.getElementById(id);
   const els = {
+    // Player elements
     base:$('base'), layout:$('layout'), align:$('align'), theme:$('theme'), accentstyle:$('accentstyle'),
     disc:$('disc'), bar:$('bar'), progressWidth:$('progressWidth'), textAlign:$('textAlign'),
     radius:$('radius'), blur:$('blur'), pad:$('pad'), outline:$('outline'),
@@ -1030,12 +1248,20 @@
     scroll:$('scroll'), autoAccent:$('autoAccent'), marq:$('marq'),
     particles:$('particles'), colorBreathing:$('colorBreathing'), waveform:$('waveform'), 
     albumBlur:$('albumBlur'), transitionEffect:$('transitionEffect'), animSpeed:$('animSpeed'),
-
     font:$('font'), shadow:$('shadow'), colorMode:$('colorMode'), accent:$('accent'), text:$('text'), muted:$('muted'),
     transparent:$('transparent'), panelAlpha:$('panelAlpha'), panelColor:$('panelColor'),
+    
+    // Queue elements
+    queueMax:$('queueMax'), showArtists:$('showArtists'), ws:$('ws'), pollMs:$('pollMs'),
+    queueTheme:$('queueTheme'), queueRadius:$('queueRadius'), queueShadow:$('queueShadow'), queueGap:$('queueGap'),
+    queueCard:$('queueCard'), queueText:$('queueText'), queueMuted:$('queueMuted'), queueAlign:$('queueAlign'),
+    queueTitleSize:$('queueTitleSize'), queueArtistSize:$('queueArtistSize'), queueFont:$('queueFont'), queueUppercase:$('queueUppercase'),
+    
+    // UI elements
     demo:$('demo'), transparentPreset:$('transparentPreset'),
     url:$('url'), copy:$('copy'), open:$('open'), reset:$('reset'), preview:$('preview'),
-    colorsBlock:$('colorsBlock')
+    colorsBlock:$('colorsBlock'), queuePreview:$('queuePreview'), queueUrl:$('queueUrl'),
+    playerUrl:$('playerUrl'), queueUrlLinks:$('queueUrlLinks')
   };
 
   // Presets
@@ -1070,6 +1296,7 @@
 
   function getState(){
     return {
+      // Player state
       base:els.base.value.trim(),
       layout:els.layout.value, align:els.align.value, theme:els.theme.value, accentstyle:els.accentstyle.value,
       disc:els.disc.value, bar:els.bar.value, progressWidth:els.progressWidth.value, textAlign:els.textAlign.value,
@@ -1081,10 +1308,29 @@
       particles:+(els.particles?.checked || false), colorBreathing:+(els.colorBreathing?.checked || false), 
       waveform:+(els.waveform?.checked || false), albumBlur:+(els.albumBlur?.checked || false),
       transitionEffect:els.transitionEffect?.value || 'none', animSpeed:els.animSpeed?.value || 1,
-
       font:els.font.value, shadow:els.shadow.value, colorMode:els.colorMode.value, 
       accent:els.accent.value, text:els.text.value, muted:els.muted.value,
       transparent:+els.transparent.checked, panelAlpha:els.panelAlpha.value, panelColor:els.panelColor.value,
+      
+      // Queue state
+      queueMax:els.queueMax?.value || '5',
+      showArtists:els.showArtists?.value || 'true',
+      ws:els.ws?.value || 'ws://localhost:5173',
+      pollMs:els.pollMs?.value || '15000',
+      queueTheme:els.queueTheme?.value || '',
+      queueRadius:els.queueRadius?.value || '12',
+      queueShadow:els.queueShadow?.value || '1',
+      queueGap:els.queueGap?.value || '6',
+      queueCard:els.queueCard?.value || '#000000',
+      queueText:els.queueText?.value || '#ffffff',
+      queueMuted:els.queueMuted?.value || '#cfcfcf',
+      queueAlign:els.queueAlign?.value || 'left',
+      queueTitleSize:els.queueTitleSize?.value || '15',
+      queueArtistSize:els.queueArtistSize?.value || '12',
+      queueFont:els.queueFont?.value || '',
+      queueUppercase:els.queueUppercase?.value || '0',
+      
+      // UI state
       demo:+els.demo.checked
     };
   }
@@ -1147,14 +1393,165 @@
     return s.base + (q.toString() ? sep + q.toString() : '');
   }
 
-  function render(){
-    const u=buildURL(); 
-    els.url.textContent=u; 
-    
-    // Add demo parameter to preview URL only (not to the generated URL)
-    const previewUrl = u + (u.includes('?') ? '&' : '?') + 'demo=1';
-    els.preview.src = els.demo.checked ? previewUrl : u;
+  function buildPlayerURL(){
+    const s=getState(); if(!s.base) return '';
+    const q=new URLSearchParams();
+
+    if(s.layout && s.layout!=='record') q.set('layout', s.layout);
+    if(s.align && s.align!=='left') q.set('align', s.align);
+    if(s.theme) q.set('theme', s.theme);
+    if(s.accentstyle && s.accentstyle!=='solid') q.set('accentstyle', s.accentstyle);
+    if(s.disc) q.set('disc', s.disc);
+    if(s.bar) q.set('bar', s.bar);
+    if(s.progressWidth && s.progressWidth!=='100') q.set('progresswidth', s.progressWidth);
+    if(s.textAlign && s.textAlign!=='auto') q.set('textalign', s.textAlign);
+    if(s.radius) q.set('radius', s.radius);
+    if(s.blur) q.set('blur', s.blur);
+    if(s.pad) q.set('pad', s.pad);
+    if(s.outline) q.set('outline', s.outline);
+    if(s.compact) q.set('compact','1');
+    if(!s.spin) q.set('spin','0');
+    if(s.labelStatic) q.set('label','static');
+    if(!s.tonearm) q.set('tonearm','0');
+    if(!s.showStatus) q.set('showstatus','0');
+    if(!s.showProgress) q.set('showprogress','0');
+    if(!s.showTime) q.set('showtime','0');
+    if(!s.showTitle) q.set('title','0');
+    if(!s.showArtist) q.set('artist','0');
+    if(s.showNext) q.set('next','1');
+    if(!s.scroll) q.set('scroll','0');
+    if(s.autoAccent) q.set('autoaccent','1');
+    if(s.marq && s.marq!=='18') q.set('marq', s.marq);
+    if(s.particles) q.set('particles','1');
+    if(s.colorBreathing) q.set('colorbreathing','1');
+    if(s.waveform) q.set('waveform','1');
+    if(s.albumBlur) q.set('albumblur','1');
+    if(s.transitionEffect && s.transitionEffect!=='none') q.set('transition', s.transitionEffect);
+    if(s.animSpeed && s.animSpeed!=='1') q.set('animspeed', s.animSpeed);
+
+    if(s.font) q.set('font', s.font);
+    if(s.shadow==='0') q.set('shadow','0');
+    if(s.colorMode==='custom'){
+      if(s.accent) q.set('accent', s.accent);
+      if(s.text) q.set('text', s.text);
+      if(s.muted) q.set('muted', s.muted);
+    }
+    if(s.transparent) q.set('transparent','1');
+    else {
+      const hexToRgb = hex => {
+        const m=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)||[];
+        return {r:parseInt(m[1]||'00',16), g:parseInt(m[2]||'00',16), b:parseInt(m[3]||'00',16)};
+      };
+      const {r,g,b}=hexToRgb(s.panelColor);
+      const a=Math.max(0,Math.min(100,parseInt(s.panelAlpha||'72',10)))/100;
+      q.set('panel', `rgba(${r},${g},${b},${a})`);
+    }
+
+    const sep = s.base.includes('?') ? '&' : '?';
+    return s.base + (q.toString() ? sep + q.toString() : '');
   }
+
+  function buildQueueURL(){
+    const s = getState();
+    if(!s.base) return '';
+    
+    // swap overlay.html → queue.html (same folder)
+    const u = new URL(s.base);
+    u.pathname = u.pathname.replace(/overlay\.html$/,'queue.html');
+    const q = new URLSearchParams();
+    
+    // Behavior params
+    if(s.queueMax && s.queueMax !== '5') q.set('queueMax', s.queueMax);
+    if(s.showArtists === 'false') q.set('showArtists', 'false');
+    if(s.ws && s.ws !== 'ws://localhost:5173') q.set('ws', s.ws);
+    if(s.pollMs && s.pollMs !== '15000') q.set('pollMs', s.pollMs);
+    
+    // Styling params
+    if(s.queueTheme) q.set('theme', s.queueTheme);
+    if(s.queueRadius && s.queueRadius !== '12') q.set('radius', s.queueRadius);
+    if(s.queueShadow === '0') q.set('shadow', '0');
+    if(s.queueGap && s.queueGap !== '6') q.set('gap', s.queueGap);
+    if(s.queueCard && s.queueCard !== '#000000') {
+      // Convert hex to rgba for card background
+      const hexToRgba = hex => {
+        const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex) || [];
+        const r = parseInt(m[1] || '00', 16);
+        const g = parseInt(m[2] || '00', 16);
+        const b = parseInt(m[3] || '00', 16);
+        return `rgba(${r},${g},${b},0.35)`;
+      };
+      q.set('card', hexToRgba(s.queueCard));
+    }
+    if(s.queueText && s.queueText !== '#ffffff') q.set('text', s.queueText);
+    if(s.queueMuted && s.queueMuted !== '#cfcfcf') q.set('muted', s.queueMuted);
+    if(s.queueTitleSize && s.queueTitleSize !== '15') q.set('titleSize', s.queueTitleSize);
+    if(s.queueArtistSize && s.queueArtistSize !== '12') q.set('artistSize', s.queueArtistSize);
+    if(s.queueUppercase === '1') q.set('uppercase', '1');
+    if(s.queueAlign && s.queueAlign !== 'left') q.set('align', s.queueAlign);
+    if(s.queueFont) q.set('font', s.queueFont);
+    
+    return u.origin + u.pathname + (q.toString() ? '?' + q.toString() : '');
+  }
+
+
+function render(){
+  const s = getState();
+  
+  // Build URLs
+  const playerUrl = buildPlayerURL();
+  const queueUrl = buildQueueURL();
+  
+  // Update URL displays
+  if(els.url) els.url.textContent = playerUrl;
+  if(els.playerUrl) els.playerUrl.textContent = playerUrl;
+  if(els.queueUrl) els.queueUrl.textContent = queueUrl;
+  if(els.queueUrlLinks) els.queueUrlLinks.textContent = queueUrl;
+  
+  // Update previews
+  if(els.preview) {
+    if (playerUrl && playerUrl !== '') {
+      const previewUrl = playerUrl + (playerUrl.includes('?') ? '&' : '?') + 'demo=1';
+      els.preview.src = els.demo.checked ? previewUrl : playerUrl;
+    } else {
+      // Fallback to local overlay.html with demo
+      const localOverlay = new URL('overlay.html', location.href).toString();
+      els.preview.src = localOverlay + '?demo=1';
+    }
+  }
+  
+  // Queue preview: always load local queue.html?demo=1 with current styling
+  if(els.queuePreview) {
+    const localQueue = new URL('queue.html', location.href).toString();
+    const queuePreviewParams = new URLSearchParams();
+    queuePreviewParams.set('demo', '1');
+    
+    // Apply current queue styling to preview
+    if(s.queueTheme) queuePreviewParams.set('theme', s.queueTheme);
+    if(s.queueRadius && s.queueRadius !== '12') queuePreviewParams.set('radius', s.queueRadius);
+    if(s.queueShadow === '0') queuePreviewParams.set('shadow', '0');
+    if(s.queueGap && s.queueGap !== '6') queuePreviewParams.set('gap', s.queueGap);
+    if(s.queueCard && s.queueCard !== '#000000') {
+      // Convert hex to rgba for card background
+      const hexToRgba = hex => {
+        const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex) || [];
+        const r = parseInt(m[1] || '00', 16);
+        const g = parseInt(m[2] || '00', 16);
+        const b = parseInt(m[3] || '00', 16);
+        return `rgba(${r},${g},${b},0.35)`;
+      };
+      queuePreviewParams.set('card', hexToRgba(s.queueCard));
+    }
+    if(s.queueText && s.queueText !== '#ffffff') queuePreviewParams.set('text', s.queueText);
+    if(s.queueMuted && s.queueMuted !== '#cfcfcf') queuePreviewParams.set('muted', s.queueMuted);
+    if(s.queueTitleSize && s.queueTitleSize !== '15') queuePreviewParams.set('titleSize', s.queueTitleSize);
+    if(s.queueArtistSize && s.queueArtistSize !== '12') queuePreviewParams.set('artistSize', s.queueArtistSize);
+    if(s.queueUppercase === '1') queuePreviewParams.set('uppercase', '1');
+    if(s.queueAlign && s.queueAlign !== 'left') queuePreviewParams.set('align', s.queueAlign);
+    if(s.queueFont) queuePreviewParams.set('font', s.queueFont);
+    
+    els.queuePreview.src = localQueue + '?' + queuePreviewParams.toString();
+  }
+}
 
   // Tab switching
   document.querySelectorAll('.nav-tab').forEach(tab => {
@@ -1167,8 +1564,8 @@
   });
 
   // Wire up events
-    for(const k in els){
-      const n=els[k]; if(!n) continue;
+  for(const k in els){
+    const n=els[k]; if(!n) continue;
     if(n.tagName==='INPUT' || n.tagName==='SELECT'){ 
       n.addEventListener('input', render); 
       n.addEventListener('change', render); 
@@ -1177,14 +1574,34 @@
 
   els.copy.onclick=async()=>{ 
     try{ 
-      await navigator.clipboard.writeText(els.url.textContent); 
-      els.copy.textContent='Copied!'; 
-      setTimeout(()=>els.copy.textContent='Copy URL',1200);
+      const activeTab = document.querySelector('.nav-tab.active').dataset.tab;
+      let urlToCopy = '';
+      
+      if(activeTab === 'player' || activeTab === 'links') {
+        urlToCopy = els.playerUrl?.textContent || els.url?.textContent || '';
+      } else if(activeTab === 'queue') {
+        urlToCopy = els.queueUrl?.textContent || '';
+      }
+      
+      if(urlToCopy) {
+        await navigator.clipboard.writeText(urlToCopy); 
+        els.copy.textContent='Copied!'; 
+        setTimeout(()=>els.copy.textContent='Copy URL',1200);
+      }
     }catch(e){} 
   };
   
   els.open.onclick=()=>{ 
-    if(els.url.textContent) window.open(els.url.textContent,'_blank'); 
+    const activeTab = document.querySelector('.nav-tab.active').dataset.tab;
+    let urlToOpen = '';
+    
+    if(activeTab === 'player' || activeTab === 'links') {
+      urlToOpen = els.playerUrl?.textContent || els.url?.textContent || '';
+    } else if(activeTab === 'queue') {
+      urlToOpen = els.queueUrl?.textContent || '';
+    }
+    
+    if(urlToOpen) window.open(urlToOpen,'_blank'); 
   };
   
   els.reset.onclick=()=>{ 
@@ -1208,6 +1625,58 @@
   els.colorMode.addEventListener('change', toggleColorsBlock);
   toggleColorsBlock();
 
+  // LocalStorage persistence
+  function saveState() {
+    const state = getState();
+    localStorage.setItem('queuefy_config_v1', JSON.stringify(state));
+  }
+
+  function loadState() {
+    try {
+      const saved = localStorage.getItem('queuefy_config_v1');
+      if(saved) {
+        const state = JSON.parse(saved);
+        setState(state);
+      }
+    } catch(e) {
+      console.log('Failed to load saved state:', e);
+    }
+  }
+
+  // Auto-save on changes
+  const originalRender = render;
+  function renderAndSave() {
+    originalRender();
+    saveState();
+  }
+
+  // Replace render with renderAndSave for auto-persistence
+  render = renderAndSave;
+
+  // Auto-fill Base URL if empty
+  function autoFillBaseUrl() {
+    if (!els.base.value || els.base.value.includes('github.io/SpotiStream')) {
+      const currentUrl = new URL(location.href);
+      
+      // If we're on GitHub Pages, construct the proper URL
+      if (currentUrl.hostname.includes('github.io')) {
+        // Extract username from hostname (e.g., "username.github.io" -> "username")
+        const username = currentUrl.hostname.split('.')[0];
+        els.base.value = `https://${username}.github.io/Queuefy/overlay.html`;
+      } else {
+        // Local development - use relative path
+        const overlayUrl = new URL('overlay.html', currentUrl.origin + currentUrl.pathname);
+        els.base.value = overlayUrl.toString();
+      }
+    }
+  }
+
+  // Load saved state on startup
+  loadState();
+  
+  // Auto-fill Base URL
+  autoFillBaseUrl();
+  
   // Initial render
   render();
 </script>
