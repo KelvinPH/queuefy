@@ -569,10 +569,10 @@
                </div>
                <div class="card-body">
                  <div class="form-section">
-                   <div class="form-group">
-                     <label class="form-label">Base URL</label>
-                     <input id="base" class="form-input" type="url" placeholder="https://<user>.github.io/Queuefy/overlay.html" value="https://kelvinph.github.io/Queuefy/overlay.html"/>
-                   </div>
+                                       <div class="form-group">
+                      <label class="form-label">Base URL</label>
+                      <input id="base" class="form-input" type="url" placeholder="https://<user>.github.io/queuefy/overlay.html" value="https://kelvinph.github.io/queuefy/overlay.html"/>
+                    </div>
                    
                    <div class="form-group">
                      <label class="form-label">Quick Presets</label>
@@ -1706,14 +1706,14 @@ function render(){
 
   // Auto-fill Base URL if empty
   function autoFillBaseUrl() {
-    if (!els.base.value || els.base.value.includes('github.io/SpotiStream') || els.base.value.includes('github.io/Queuefy')) {
+    if (!els.base.value || els.base.value.includes('github.io/SpotiStream') || els.base.value.includes('github.io/queuefy')) {
       const currentUrl = new URL(location.href);
       
       // If we're on GitHub Pages, construct the proper URL
       if (currentUrl.hostname.includes('github.io')) {
         // Extract username from hostname (e.g., "username.github.io" -> "username")
         const username = currentUrl.hostname.split('.')[0];
-        els.base.value = `https://${username}.github.io/Queuefy/overlay.html`;
+        els.base.value = `https://${username}.github.io/queuefy/overlay.html`;
       } else {
         // Local development - use relative path
         const overlayUrl = new URL('overlay.html', currentUrl.origin + currentUrl.pathname);
