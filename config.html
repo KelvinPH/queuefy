@@ -844,13 +844,17 @@
              </div>
            </div>
 
-           <!-- Queue Tab Panel -->
-           <div class="tab-panel" id="queue-tab">
-             <div class="card">
-               <div class="card-header">
-                 <h2 class="card-title">Queue Behavior</h2>
-               </div>
-               <div class="card-body">
+                       <!-- Queue Tab Panel -->
+            <div class="tab-panel" id="queue-tab">
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="card-title">Queue Behavior</h2>
+                </div>
+                <div class="card-body">
+                                     <div style="margin-bottom: 20px; padding: 12px; background: rgba(52,199,89,0.1); border-radius: 8px; font-size: 13px; color: var(--text-secondary);">
+                     <strong>🎯 What is this?</strong> This creates a queue overlay that shows upcoming tracks. 
+                     The generated URL will automatically connect to your local Queuefy server for real-time updates.
+                   </div>
                  <div class="form-section">
                    <div class="form-row">
                      <div class="form-group">
@@ -865,16 +869,22 @@
                        </select>
                      </div>
                    </div>
-                   <div class="form-row">
-                     <div class="form-group">
-                       <label class="form-label">WebSocket URL</label>
-                       <input id="ws" class="form-input" placeholder="ws://localhost:5173" value="ws://localhost:5173">
-                     </div>
-                     <div class="form-group">
-                       <label class="form-label">Poll Interval (ms)</label>
-                       <input id="pollMs" class="form-input" type="number" min="3000" value="15000">
-                     </div>
-                   </div>
+                                       <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">WebSocket URL</label>
+                        <input id="ws" class="form-input" placeholder="ws://localhost:5173" value="ws://localhost:5173">
+                        <div style="font-size: 12px; color: var(--text-light); margin-top: 4px;">
+                          Default: <code>ws://localhost:5173</code> - connects to your local Queuefy server
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Poll Interval (ms)</label>
+                        <input id="pollMs" class="form-input" type="number" min="3000" value="15000">
+                        <div style="font-size: 12px; color: var(--text-light); margin-top: 4px;">
+                          HTTP fallback interval if WebSocket fails
+                        </div>
+                      </div>
+                    </div>
                  </div>
                </div>
              </div>
@@ -992,7 +1002,14 @@
                    <div class="form-group">
                      <label class="form-label">Generated Queue URL</label>
                      <div id="queueUrl" class="url-display"></div>
-                     <div class="badge">Add this URL to OBS → Browser Source</div>
+                     <div style="display: flex; gap: 8px; margin-top: 8px;">
+                       <button id="copyQueueUrl" class="btn btn-sm" style="flex-shrink: 0;">📋 Copy Queue URL</button>
+                       <div class="badge" style="flex: 1; display: flex; align-items: center;">Paste this URL into OBS → Browser Source</div>
+                     </div>
+                     <div style="margin-top: 8px; padding: 12px; background: rgba(0,122,255,0.1); border-radius: 8px; font-size: 13px; color: var(--text-secondary);">
+                       <strong>💡 Tip:</strong> This URL will automatically connect to your local Queuefy server at <code>ws://localhost:5173</code>. 
+                       Make sure your Queuefy app is running on the streaming PC for live queue updates.
+                     </div>
                    </div>
                  </div>
                </div>
@@ -1072,7 +1089,7 @@
                   <div class="form-group">
                     <label class="form-label">Queue URL</label>
                     <div id="queueUrlLinks" class="url-display"></div>
-                    <div class="badge">Add as a second Browser Source in OBS</div>
+                    <div class="badge">📋 Copy this URL and add as a second Browser Source in OBS</div>
                   </div>
                 </div>
               </div>
@@ -1091,6 +1108,9 @@
                       <li>Add Queue URL to OBS (Browser Source)</li>
                       <li>Use chat commands (!sr, !queue, !song, !skip) to test</li>
                     </ol>
+                    <div style="margin-top: 16px; padding: 12px; background: rgba(255,149,0,0.1); border-radius: 8px; font-size: 13px; color: var(--text-secondary);">
+                      <strong>🔗 Quick Copy:</strong> Use the "Copy Queue URL" button above to quickly copy the queue URL for OBS.
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1226,7 +1246,7 @@
            <div style="flex:1;">
              <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px;margin-bottom:8px;">
                <div class="preview-title" style="font-size:16px;margin:0;">Queue Preview</div>
-               <div class="badge">Uses demo data; add as a separate Browser Source in OBS</div>
+               <div class="badge">🎯 Live preview with demo data - shows exactly how it will look in OBS</div>
              </div>
              <iframe id="queuePreview" class="preview-iframe" src="" allow="clipboard-read; clipboard-write" loading="lazy"></iframe>
            </div>
@@ -1261,7 +1281,7 @@
     demo:$('demo'), transparentPreset:$('transparentPreset'),
     url:$('url'), copy:$('copy'), open:$('open'), reset:$('reset'), preview:$('preview'),
     colorsBlock:$('colorsBlock'), queuePreview:$('queuePreview'), queueUrl:$('queueUrl'),
-    playerUrl:$('playerUrl'), queueUrlLinks:$('queueUrlLinks')
+    playerUrl:$('playerUrl'), queueUrlLinks:$('queueUrlLinks'), copyQueueUrl:$('copyQueueUrl')
   };
 
   // Presets
@@ -1533,6 +1553,10 @@ function render(){
     const queuePreviewParams = new URLSearchParams();
     queuePreviewParams.set('demo', 'true');
     
+    // Apply current queue behavior and styling to preview
+    if(s.queueMax && s.queueMax !== '5') queuePreviewParams.set('queueMax', s.queueMax);
+    if(s.showArtists === 'false') queuePreviewParams.set('showArtists', 'false');
+    
     // Apply current queue styling to preview
     if(s.queueTheme) queuePreviewParams.set('theme', s.queueTheme);
     if(s.queueRadius && s.queueRadius !== '12') queuePreviewParams.set('radius', s.queueRadius);
@@ -1557,7 +1581,9 @@ function render(){
     if(s.queueAlign && s.queueAlign !== 'left') queuePreviewParams.set('align', s.queueAlign);
     if(s.queueFont) queuePreviewParams.set('font', s.queueFont);
     
-    els.queuePreview.src = localQueue + '?' + queuePreviewParams.toString();
+    const previewUrl = localQueue + '?' + queuePreviewParams.toString();
+    console.log('Queue preview URL:', previewUrl); // Debug log
+    els.queuePreview.src = previewUrl;
   }
 }
 
@@ -1598,6 +1624,23 @@ function render(){
       }
     }catch(e){} 
   };
+
+  // Copy queue URL button
+  const copyQueueUrlBtn = document.getElementById('copyQueueUrl');
+  if(copyQueueUrlBtn) {
+    copyQueueUrlBtn.onclick = async () => {
+      try {
+        const urlToCopy = els.queueUrl?.textContent || '';
+        if(urlToCopy) {
+          await navigator.clipboard.writeText(urlToCopy);
+          copyQueueUrlBtn.textContent = '✅ Copied!';
+          setTimeout(() => copyQueueUrlBtn.textContent = '📋 Copy Queue URL', 1200);
+        }
+      } catch(e) {
+        console.error('Failed to copy queue URL:', e);
+      }
+    };
+  }
   
   els.open.onclick=()=>{ 
     const activeTab = document.querySelector('.nav-tab.active').dataset.tab;
