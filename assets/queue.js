@@ -1,11 +1,10 @@
 (function(){
-  const params   = new URL(location.href).searchParams;
-  const wsParam  = params.get('ws');                 // e.g. ws://localhost:5173
-  const theme    = params.get('theme') || '';        // minimal|obsdark|elegant
-  const showArt  = (params.get('showArtists') ?? 'true') !== 'false';
-  const maxItems = Math.max(0, + (params.get('queueMax') || 5));
-  const pollMs   = Math.max(3000, + (params.get('pollMs') || 15000));
-  const isDemo   = (params.get('demo') === '1');
+  const params = new URLSearchParams(location.search);
+  const ws = params.get('ws') || 'ws://localhost:5173'; // Default to localhost:5173
+  const queueMax = Math.max(0, +(params.get('queueMax') || 5));
+  const isDemo = params.get('demo') === 'true';
+  const theme = params.get('theme') || '';
+  const showArt = (params.get('showArtists') ?? 'true') !== 'false';
 
   // New styling parameters
   const radius = params.get('radius') || '12';
@@ -58,72 +57,156 @@
 
   const list = document.getElementById('ssq-list');
 
-  function trunc(s,n){ if(!s) return ''; return s.length>n ? s.slice(0,n-1)+'…' : s; }
+  function trunc(s, n) { 
+    if (!s) return ''; 
+    return s.length > n ? s.slice(0, n-1) + '…' : s; 
+  }
 
-  function render(snap){
-    if (!snap || !Array.isArray(snap.next)) { list.innerHTML=''; return; }
-    const items = snap.next.slice(0, maxItems);
-    list.innerHTML = items.map(t => {
-      const title  = trunc(t?.name || '', 48);
-      const artist = showArt ? `<div class="ssq-artist">${trunc((t?.artists?.[0]?.name)||'', 28)}</div>` : '';
+  function renderQueue(data) {
+    if (!data) { 
+      list.innerHTML = ''; 
+      return; 
+    }
+
+    let html = '';
+    
+    // Show now playing if present
+    if (data.nowPlaying) {
+      const title = trunc(data.nowPlaying.name || '', 48);
+      const artist = showArt ? trunc((data.nowPlaying.artists?.[0]?.name) || '', 28) : '';
+      const albumArt = data.nowPlaying.album?.images?.[0]?.url || '';
       const titleText = uppercase ? title.toUpperCase() : title;
-      return `<div class="ssq-item">
-        <div class="ssq-title">${titleText}</div>
-        ${artist}
+      
+      html += `<div class="ssq-item ssq-now-playing">
+        ${albumArt ? `<div class="ssq-art-thumb"><img src="${albumArt}" alt="Album Art" /></div>` : ''}
+        <div class="ssq-content">
+          <div class="ssq-title">▶ Now Playing: ${titleText}</div>
+          ${artist ? `<div class="ssq-artist">${artist}</div>` : ''}
+        </div>
       </div>`;
-    }).join('');
+    }
+
+    // Show queue items
+    if (data.next && Array.isArray(data.next)) {
+      const items = data.next.slice(0, queueMax);
+      items.forEach(track => {
+        const title = trunc(track?.name || '', 48);
+        const artist = showArt ? trunc((track?.artists?.[0]?.name) || '', 28) : '';
+        const albumArt = track?.album?.images?.[0]?.url || '';
+        const titleText = uppercase ? title.toUpperCase() : title;
+        
+        html += `<div class="ssq-item">
+          ${albumArt ? `<div class="ssq-art-thumb"><img src="${albumArt}" alt="Album Art" /></div>` : ''}
+          <div class="ssq-content">
+            <div class="ssq-title">${titleText}</div>
+            ${artist ? `<div class="ssq-artist">${artist}</div>` : ''}
+          </div>
+        </div>`;
+      });
+    }
+
+    list.innerHTML = html;
   }
 
-  // --- Demo mode (no sockets, no HTTP) ---
+  // Demo mode - render static demo data
   if (isDemo) {
-    const demoTracks = [
-      { name: "Midnight Drive", artists: [{ name: "Lumen & Co" }] },
-      { name: "Neon Skyline", artists: [{ name: "City Nights" }] },
-      { name: "Rainy Window", artists: [{ name: "Lofigram" }] },
-      { name: "Synth Bloom",  artists: [{ name: "Vapor Sun" }] },
-      { name: "Golden Hour",  artists: [{ name: "Horizons" }] }
-    ];
-    let rotate = 0;
-    function snap() {
-      // simulate a queue: rotate demo list
-      const rotated = demoTracks.slice(rotate).concat(demoTracks.slice(0, rotate));
-      return { nowPlaying: null, next: rotated };
+    const demoData = {
+      nowPlaying: {
+        name: "Midnight Drive",
+        artists: [{ name: "Lumen & Co" }],
+        album: { images: [{ url: "assets/demo-albumcover.jpg" }] }
+      },
+      next: [
+        { 
+          name: "Neon Skyline", 
+          artists: [{ name: "City Nights" }],
+          album: { images: [{ url: "assets/demo-albumcover.jpg" }] }
+        },
+        { 
+          name: "Rainy Window", 
+          artists: [{ name: "Lofigram" }],
+          album: { images: [{ url: "assets/demo-albumcover.jpg" }] }
+        },
+        { 
+          name: "Synth Bloom", 
+          artists: [{ name: "Vapor Sun" }],
+          album: { images: [{ url: "assets/demo-albumcover.jpg" }] }
+        }
+      ],
+      is_playing: true,
+      lastUpdated: new Date().toISOString()
+    };
+    
+    renderQueue(demoData);
+    return; // Stop here in demo mode
+  }
+
+  // WebSocket connection
+  function connectWebSocket() {
+    try {
+      // Convert ws:// to http:// for Socket.IO
+      const socketUrl = ws.replace(/^ws:\/\//, 'http://').replace(/^wss:\/\//, 'https://');
+      
+      const socket = io(socketUrl, { 
+        transports: ['websocket'],
+        path: '/socket.io'
+      });
+
+      // Listen for queue updates
+      socket.on('queue:update', (data) => {
+        console.log('[Queuefy] Received queue update:', data);
+        renderQueue(data);
+      });
+
+      socket.on('connect', () => {
+        console.log('[Queuefy] WebSocket connected to:', socketUrl);
+      });
+
+      socket.on('connect_error', (error) => {
+        console.log('[Queuefy] WebSocket connection error:', error);
+        // Fallback to HTTP polling
+        startHttpPolling();
+      });
+
+      socket.on('disconnect', () => {
+        console.log('[Queuefy] WebSocket disconnected');
+      });
+
+    } catch (error) {
+      console.log('[Queuefy] WebSocket setup failed:', error);
+      // Fallback to HTTP polling
+      startHttpPolling();
     }
-    render(snap());
-    setInterval(() => { rotate = (rotate + 1) % demoTracks.length; render(snap()); }, 4000);
-    return; // stop here in demo mode
   }
 
-  function wsUrl(){
-    return wsParam || 'ws://localhost:5173'; // default Queuefy app
-  }
-
-  function ensureSocketIo(done){
-    if (window.io) return done();
-    const s = document.createElement('script');
-    s.src = 'https://cdn.socket.io/4.7.2/socket.io.min.js';
-    s.onload = done;
-    document.head.appendChild(s);
-  }
-
-  ensureSocketIo(function(){
-    try{
-      const socket = window.io(wsUrl(), { transports:['websocket'], path:'/socket.io' });
-      socket.on('queue:update', render);
-      socket.on('connect', () => console.log('[Queuefy] WS connected'));
-      socket.on('connect_error', () => console.log('[Queuefy] WS error; using HTTP fallback'));
-    }catch(e){
-      console.log('[Queuefy] WS failed; using HTTP fallback only');
+  // HTTP polling fallback
+  function startHttpPolling() {
+    console.log('[Queuefy] Using HTTP polling fallback');
+    
+    async function poll() {
+      try {
+        const httpBase = ws.replace(/^wss?:\/\//i, m => m.toLowerCase().startsWith('wss') ? 'https' : 'http');
+        const response = await fetch(httpBase + '/queue.json', { 
+          cache: 'no-store',
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          renderQueue(data);
+        }
+      } catch (error) {
+        console.log('[Queuefy] HTTP polling failed:', error);
+      }
     }
-  });
 
-  async function poll(){
-    try{
-      const httpBase = wsUrl().replace(/^wss?/i, m => m.toLowerCase().startsWith('wss') ? 'https' : 'http');
-      const r = await fetch(httpBase + '/queue.json', { cache:'no-store' });
-      render(await r.json());
-    }catch(_){}
+    // Poll immediately and then every 15 seconds
+    poll();
+    setInterval(poll, 15000);
   }
-  setInterval(poll, pollMs);
-  poll();
+
+  // Start WebSocket connection
+  connectWebSocket();
 })();

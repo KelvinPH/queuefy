@@ -571,7 +571,7 @@
                  <div class="form-section">
                    <div class="form-group">
                      <label class="form-label">Base URL</label>
-                     <input id="base" class="form-input" type="url" placeholder="https://<user>.github.io/SpotiStream/overlay.html" value="https://kelvinph.github.io/SpotiStream/overlay.html"/>
+                     <input id="base" class="form-input" type="url" placeholder="https://<user>.github.io/Queuefy/overlay.html" value="https://kelvinph.github.io/Queuefy/overlay.html"/>
                    </div>
                    
                    <div class="form-group">
@@ -1208,7 +1208,7 @@
         <div class="preview-header">
           <div>
             <h2 class="preview-title">Live Previews</h2>
-            <p class="preview-subtitle">Player preview uses demo mode; Queue preview always shows demo data</p>
+            <p class="preview-subtitle">Player preview connects to real Spotify when demo mode is off; Queue preview always shows demo data</p>
           </div>
           <div class="badge">Resize to test different scales</div>
         </div>
@@ -1217,7 +1217,7 @@
            <div style="flex:1;">
              <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px;margin-bottom:8px;">
                <div class="preview-title" style="font-size:16px;margin:0;">Player Preview</div>
-               <div class="badge">Turn off demo mode to connect to Spotify</div>
+               <div class="badge" id="demoStatus">Turn off demo mode to connect to Spotify</div>
              </div>
              <iframe id="preview" class="preview-iframe" src="" allow="clipboard-read; clipboard-write" loading="lazy"></iframe>
            </div>
@@ -1507,23 +1507,31 @@ function render(){
   if(els.queueUrl) els.queueUrl.textContent = queueUrl;
   if(els.queueUrlLinks) els.queueUrlLinks.textContent = queueUrl;
   
+  // Update demo status text
+  const demoStatus = document.getElementById('demoStatus');
+  if(demoStatus) {
+    demoStatus.textContent = els.demo.checked ? 
+      'Demo mode: showing sample data' : 
+      'Live mode: connecting to Spotify';
+  }
+  
   // Update previews
   if(els.preview) {
     if (playerUrl && playerUrl !== '') {
-      const previewUrl = playerUrl + (playerUrl.includes('?') ? '&' : '?') + 'demo=1';
+      const previewUrl = playerUrl + (playerUrl.includes('?') ? '&' : '?') + 'demo=true';
       els.preview.src = els.demo.checked ? previewUrl : playerUrl;
     } else {
-      // Fallback to local overlay.html with demo
+      // Fallback to local overlay.html
       const localOverlay = new URL('overlay.html', location.href).toString();
-      els.preview.src = localOverlay + '?demo=1';
+      els.preview.src = els.demo.checked ? localOverlay + '?demo=true' : localOverlay;
     }
   }
   
-  // Queue preview: always load local queue.html?demo=1 with current styling
+  // Queue preview: always load local queue.html?demo=true with current styling
   if(els.queuePreview) {
     const localQueue = new URL('queue.html', location.href).toString();
     const queuePreviewParams = new URLSearchParams();
-    queuePreviewParams.set('demo', '1');
+    queuePreviewParams.set('demo', 'true');
     
     // Apply current queue styling to preview
     if(s.queueTheme) queuePreviewParams.set('theme', s.queueTheme);
@@ -1655,7 +1663,7 @@ function render(){
 
   // Auto-fill Base URL if empty
   function autoFillBaseUrl() {
-    if (!els.base.value || els.base.value.includes('github.io/SpotiStream')) {
+    if (!els.base.value || els.base.value.includes('github.io/SpotiStream') || els.base.value.includes('github.io/Queuefy')) {
       const currentUrl = new URL(location.href);
       
       // If we're on GitHub Pages, construct the proper URL

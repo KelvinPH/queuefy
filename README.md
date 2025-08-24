@@ -62,6 +62,15 @@ A comprehensive streaming overlay system with both Player and Queue overlays for
 - **WebSocket URL**: Connection endpoint (default: ws://localhost:5173)
 - **Poll Interval**: HTTP fallback interval in milliseconds (min: 3000, default: 15000)
 
+### WebSocket Connection
+The queue overlay automatically connects to your local Queuefy server:
+- **Default URL**: `ws://localhost:5173`
+- **Custom URL**: Use `?ws=ws://your-server:port` parameter
+- **Socket.IO**: Uses Socket.IO client for reliable WebSocket communication
+- **Event**: Listens for `queue:update` events with track data
+- **Fallback**: HTTP polling if WebSocket connection fails
+- **Demo Mode**: Use `?demo=true` for static demo data without connection
+
 ### Styling
 - **Theme**: Minimal, OBS Dark, Elegant presets
 - **Card Radius**: Corner radius in pixels
