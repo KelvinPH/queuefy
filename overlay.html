@@ -43,21 +43,23 @@
   .layout-compact .disc, .layout-compact .artbox{width:80px; height:80px;}
   .layout-compact .wrap{padding:8px;}
   
-  .layout-wide         .inner{grid-template-columns: var(--disc) 1fr var(--disc); grid-template-areas: "art meta art2"; gap:32px;}
-  .layout-wide .artbox:last-child{grid-area:art2; opacity:0.3; filter:blur(2px);}
+  .layout-wide         .inner{grid-template-columns: var(--disc) 1fr; grid-template-areas: "art meta"; gap:32px;}
   
-  .layout-split.left   .inner{grid-template-columns: 1fr; grid-template-areas: "art" "meta"; gap:16px; text-align:center;}
-  .layout-split.right  .inner{grid-template-columns: 1fr; grid-template-areas: "meta" "art"; gap:16px; text-align:center;}
-  .layout-split.center .inner{grid-template-columns: 1fr; grid-template-areas: "art" "meta"; gap:16px; text-align:center;}
-  .layout-split.top    .inner{grid-template-columns: 1fr; grid-template-areas: "art" "meta"; gap:16px; text-align:center;}
-  .layout-split.bottom .inner{grid-template-columns: 1fr; grid-template-areas: "meta" "art"; gap:16px; text-align:center;}
+  .layout-split.left   .inner{grid-template-columns: 1fr; grid-template-areas: "art" "meta"; gap:24px; text-align:center; padding:24px;}
+.layout-split.right  .inner{grid-template-columns: 1fr; grid-template-areas: "meta" "art"; gap:24px; text-align:center; padding:24px;}
+.layout-split.center .inner{grid-template-columns: 1fr; grid-template-areas: "art" "meta"; gap:24px; text-align:center; padding:24px;}
+.layout-split.top    .inner{grid-template-columns: 1fr; grid-template-areas: "art" "meta"; gap:24px; text-align:center; padding:24px;}
+.layout-split.bottom .inner{grid-template-columns: 1fr; grid-template-areas: "meta" "art"; gap:24px; text-align:center; padding:24px;}
   
-  .layout-floating     .wrap{position:fixed; top:20px; right:20px; width:300px; height:auto; backdrop-filter:blur(20px); z-index:999;}
-  .layout-floating     .inner{width:100%; max-width:none;}
+  .layout-floating     .wrap{position:fixed; top:20px; right:20px; width:320px; height:auto; backdrop-filter:blur(20px); z-index:999; border:1px solid rgba(255,255,255,0.1);}
+.layout-floating     .inner{width:100%; max-width:none; padding:16px;}
   
-  .layout-corner       .inner{grid-template-columns: 60px 1fr; grid-template-areas: "art meta"; gap:8px; padding:6px;}
-  .layout-corner .disc, .layout-corner .artbox{width:60px; height:60px;}
-  .layout-corner .wrap{padding:6px; position:fixed; bottom:20px; right:20px; width:280px; height:auto;}
+  .layout-corner       .inner{grid-template-columns: 60px 1fr; grid-template-areas: "art meta"; gap:6px; padding:8px;}
+.layout-corner .disc, .layout-corner .artbox{width:60px; height:60px;}
+.layout-corner .wrap{padding:8px; position:fixed; bottom:20px; right:20px; width:260px; height:auto;}
+.layout-corner .title{font-size:14px; line-height:1.2;}
+.layout-corner .artist{font-size:12px; line-height:1.2;}
+.layout-corner .meta{gap:4px;}
   
   .layout-ticker       .inner{grid-template-columns: 60px 1fr; grid-template-areas: "art meta"; gap:12px; padding:8px 16px;}
   .layout-ticker .meta{overflow:hidden; white-space:nowrap;}
@@ -76,6 +78,8 @@
   .layout-ticker .pill, .layout-ticker .progress, .layout-ticker .time{display:none}
   .layout-floating .pill{font-size:12px; padding:4px 8px;}
   .layout-split .pill{margin:0 auto;}
+.layout-split .disc, .layout-split .artbox{margin:0 auto; width:180px; height:180px;}
+.layout-split .meta{gap:16px;}
 
   .meta{grid-area:meta; min-width:0; display:grid; gap:10px; align-content:center; z-index:2}
   .disc, .artbox{z-index:1}
@@ -263,45 +267,14 @@
     </div>
   </div>
 
+
 <script>
 /* ---------- utilities ---------- */
 const p = new URLSearchParams(location.search);
 const $ = id => document.getElementById(id);
 const root = document.documentElement.style;
 
-const THEMES = {
-  spotify:{panel:'rgba(18,18,18,0.72)',text:'#eaeaea',muted:'#b6bcc4',accent:'#1db954',radius:16,blur:8},
-  obsdark:{panel:'rgba(24,24,27,0.72)',text:'#e6e7ea',muted:'#9da3ad',accent:'#22d3ee',radius:14,blur:6},
-  minimal:{panel:'rgba(0,0,0,0.34)',text:'#ffffff',muted:'#cfcfcf',accent:'#ffffff',radius:12,blur:2,bar:4,shadow:0},
-  neon:{panel:'rgba(8,10,22,0.62)',text:'#e9f0ff',muted:'#9ab0ff',accent:'#7cf4ff',radius:14,blur:10},
-  oldradio:{panel:'rgba(64,50,34,0.62)',text:'#fff7e6',muted:'#eed9b7',accent:'#ffb84d',radius:12,blur:3,bar:4},
-  blue:{panel:'rgba(10,24,48,0.55)',text:'#e6f0ff',muted:'#a9c1ff',accent:'#4da3ff',radius:16,blur:8},
-  red:{panel:'rgba(48,12,18,0.52)',text:'#ffeaea',muted:'#ffb3b3',accent:'#ff4d4d',radius:16,blur:8},
-  yellow:{panel:'rgba(48,40,12,0.52)',text:'#fff9db',muted:'#ffe7a3',accent:'#ffd43b',radius:16,blur:8},
-  slate:{panel:'rgba(0,0,0,0.55)',text:'#ffffff',muted:'#c7c7c7',accent:'#1db954',radius:16,blur:6},
-  twitch:{panel:'rgba(16,12,26,0.66)',text:'#ede9fe',muted:'#c4b5fd',accent:'#9146FF',radius:16,blur:8},
-  ytred:{panel:'rgba(26,8,8,0.66)',text:'#ffecec',muted:'#ffb4b4',accent:'#FF0033',radius:16,blur:8},
-  aqua:{panel:'rgba(10,24,24,0.55)',text:'#e6fffb',muted:'#a8fff2',accent:'#12d6c5',radius:16,blur:8},
-  cyber:{panel:'rgba(6,8,18,0.62)',text:'#d9f2ff',muted:'#8dd6ff',accent:'#00ffe1',radius:16,blur:10},
-  cyberpunk:{panel:'rgba(0,0,20,0.9)',text:'#00ffff',muted:'#0099cc',accent:'#ff0080',radius:16,blur:10},
-  pastel:{panel:'rgba(28,25,23,0.45)',text:'#fff7ed',muted:'#fed7aa',accent:'#f9a8d4',radius:18,blur:6},
-  
-  // New Creative Themes
-  gaming:{panel:'rgba(0,0,0,0.85)',text:'#00ff88',muted:'#66ffaa',accent:'#ff0066',radius:16,blur:12},
-  lofi:{panel:'rgba(42,24,16,0.6)',text:'#f4e4c1',muted:'#d4b896',accent:'#e67e22',radius:20,blur:4},
-  retro:{panel:'rgba(26,10,42,0.7)',text:'#ff6ec7',muted:'#c77dff',accent:'#7209b7',radius:12,blur:6},
-  elegant:{panel:'rgba(248,249,250,0.9)',text:'#1a202c',muted:'#4a5568',accent:'#3182ce',radius:18,blur:8},
-  party:{panel:'rgba(0,0,0,0.8)',text:'#ffffff',muted:'#cccccc',accent:'#ff1493',radius:16,blur:10},
-  cozy:{panel:'rgba(45,24,16,0.65)',text:'#f7e6d3',muted:'#d4b896',accent:'#cd853f',radius:16,blur:6},
-  focus:{panel:'rgba(0,0,0,0.3)',text:'#e2e8f0',muted:'#a0aec0',accent:'#4299e1',radius:8,blur:2},
-  sunset:{panel:'rgba(255,94,77,0.2)',text:'#2d3748',muted:'#4a5568',accent:'#ed8936',radius:16,blur:8},
-  ocean:{panel:'rgba(0,119,190,0.3)',text:'#ffffff',muted:'#b3d9ff',accent:'#00d4ff',radius:16,blur:8},
-  forest:{panel:'rgba(34,139,34,0.3)',text:'#f0fff0',muted:'#98fb98',accent:'#32cd32',radius:16,blur:6},
-  midnight:{panel:'rgba(25,25,112,0.4)',text:'#e6e6fa',muted:'#c5c5ff',accent:'#9370db',radius:16,blur:10},
-  aurora:{panel:'rgba(0,100,100,0.3)',text:'#f0ffff',muted:'#afeeee',accent:'#40e0d0',radius:18,blur:8},
-  gradient:{panel:'linear-gradient(135deg, rgba(255,0,150,0.3), rgba(0,204,255,0.3))',text:'#ffffff',muted:'#e0e0e0',accent:'#ff6b9d',radius:16,blur:8},
-  monochrome:{panel:'rgba(0,0,0,0.2)',text:'#ffffff',muted:'#888888',accent:'#ffffff',radius:4,blur:0,shadow:0}
-};
+// Theme system is now handled by themes.js
 const FONTS = {
   inter:'https://fonts.googleapis.com/css2?family=Inter:wght@600;800&display=swap',
   rubik:'https://fonts.googleapis.com/css2?family=Rubik:wght@600;800&display=swap',
@@ -310,11 +283,6 @@ const FONTS = {
   firasans:'https://fonts.googleapis.com/css2?family=Fira+Sans:wght@600;800&display=swap'
 };
 const getBool=(key,def=true)=>{ const v=p.get(key); if(v===null) return def; return !(v==='0'||v==='false'||v==='off'); };
-const applyVars=v=>{ if(!v) return;
-  if(v.panel)root.setProperty('--panel',v.panel); if(v.text)root.setProperty('--text',v.text);
-  if(v.muted)root.setProperty('--muted',v.muted); if(v.accent)root.setProperty('--accent',v.accent);
-  if(v.radius!=null)root.setProperty('--radius',v.radius+'px'); if(v.blur!=null)root.setProperty('--blur',v.blur+'px');
-  if(v.bar!=null)root.setProperty('--bar-h',v.bar+'px'); if(v.shadow===0)root.setProperty('--shadow','none'); };
 const applyFont=name=>{ if(!name) return; const href=FONTS[name.toLowerCase()]; if(href){ const link=document.createElement('link'); link.rel='stylesheet'; link.href=href; document.head.appendChild(link);
   const fam={inter:'"Inter"',rubik:'"Rubik"',montserrat:'"Montserrat"',poppins:'"Poppins"',firasans:'"Fira Sans"'}[name.toLowerCase()];
   if(fam) root.setProperty('--font', `${fam}, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif`);} };
@@ -323,7 +291,8 @@ const applyFont=name=>{ if(!name) return; const href=FONTS[name.toLowerCase()]; 
 const layout=(p.get('layout')||'record').toLowerCase();
 const align =(p.get('align') ||'left').toLowerCase();
 document.body.className=`layout-${layout} ${align}`;
-applyVars(THEMES[(p.get('theme')||'spotify').toLowerCase()]);
+
+
 
 const discEl=$('disc'), artbox=$('artbox'), tonearm=$('tonearm');
 
@@ -339,18 +308,27 @@ if(layout==='compact' || layout==='corner' || layout==='ticker' || layout==='spl
 if(layout==='wide'){
   discEl.style.display='none'; 
   artbox.classList.remove('hidden');
-  // Create duplicate artbox for wide layout
-  const artbox2 = artbox.cloneNode(true);
-  artbox2.id = 'artbox2';
-  artbox.parentNode.appendChild(artbox2);
 }
 if(layout!=='record'){ 
   tonearm.style.display='none'; 
 }
 
-/* overrides */
-const map={accent:'--accent',panel:'--panel',text:'--text',muted:'--muted'};
-for(const [k,css] of Object.entries(map)){ const v=p.get(k); if(v) root.setProperty(css,v); }
+/* overrides - apply custom colors */
+const map={
+  accent:'--accent',
+  panel:'--panel',
+  text:'--text',
+  muted:'--muted',
+  glowColor:'--glow-color',
+  borderColor:'--border-color'
+};
+for(const [k,css] of Object.entries(map)){ 
+  const v=p.get(k); 
+  if(v) {
+    console.log(`Setting ${css} to ${v}`);
+    root.setProperty(css,v); 
+  }
+}
 if(p.get('radius')) root.setProperty('--radius',p.get('radius')+'px');
 if(p.get('blur'))   root.setProperty('--blur',p.get('blur')+'px');
 if(p.get('bar'))    root.setProperty('--bar-h',p.get('bar')+'px');
@@ -402,12 +380,22 @@ else if(astyle==='rainbow') document.body.classList.add('accent-rainbow');
 if(p.get('shadow')==='0') document.body.classList.add('no-shadow');
 
 /* element toggles */
-const show=(id,flag)=>{ const n=$(id); if(!n) return; n.style.display = flag ? '' : 'none'; };
-show('statusRow', getBool('showstatus',true));
-show('progress',  getBool('showprogress',true));
-show('timeRow',   getBool('showtime',true));
-show('title',     getBool('title',true));
-show('artist',    getBool('artist',true));
+const show=(id,flag)=>{ const n=$(id); if(!n) return; n.style.setProperty('display', flag ? '' : 'none', 'important'); };
+const showStatus = getBool('showstatus',true);
+const showProgress = getBool('showprogress',true);
+const showTime = getBool('showtime',true);
+const showTitle = getBool('title',true);
+const showArtist = getBool('artist',true);
+
+
+
+
+
+show('statusRow', showStatus);
+show('progress',  showProgress);
+show('timeRow',   showTime);
+show('title',     showTitle);
+show('artist',    showArtist);
 
 /* visual effects */
 if(getBool('particles',false)) document.body.classList.add('particles');
@@ -422,6 +410,8 @@ show('nextRow', showNext);
 const scrollOn=getBool('scroll',true);
 const spinOn  =getBool('spin',true);
 const autoAccent=getBool('autoaccent',false);
+
+
 
 /* ---------- Spotify auth + data ---------- */
 const SCOPES=['user-read-playback-state','user-read-currently-playing'];
@@ -440,7 +430,20 @@ function setStatus(t){ statusEl.textContent=t; }
 function setMarquee(el,text,enable){
   if(!enable){ el.classList.remove('marquee'); el.textContent=text; return; }
   el.classList.remove('marquee'); el.textContent=text;
-  requestAnimationFrame(()=>{ if(el.scrollWidth>el.clientWidth+8){ el.classList.add('marquee'); el.innerHTML=''; const s1=document.createElement('span'); s1.textContent=text+'   •   '; const s2=s1.cloneNode(true); el.appendChild(s1); el.appendChild(s2);} });
+  requestAnimationFrame(()=>{ 
+    // Add a small delay to ensure the element has its final width
+    setTimeout(() => {
+      if(el.scrollWidth>el.clientWidth+8){ 
+        el.classList.add('marquee'); 
+        el.innerHTML=''; 
+        const s1=document.createElement('span'); 
+        s1.textContent=text+'   •   '; 
+        const s2=s1.cloneNode(true); 
+        el.appendChild(s1); 
+        el.appendChild(s2);
+      }
+    }, 100);
+  });
 }
 function showSetup(b){ $('setup').classList.toggle('hidden',!b); }
 
@@ -538,9 +541,15 @@ function startDemo(){
   if(astyle==='glow') document.body.classList.add('accent-glow');
   else if(astyle==='gradient') document.body.classList.add('accent-gradient');
 
+
+
   initSetup();
 
-  if(demo){ startDemo(); return; }
+  // Always start demo mode for config preview
+  if(demo || location.href.includes('demo=true')){ 
+    startDemo(); 
+    return; 
+  }
 
   const ok=await ensureToken(); showSetup(!ok);
 

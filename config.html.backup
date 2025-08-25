@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-      <title>Queuefy Configurator</title>
+  <title>Queuefy Configurator</title>
   <style>
     /* CSS Reset */
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -135,8 +135,8 @@
       margin: 0 auto;
       padding: var(--space-3xl);
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-2xl);
+      grid-template-columns: 520px 1fr;
+      gap: var(--space-3xl);
       flex: 1;
     }
     
@@ -156,9 +156,6 @@
       overflow-y: auto;
       overflow-x: hidden;
       max-height: calc(100vh - 280px);
-      /* Fix: Ensure sidebar content has proper height */
-      min-height: 400px;
-      height: auto;
     }
     
     .sidebar-content::-webkit-scrollbar {
@@ -632,14 +629,14 @@
       box-shadow: var(--shadow-md);
       display: flex;
       flex-direction: column;
-      min-height: 500px;
+      min-height: 600px;
     }
     
     .preview-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: var(--space-lg) var(--space-xl);
+      padding: var(--space-xl) var(--space-2xl);
       border-bottom: 1px solid var(--border);
     }
     
@@ -657,20 +654,20 @@
     }
     
     .preview-content {
-      padding: var(--space-lg);
+      padding: var(--space-xl);
       display: flex;
       flex-direction: column;
-      gap: var(--space-lg);
+      gap: var(--space-xl);
       flex: 1;
     }
     
     .preview-iframe {
       width: 100%;
-      height: 250px;
+      height: 400px;
       border: none;
       border-radius: var(--radius-md);
       background: #000;
-      min-height: 250px;
+      min-height: 400px;
       transition: opacity 0.2s ease;
     }
     
@@ -690,16 +687,10 @@
       
       .sidebar {
         position: static;
-        order: 1;
       }
       
       .preview-area {
         min-height: 400px;
-        order: 2;
-      }
-      
-      .preview-content {
-        flex-direction: column;
       }
       
       .preview-iframe {
@@ -741,7 +732,7 @@
   <div class="dashboard">
     <header class="header">
       <div class="header-content">
-                    <h1>Queuefy Configurator</h1>
+        <h1>Queuefy Configurator</h1>
         <div class="header-controls">
           <div class="demo-toggle">
             <label class="toggle-label">
@@ -750,7 +741,8 @@
             </label>
           </div>
           <div class="header-actions">
-            <button id="getUrls" class="btn-secondary btn-sm">Get URLs</button>
+            <button id="copy" class="btn btn-sm">Copy URL</button>
+            <button id="open" class="btn-secondary btn-sm">Open Preview</button>
             <button id="reset" class="btn-outline btn-sm">Reset</button>
           </div>
         </div>
@@ -758,7 +750,6 @@
     </header>
     
     <main class="main">
-
       <aside class="sidebar">
         <nav class="nav-tabs" role="tablist">
           <button class="nav-tab active" data-tab="player" role="tab" aria-selected="true">Player</button>
@@ -768,9 +759,13 @@
         <div class="sidebar-content">
           <!-- Player Tab Panel -->
           <div class="tab-panel active" id="player-tab" role="tabpanel">
-
+            <div class="sub-tabs" role="tablist">
+              <button class="sub-tab active" data-subtab="basics" role="tab" aria-selected="true">Basics</button>
+              <button class="sub-tab" data-subtab="links" role="tab" aria-selected="false">Links</button>
+            </div>
             
-
+            <!-- Player Basics Sub-panel -->
+            <div class="sub-panel active" id="player-basics">
               <div class="card">
                 <div class="card-header">
                   <h2 class="card-title">Quick Start</h2>
@@ -782,6 +777,15 @@
                       <label class="form-label">Base URL</label>
                       <input id="base" class="form-input" type="url" placeholder="https://<user>.github.io/queuefy/overlay.html" value="https://kelvinph.github.io/queuefy/overlay.html"/>
                     </div>
+                    
+                    
+                    
+                                         <div class="form-group">
+                       <label class="form-label">Generated Player URL</label>
+                       <div id="url" class="url-display"></div>
+                       <div class="badge">Add this URL to OBS → Browser Source</div>
+
+                     </div>
                   </div>
                 </div>
               </div>
@@ -873,7 +877,7 @@
                         </div>
                         <div class="form-group">
                           <label class="form-label">🎨 Panel Color</label>
-                          <input id="panelColor" type="color" class="color-picker" value="#121212"/>
+                          <input id="panel" type="color" class="color-picker" value="#121212"/>
                           <div class="helper-text">Background panel color</div>
                         </div>
                       </div>
@@ -889,7 +893,16 @@
                           <div class="helper-text">Border color for elements</div>
                         </div>
                       </div>
-
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label class="form-label">🎭 Background</label>
+                          <select id="backgroundType" class="form-select">
+                            <option value="panel">Panel Background</option>
+                            <option value="transparent">Transparent</option>
+                          </select>
+                          <div class="helper-text">Choose between panel background or transparent</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -913,7 +926,10 @@
                         <div class="range-value"><span id="paOut">72</span>%</div>
                       </div>
                     </div>
-
+                    <div class="form-group">
+                      <label class="form-label">Panel Color</label>
+                      <input id="panelColor" type="color" class="color-picker" value="#121212"/>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1091,9 +1107,184 @@
               </div>
             </div>
             
+            <!-- Player Links Sub-panel -->
+                             <div class="card">
+                 <div class="card-header">
+                   <h2 class="card-title">Typography</h2>
+                   <p class="card-description">Customize fonts and text styling</p>
+                 </div>
+                 <div class="card-body">
+                   <div class="form-section">
+                     <div class="form-row">
+                       <div class="form-group">
+                         <label class="form-label">Font</label>
+                         <select id="font" class="form-select">
+                           <option value="">System</option>
+                           <option value="inter">Inter</option>
+                           <option value="roboto">Roboto</option>
+                           <option value="mono">Mono</option>
+                         </select>
+                       </div>
+                       <div class="form-group">
+                         <label class="form-label">Text Shadow</label>
+                         <select id="shadow" class="form-select">
+                           <option value="0">Off</option>
+                           <option value="1">On</option>
+                         </select>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+               </div>
 
+               <div class="card">
+                 <div class="card-header">
+                   <h2 class="card-title">Background</h2>
+                   <p class="card-description">Configure background styling and transparency</p>
+                 </div>
+                 <div class="card-body">
+                   <div class="form-section">
+                     <div class="toggle-group">
+                       <label class="form-label">Transparent panel</label>
+                       <input id="transparent" type="checkbox" class="toggle"/>
+                     </div>
+                     <div class="form-group">
+                       <label class="form-label">Panel Opacity</label>
+                       <div class="range-group">
+                         <input id="panelAlpha" class="range-input" type="range" min="0" max="100" step="1" value="72" oninput="paOut.textContent=this.value"/>
+                         <div class="range-value"><span id="paOut">72</span>%</div>
+                       </div>
+                     </div>
+                     <div class="form-group">
+                       <label class="form-label">Panel Color</label>
+                       <input id="panelColor" type="color" class="color-picker" value="#121212"/>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+
+               <div class="card">
+                 <div class="card-header">
+                   <h2 class="card-title">Quick Actions</h2>
+                   <p class="card-description">One-click presets for common use cases</p>
+                 </div>
+                 <div class="card-body">
+                   <div class="form-section">
+                     <button id="transparentPreset" class="btn-outline">1-click Transparent</button>
+                   </div>
+                 </div>
+               </div>
+
+
+
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="card-title">Background</h2>
+                  <p class="card-description">Configure background styling and transparency</p>
+                </div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="form-group">
+                      <label class="form-label">Type</label>
+                      <select id="bgType" class="form-select">
+                        <option value="none">None</option>
+                        <option value="solid">Solid</option>
+                        <option value="gradient">Gradient</option>
+                        <option value="image">Image</option>
+                      </select>
+                    </div>
+                    <div id="bgSolid" class="form-group">
+                      <label class="form-label">Background Color</label>
+                      <input id="bgColor" type="color" class="color-picker" value="#121212"/>
+                    </div>
+                    <div id="bgGradient" class="form-section" style="display: none;">
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label class="form-label">Gradient Start</label>
+                          <input id="bgGradientStart" type="color" class="color-picker" value="#1db954"/>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">Gradient End</label>
+                          <input id="bgGradientEnd" type="color" class="color-picker" value="#191414"/>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Gradient Angle</label>
+                        <div class="range-group">
+                          <input id="bgGradientAngle" class="range-input" type="range" min="0" max="360" step="1" value="45" oninput="bgAngleOut.textContent=this.value"/>
+                          <div class="range-value"><span id="bgAngleOut">45</span>°</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div id="bgImage" class="form-section" style="display: none;">
+                      <div class="form-group">
+                        <label class="form-label">Image URL</label>
+                        <input id="bgImageUrl" class="form-input" type="url" placeholder="https://example.com/image.jpg"/>
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label class="form-label">Blur</label>
+                          <div class="range-group">
+                            <input id="bgImageBlur" class="range-input" type="range" min="0" max="20" step="1" value="0" oninput="bgBlurOut.textContent=this.value"/>
+                            <div class="range-value"><span id="bgBlurOut">0</span>px</div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">Opacity</label>
+                          <div class="range-group">
+                            <input id="bgImageOpacity" class="range-input" type="range" min="0" max="1" step="0.1" value="1" oninput="bgOpacityOut.textContent=this.value"/>
+                            <div class="range-value"><span id="bgOpacityOut">1</span></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
             
+            <!-- Player Links Sub-panel -->
+            <div class="sub-panel" id="player-links">
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="card-title">OBS URLs</h2>
+                  <p class="card-description">Copy these URLs to add as Browser Sources in OBS</p>
+                </div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="form-group">
+                      <label class="form-label">Player URL</label>
+                      <div id="playerUrl" class="url-display"></div>
+                      <div class="badge">Add this URL to OBS → Browser Source</div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Queue URL</label>
+                      <div id="queueUrlLinks" class="url-display"></div>
+                      <div class="badge">Add this URL to OBS → Browser Source</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="card-title">How to Use</h2>
+                  <p class="card-description">Step-by-step setup instructions</p>
+                </div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="form-group">
+                      <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
+                        <li>Run Queuefy app on streaming PC</li>
+                        <li>Add Player URL to OBS (Browser Source)</li>
+                        <li>Add Queue URL to OBS (Browser Source)</li>
+                        <li>Use chat commands (!sr, !queue, !song, !skip) to test</li>
+                      </ol>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Queue Tab Panel -->
@@ -1254,6 +1445,25 @@
                 </div>
               </div>
             </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">Generated Queue URL</h2>
+                <p class="card-description">Copy this URL to add as a Browser Source in OBS</p>
+              </div>
+              <div class="card-body">
+                <div class="form-section">
+                  <div class="form-group">
+                    <label class="form-label">Queue URL</label>
+                    <div id="queueUrl" class="url-display"></div>
+                    <div style="display: flex; gap: 8px; margin-top: 8px;">
+                      <button id="copyQueueUrl" class="btn btn-sm" style="flex-shrink: 0;">📋 Copy Queue URL</button>
+                      <div class="badge" style="flex: 1; display: flex; align-items: center;">Paste this URL into OBS → Browser Source</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </aside>
@@ -1289,130 +1499,6 @@
     </main>
   </div>
 
-  <!-- URL Modal -->
-  <div id="urlModal" style="
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    display: none;
-    z-index: 10000;
-    backdrop-filter: blur(5px);
-  ">
-    <div style="
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: var(--bg-tertiary);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: var(--space-3xl);
-      max-width: 800px;
-      width: 90%;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: var(--shadow-lg);
-      font-family: inherit;
-    ">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-2xl);">
-        <h2 style="margin: 0; font-size: var(--font-size-xl); font-weight: 600; color: var(--text-primary);">OBS URLs</h2>
-        <button onclick="document.getElementById('urlModal').style.display='none'" style="
-          background: none;
-          border: none;
-          color: var(--text-muted);
-          font-size: var(--font-size-xl);
-          cursor: pointer;
-          padding: var(--space-sm);
-          border-radius: 50%;
-          width: 40px;
-          height: 40px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.15s ease;
-        ">&times;</button>
-      </div>
-      
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2xl); margin-bottom: var(--space-2xl);">
-        <div>
-          <div style="color: var(--text-secondary); margin-bottom: var(--space-sm); font-weight: 500; font-size: var(--font-size-sm);">Player URL</div>
-          <div id="modalPlayerUrl" style="
-            background: var(--bg-secondary); 
-            padding: var(--space-lg); 
-            border-radius: var(--radius-md); 
-            word-break: break-all; 
-            margin-bottom: var(--space-md); 
-            border: 1px solid var(--border); 
-            color: var(--text-primary); 
-            font-size: var(--font-size-sm);
-            line-height: 1.4;
-            min-height: 80px;
-            font-family: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
-          "></div>
-          <button id="copyPlayerBtn" style="
-            background: var(--accent); 
-            color: white; 
-            border: none; 
-            padding: var(--space-md) var(--space-xl); 
-            border-radius: var(--radius-md); 
-            cursor: pointer; 
-            font-size: var(--font-size-sm); 
-            font-weight: 500;
-            width: 100%;
-            transition: all 0.15s ease;
-            font-family: inherit;
-          ">📋 Copy Player URL</button>
-        </div>
-        <div>
-          <div style="color: var(--text-secondary); margin-bottom: var(--space-sm); font-weight: 500; font-size: var(--font-size-sm);">Queue URL</div>
-          <div id="modalQueueUrl" style="
-            background: var(--bg-secondary); 
-            padding: var(--space-lg); 
-            border-radius: var(--radius-md); 
-            word-break: break-all; 
-            margin-bottom: var(--space-md); 
-            border: 1px solid var(--border); 
-            color: var(--text-primary); 
-            font-size: var(--font-size-sm);
-            line-height: 1.4;
-            min-height: 80px;
-            font-family: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
-          "></div>
-          <button id="copyQueueBtn" style="
-            background: var(--accent); 
-            color: white; 
-            border: none; 
-            padding: var(--space-md) var(--space-xl); 
-            border-radius: var(--radius-md); 
-            cursor: pointer; 
-            font-size: var(--font-size-sm); 
-            font-weight: 500;
-            width: 100%;
-            transition: all 0.15s ease;
-            font-family: inherit;
-          ">📋 Copy Queue URL</button>
-        </div>
-      </div>
-      
-      <div style="
-        background: var(--bg-secondary); 
-        border-radius: var(--radius-md); 
-        padding: var(--space-xl); 
-        border-left: 4px solid var(--accent);
-      ">
-        <h3 style="margin: 0 0 var(--space-md) 0; color: var(--text-primary); font-size: var(--font-size-lg); font-weight: 600;">How to Use</h3>
-        <ol style="margin: 0; padding-left: 20px; line-height: 1.6; color: var(--text-secondary); font-size: var(--font-size-sm);">
-          <li>Run Queuefy app on your streaming PC</li>
-          <li>Add Player URL to OBS as a Browser Source</li>
-          <li>Add Queue URL to OBS as a Browser Source</li>
-          <li>Use chat commands (!sr, !queue, !song, !skip) to test</li>
-        </ol>
-      </div>
-    </div>
-  </div>
 
   <script>
     // Element references - will be initialized after DOM loads
@@ -1423,7 +1509,7 @@
       els = {
         // Player elements
         base: $('base'), layout: $('layout'), align: $('align'), accentstyle: $('accentstyle'),
-        colorMode: $('colorMode'), accent: $('accent'), text: $('text'), muted: $('muted'), panelColor: $('panelColor'), glowColor: $('glowColor'), borderColor: $('borderColor'),
+        colorMode: $('colorMode'), accent: $('accent'), text: $('text'), muted: $('muted'), panel: $('panel'), glowColor: $('glowColor'), borderColor: $('borderColor'), backgroundType: $('backgroundType'),
         disc: $('disc'), bar: $('bar'), progressWidth: $('progressWidth'), textAlign: $('textAlign'),
         radius: $('radius'), blur: $('blur'), pad: $('pad'), outline: $('outline'),
         compact: $('compact'), spin: $('spin'), labelStatic: $('labelStatic'), tonearm: $('tonearm'),
@@ -1440,14 +1526,18 @@
         queueLayout: $('queueLayout'), queueRadius: $('queueRadius'), queueShadow: $('queueShadow'), queueGap: $('queueGap'), queueSliderHeight: $('queueSliderHeight'),
         
         // UI elements
-        demo: $('demo'), url: $('url'), getUrls: $('getUrls'), reset: $('reset'), preview: $('preview'),
-        colorsBlock: $('colorsBlock'), queuePreview: $('queuePreview'),
+        demo: $('demo'), url: $('url'), copy: $('copy'), open: $('open'), reset: $('reset'), preview: $('preview'),
+        colorsBlock: $('colorsBlock'), queuePreview: $('queuePreview'), queueUrl: $('queueUrl'),
+        playerUrl: $('playerUrl'), queueUrlLinks: $('queueUrlLinks'), copyQueueUrl: $('copyQueueUrl'),
         transparentPreset: $('transparentPreset')
       };
       
-      console.log('Elements initialized successfully');
-      console.log('playerUrl element:', els.playerUrl);
-      console.log('queueUrl element:', els.queueUrl);
+      console.log('Elements initialized:', {
+        showStatus: els.showStatus,
+        disc: els.disc,
+        compact: els.compact,
+        scroll: els.scroll
+      });
     }
 
     // Default configuration
@@ -1463,6 +1553,7 @@
         panel: '#121212',
         glowColor: '#00ff00',
         borderColor: '#ffffff',
+        backgroundType: 'panel',
       disc: 200,
       progressWidth: 100,
       textAlign: 'auto',
@@ -1592,8 +1683,14 @@
          if(s.accent) q.set('accent', s.accent);
          if(s.text) q.set('text', s.text);
          if(s.muted) q.set('muted', s.muted);
+         if(s.panel) q.set('panel', s.panel);
          if(s.glowColor) q.set('glowColor', s.glowColor);
          if(s.borderColor) q.set('borderColor', s.borderColor);
+       }
+       
+       // Handle background type
+       if(s.backgroundType === 'transparent') {
+         q.set('transparent', '1');
        }
        if(s.transparent) q.set('transparent','1');
        else {
@@ -1601,7 +1698,6 @@
            const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex) || [];
            return {r:parseInt(m[1]||'00',16), g:parseInt(m[2]||'00',16), b:parseInt(m[3]||'00',16)};
          };
-
          const {r,g,b} = hexToRgb(s.panelColor);
          const a = Math.max(0,Math.min(100,parseInt(s.panelAlpha||'72',10)))/100;
          q.set('panel', `rgba(${r},${g},${b},${a})`);
@@ -1662,22 +1758,11 @@
        const playerUrl = buildPlayerURL();
        const queueUrl = buildQueueURL();
        
-       // URLs built successfully
-       
        // Update URL displays
        if(els.url) els.url.textContent = playerUrl;
-       if(els.playerUrl) {
-         els.playerUrl.textContent = playerUrl;
-         console.log('Render function - playerUrl set to:', playerUrl);
-       } else {
-         console.error('Render function - els.playerUrl not found!');
-       }
-       if(els.queueUrl) {
-         els.queueUrl.textContent = queueUrl;
-         console.log('Render function - queueUrl set to:', queueUrl);
-       } else {
-         console.error('Render function - els.queueUrl not found!');
-       }
+       if(els.playerUrl) els.playerUrl.textContent = playerUrl;
+       if(els.queueUrl) els.queueUrl.textContent = queueUrl;
+       if(els.queueUrlLinks) els.queueUrlLinks.textContent = queueUrl;
        
        // Update demo status text
        const demoStatus = document.getElementById('demoStatus');
@@ -1735,23 +1820,24 @@
          document.querySelectorAll('.tab-panel').forEach(c => c.classList.remove('active'));
          tab.classList.add('active');
          tab.setAttribute('aria-selected', 'true');
-         
-         const targetPanel = document.getElementById(tab.dataset.tab + '-tab');
-         console.log('Target panel for tab', tab.dataset.tab, ':', targetPanel);
-         if (targetPanel) {
-           targetPanel.classList.add('active');
-           console.log('Added active class to panel:', targetPanel.id);
-           console.log('Panel classes after adding active:', targetPanel.className);
-           console.log('Panel display style:', window.getComputedStyle(targetPanel).display);
-         } else {
-           console.error('Target panel not found for tab:', tab.dataset.tab);
-         }
-         
-                  console.log('Tab dataset.tab value:', tab.dataset.tab);
+         document.getElementById(tab.dataset.tab + '-tab').classList.add('active');
        });
      });
 
-
+     // Sub-tab switching
+     document.querySelectorAll('.sub-tab').forEach(tab => {
+       tab.addEventListener('click', () => {
+         const parentPanel = tab.closest('.tab-panel');
+         parentPanel.querySelectorAll('.sub-tab').forEach(t => {
+           t.classList.remove('active');
+           t.setAttribute('aria-selected', 'false');
+         });
+         parentPanel.querySelectorAll('.sub-panel').forEach(c => c.classList.remove('active'));
+         tab.classList.add('active');
+         tab.setAttribute('aria-selected', 'true');
+         document.getElementById('player-' + tab.dataset.subtab).classList.add('active');
+       });
+     });
 
 
 
@@ -1862,6 +1948,7 @@
        
        // Update queue URL displays
        if(els.queueUrl) els.queueUrl.textContent = queueUrl;
+       if(els.queueUrlLinks) els.queueUrlLinks.textContent = queueUrl;
        
        // Update queue preview only
        if(els.queuePreview) {
@@ -1979,13 +2066,6 @@
            els.base.value = overlayUrl.toString();
          }
        }
-       
-       // Always update base URL to current server for local development
-       if (location.hostname === 'localhost') {
-         const overlayUrl = new URL('overlay.html', location.origin);
-         els.base.value = overlayUrl.toString();
-         console.log('Updated base URL for localhost:', els.base.value);
-       }
      }
 
      // Color mode toggle function
@@ -2028,67 +2108,39 @@
        // Note: Event listeners are already added in the loop above for all form elements
        
        // Button handlers
-       if(els.getUrls) {
-         els.getUrls.onclick = () => {
-           const playerUrl = buildPlayerURL();
-           const queueUrl = buildQueueURL();
-           
-           // Update modal content
-           const modalPlayerUrl = document.getElementById('modalPlayerUrl');
-           const modalQueueUrl = document.getElementById('modalQueueUrl');
-           const copyPlayerBtn = document.getElementById('copyPlayerBtn');
-           const copyQueueBtn = document.getElementById('copyQueueBtn');
-           
-           if (modalPlayerUrl && modalQueueUrl) {
-             modalPlayerUrl.textContent = playerUrl;
-             modalQueueUrl.textContent = queueUrl;
+       if(els.copy) {
+         els.copy.onclick = async () => { 
+           try { 
+             const activeTab = document.querySelector('.nav-tab.active').dataset.tab;
+             let urlToCopy = '';
              
-             // Set up copy button handlers
-             if (copyPlayerBtn) {
-               copyPlayerBtn.onclick = async () => {
-                 try {
-                   await navigator.clipboard.writeText(playerUrl);
-                   copyPlayerBtn.textContent = '✅ Copied!';
-                   copyPlayerBtn.style.background = '#28a745';
-                   setTimeout(() => {
-                     copyPlayerBtn.textContent = '📋 Copy Player URL';
-                     copyPlayerBtn.style.background = 'var(--accent)';
-                   }, 2000);
-                 } catch(e) {
-                   copyPlayerBtn.textContent = '❌ Failed';
-                   copyPlayerBtn.style.background = '#dc3545';
-                   setTimeout(() => {
-                     copyPlayerBtn.textContent = '📋 Copy Player URL';
-                     copyPlayerBtn.style.background = 'var(--accent)';
-                   }, 2000);
-                 }
-               };
+             if(activeTab === 'player' || activeTab === 'links') {
+               urlToCopy = els.playerUrl?.textContent || els.url?.textContent || '';
+             } else if(activeTab === 'queue') {
+               urlToCopy = els.queueUrl?.textContent || '';
              }
              
-             if (copyQueueBtn) {
-               copyQueueBtn.onclick = async () => {
-                 try {
-                   await navigator.clipboard.writeText(queueUrl);
-                   copyQueueBtn.textContent = '✅ Copied!';
-                   copyQueueBtn.style.background = '#28a745';
-                   setTimeout(() => {
-                     copyQueueBtn.textContent = '📋 Copy Queue URL';
-                     copyQueueBtn.style.background = 'var(--accent)';
-                   }, 2000);
-                 } catch(e) {
-                   copyQueueBtn.textContent = '❌ Failed';
-                   copyQueueBtn.style.background = '#dc3545';
-                   setTimeout(() => {
-                     copyQueueBtn.textContent = '📋 Copy Queue URL';
-                     copyQueueBtn.style.background = 'var(--accent)';
-                   }, 2000);
-                 }
-               };
+             if(urlToCopy) {
+               await navigator.clipboard.writeText(urlToCopy); 
+               els.copy.textContent = 'Copied!'; 
+               setTimeout(() => els.copy.textContent = 'Copy URL', 1200);
              }
-             
-             // Show modal
-             document.getElementById('urlModal').style.display = 'block';
+           } catch(e) {} 
+         };
+       }
+       
+       if(els.open) {
+         els.open.onclick = () => { 
+           const activeTab = document.querySelector('.nav-tab.active').dataset.tab;
+           let urlToOpen = '';
+           
+           if(activeTab === 'player' || activeTab === 'links') {
+             urlToOpen = els.playerUrl?.textContent || els.url?.textContent || '';
+           } else if(activeTab === 'queue') {
+             urlToOpen = els.queueUrl?.textContent || '';
            }
+           
+           if(urlToOpen) window.open(urlToOpen,'_blank'); 
          };
        }
        
@@ -2108,33 +2160,6 @@
            els.pad.value = 0; 
            els.shadow.value = '0'; 
            render(); 
-         };
-       }
-       
-       // Copy button handlers for Links tab
-       if(els.copyPlayerUrl) {
-         els.copyPlayerUrl.onclick = async () => { 
-           try { 
-             const urlToCopy = els.playerUrl?.textContent || '';
-             if(urlToCopy) {
-               await navigator.clipboard.writeText(urlToCopy); 
-               els.copyPlayerUrl.textContent = 'Copied!'; 
-               setTimeout(() => els.copyPlayerUrl.textContent = '📋 Copy Player URL', 1200);
-             }
-           } catch(e) {} 
-         };
-       }
-       
-       if(els.copyQueueUrl) {
-         els.copyQueueUrl.onclick = async () => { 
-           try { 
-             const urlToCopy = els.queueUrl?.textContent || '';
-             if(urlToCopy) {
-               await navigator.clipboard.writeText(urlToCopy); 
-               els.copyQueueUrl.textContent = 'Copied!'; 
-               setTimeout(() => els.copyQueueUrl.textContent = '📋 Copy Queue URL', 1200);
-             }
-           } catch(e) {} 
          };
        }
        
@@ -2162,27 +2187,6 @@
        
        // Initialize queue preview on page load
        updateQueueOnly();
-       
-       // Ensure URLs are populated for Links tab on page load
-       setTimeout(() => {
-         render();
-         
-         // Also force populate the Links tab URLs directly
-         const playerUrl = buildPlayerURL();
-         const queueUrl = buildQueueURL();
-         
-         const playerUrlEl = document.getElementById('playerUrl');
-         const queueUrlEl = document.getElementById('queueUrl');
-         
-         if (playerUrlEl) {
-           playerUrlEl.textContent = playerUrl;
-           console.log('Initial population - playerUrl:', playerUrl);
-         }
-         if (queueUrlEl) {
-           queueUrlEl.textContent = queueUrl;
-           console.log('Initial population - queueUrl:', queueUrl);
-         }
-       }, 100);
        
 
      }
