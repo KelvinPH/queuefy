@@ -34,7 +34,8 @@ function initializeElements() {
     
     // Queue elements
     queueMax: $('queueMax'), showArtists: $('showArtists'), 
-    sbHost: $('sbHost'), sbPort: $('sbPort'), sbSsl: $('sbSsl'), eventType: $('eventType'), maxItems: $('maxItems'),
+    sbHost: $('sbHost'), sbPort: $('sbPort'), sbSsl: $('sbSsl'), eventType: $('eventType'), 
+    ws: $('ws'), pollMs: $('pollMs'), maxItems: $('maxItems'),
     queueColorMode: $('queueColorMode'), queueAccent: $('queueAccent'), queueText: $('queueText'), 
     queueMuted: $('queueMuted'), queueCard: $('queueCard'), queueGlowColor: $('queueGlowColor'), 
     queueBorderColor: $('queueBorderColor'), queueBackgroundType: $('queueBackgroundType'),
@@ -103,6 +104,8 @@ function getState() {
     sbPort: els.sbPort?.value || '8080',
     sbSsl: els.sbSsl?.value || '0',
     eventType: els.eventType?.value || 'queue:update',
+    ws: els.ws?.value || 'ws://localhost:5173',
+    pollMs: els.pollMs?.value || '15000',
     maxItems: els.maxItems?.value || '5',
     queueLayout: els.queueLayout?.value || 'list',
     queueColorMode: els.queueColorMode?.value || 'custom',
@@ -210,11 +213,25 @@ function buildQueueURL() {
   // Behavior params
   if(s.queueMax && s.queueMax !== '5') q.set('queueMax', s.queueMax);
   if(s.showArtists === 'false') q.set('showArtists', 'false');
-  if(s.sbHost && s.sbHost !== '127.0.0.1') q.set('sb_host', s.sbHost);
-  if(s.sbPort && s.sbPort !== '8080') q.set('sb_port', s.sbPort);
-  if(s.sbSsl && s.sbSsl !== '0') q.set('sb_ssl', s.sbSsl);
-  if(s.eventType && s.eventType !== 'queue:update') q.set('event_type', s.eventType);
+  
+  // Streamer.bot connection params - always include these
+  q.set('sb_host', s.sbHost || '127.0.0.1');
+  q.set('sb_port', s.sbPort || '8080');
+  q.set('sb_ssl', s.sbSsl || '0');
+  q.set('event_type', s.eventType || 'queue:update');
+  
+  console.log('Streamer.bot params added:', {
+    sb_host: s.sbHost || '127.0.0.1',
+    sb_port: s.sbPort || '8080',
+    sb_ssl: s.sbSsl || '0',
+    event_type: s.eventType || 'queue:update'
+  });
+  
   if(s.maxItems && s.maxItems !== '5') q.set('max_items', s.maxItems);
+  
+  // Legacy WebSocket and poll interval (for backward compatibility)
+  if(s.ws && s.ws !== 'ws://localhost:5173') q.set('ws', s.ws);
+  if(s.pollMs && s.pollMs !== '15000') q.set('pollMs', s.pollMs);
   
   // Styling params
   if(s.queueColorMode === 'custom'){
@@ -237,7 +254,9 @@ function buildQueueURL() {
   if(s.queueGap && s.queueGap !== '6') q.set('gap', s.queueGap);
   if(s.queueSliderHeight && s.queueSliderHeight !== '400') q.set('sliderHeight', s.queueSliderHeight);
   
-  return u.origin + u.pathname + (q.toString() ? '?' + q.toString() : '');
+  const finalUrl = u.origin + u.pathname + (q.toString() ? '?' + q.toString() : '');
+  console.log('Final Queue URL built:', finalUrl);
+  return finalUrl;
 }
 
 // Render function
@@ -280,7 +299,7 @@ function render() {
       '🤖 Live mode: connecting to Streamer.bot WebSocket';
   }
   
-  // Update player preview - always use demo data for preview
+  // Update player preview - respect demo mode setting
   updatePlayerPreview(playerUrl);
 }
 
@@ -290,11 +309,14 @@ function updatePlayerPreview(playerUrl) {
   
   let previewUrl;
   if (playerUrl && playerUrl !== '') {
-    previewUrl = playerUrl + (playerUrl.includes('?') ? '&' : '?') + 'demo=true&_t=' + Date.now();
+    // Respect demo mode setting
+    const demoParam = els.demo.checked ? 'true' : 'false';
+    previewUrl = playerUrl + (playerUrl.includes('?') ? '&' : '?') + 'demo=' + demoParam + '&_t=' + Date.now();
   } else {
     // Fallback to local overlay.html
     const localOverlay = new URL('overlay.html', location.href).toString();
-    previewUrl = localOverlay + '?demo=true&_t=' + Date.now();
+    const demoParam = els.demo.checked ? 'true' : 'false';
+    previewUrl = localOverlay + '?demo=' + demoParam + '&_t=' + Date.now();
   }
   
   console.log('Setting player preview URL:', previewUrl);
@@ -687,7 +709,7 @@ function initializeApp() {
     if(!n) continue;
     if(n.tagName === 'INPUT' || n.tagName === 'SELECT') { 
       // Special handling for queue-specific elements to avoid player preview conflicts
-      if (k.startsWith('queue')) {
+      if (k.startsWith('queue') || k.startsWith('sb') || k === 'eventType' || k === 'ws' || k === 'pollMs') {
         n.addEventListener('input', updateQueueOnly);
         n.addEventListener('change', updateQueueOnly);
       } else {
@@ -800,6 +822,11 @@ function initializeApp() {
   if(els.queueColorMode) {
     els.queueColorMode.addEventListener('change', toggleQueueColorsBlock);
     toggleQueueColorsBlock();
+  }
+  
+  // Demo mode toggle - refresh preview when changed
+  if(els.demo) {
+    els.demo.addEventListener('change', render);
   }
   
   // Layout change handler

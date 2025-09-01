@@ -363,12 +363,12 @@
                 <div class="field">
                   <label for="sbHost">🤖 Streamer.bot Host</label>
                   <input id="sbHost" placeholder="127.0.0.1" value="127.0.0.1">
-                  <div class="help">Streamer.bot WebSocket server host</div>
+                  <div class="help">Streamer.bot WebSocket server host (usually 127.0.0.1)</div>
                 </div>
                 <div class="field">
                   <label for="sbPort">🔌 Streamer.bot Port</label>
                   <input id="sbPort" type="number" min="1" max="65535" placeholder="8080" value="8080">
-                  <div class="help">Streamer.bot WebSocket server port</div>
+                  <div class="help">Streamer.bot WebSocket server port (usually 8080)</div>
                 </div>
               </div>
               <div class="grid-2">
@@ -378,12 +378,24 @@
                     <option value="0">No (ws://)</option>
                     <option value="1">Yes (wss://)</option>
                   </select>
-                  <div class="help">Use secure WebSocket connection</div>
+                  <div class="help">Enable if Streamer.bot WebSocket server uses SSL</div>
                 </div>
                 <div class="field">
                   <label for="eventType">📡 Event Type</label>
                   <input id="eventType" placeholder="queue:update" value="queue:update">
-                  <div class="help">Custom event type to listen for</div>
+                  <div class="help">Event type to listen for from Streamer.bot</div>
+                </div>
+              </div>
+              <div class="grid-2">
+                <div class="field">
+                  <label for="ws">Legacy WebSocket URL</label>
+                  <input id="ws" placeholder="ws://localhost:5173" value="ws://localhost:5173">
+                  <div class="help">Legacy: ws://localhost:5173 - for old Queuefy server (deprecated)</div>
+                </div>
+                <div class="field">
+                  <label for="pollMs">Poll Interval (ms)</label>
+                  <input id="pollMs" type="number" min="3000" value="15000">
+                  <div class="help">HTTP fallback interval if WebSocket fails (legacy)</div>
                 </div>
               </div>
               <div class="field">
@@ -584,11 +596,15 @@
       <div class="modal-help">
         <h3>How to Use</h3>
         <ol>
-          <li>Run Queuefy app on your streaming PC</li>
+          <li>Configure Streamer.bot WebSocket server (Settings → WebSocket Server)</li>
+          <li>Set up Streamer.bot actions to send queue updates</li>
           <li>Add Player URL to OBS as a Browser Source</li>
           <li>Add Queue URL to OBS as a Browser Source</li>
           <li>Use chat commands (!sr, !queue, !song, !skip) to test</li>
         </ol>
+        <div class="modal-help-note">
+          <strong>💡 Streamer.bot Setup:</strong> The Queue URL now includes WebSocket connection parameters. Make sure Streamer.bot is running with WebSocket Server enabled on the configured host/port.
+        </div>
       </div>
     </div>
   </div>
