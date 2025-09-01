@@ -1,126 +1,124 @@
-# Queuefy
+# Queuefy Configurator
 
-A comprehensive streaming overlay system with both Player and Queue overlays for OBS.
+A modern, user-friendly dashboard for configuring Queuefy overlays for OBS streaming.
 
 ## Features
 
-### Player Overlay (overlay.html)
-- Spotify Now Playing display with multiple layout options
-- Real-time track information and progress
-- Customizable themes, colors, and animations
-- Multiple layout presets (Record, Card, Bar, Stacked, etc.)
-- Demo mode for testing without Spotify connection
+### 🎨 **New Dashboard UI**
+- **Split Layout**: Config panel on the left, live previews on the right
+- **Vertical Navigation**: Clean segmented tabs (Player/Queue) with sub-navigation
+- **Accordion Cards**: Organized sections with clear headers and descriptions
+- **Responsive Design**: Works on desktop and mobile devices
+- **Modern Design System**: Consistent spacing, colors, and typography
 
-### Queue Overlay (queue.html)
-- Upcoming tracks display
-- WebSocket connection for real-time updates
-- HTTP fallback polling
-- Customizable styling and behavior
-- Demo mode with rotating sample tracks
+### 🎮 **Player Configuration**
+- **Layout Options**: Record (vinyl), Card, Bar, Stacked, Compact, Wide, Split, Floating, Corner, Ticker
+- **Visual Customization**: Colors, effects, animations, typography
+- **Behavior Controls**: Spinning, tonearm, status pills, progress bars
+- **Live Preview**: Real-time preview with demo data
 
-### Dashboard (config.html)
-- Unified configuration interface for both overlays
-- Live previews of both Player and Queue overlays
-- Tabbed interface: Player, Queue, Visual, Advanced, Links
-- Local storage for saving settings
-- URL generation for OBS Browser Sources
+### 📋 **Queue Configuration**
+- **Queue Behavior**: Max items, artist display, WebSocket connection
+- **Styling Options**: Colors, layouts, shadows, spacing
+- **Multiple Layouts**: List, Grid, Cards, Compact, Minimal, Slider, Ticker, Masonry, Timeline, Carousel, Stack
+- **Live Preview**: Real-time queue preview with demo data
 
-## Quick Start
+### 🔗 **OBS Integration**
+- **URL Generation**: Automatic Player and Queue URL building
+- **Copy to Clipboard**: One-click URL copying
+- **Modal Interface**: Clean URL display with instructions
+- **Open Preview**: Direct preview in new tab
 
-1. **Open the Dashboard**: Open `config.html` in your browser
-2. **Configure Player Overlay**: Use the Player tab to customize the Spotify overlay
-3. **Configure Queue Overlay**: Use the Queue tab to customize the queue display
-4. **Get URLs**: Use the Links tab to copy both overlay URLs
-5. **Add to OBS**: Add both URLs as Browser Sources in OBS
+## Usage
 
-## Player Overlay Configuration
+### Quick Start
+1. Open `index.html` in your browser
+2. Configure your Player settings in the left panel
+3. Switch to Queue tab to configure queue display
+4. Copy the generated URLs to use in OBS
 
-### Layout Options
-- **Record**: Vinyl record style with spinning animation
-- **Card**: Album cover with text overlay
-- **Bar**: Minimal horizontal layout
-- **Stacked**: Centered layout with album art
-- **Compact**: Mini version for small spaces
-- **Wide**: Cinematic wide layout
-- **Split**: Dual-panel layout
-- **Floating**: Overlay-style positioning
-- **Corner**: Tiny corner display
-- **Ticker**: Scrolling text layout
+### Player Configuration
+1. **Basics**: Set your base URL (auto-filled for GitHub Pages)
+2. **Layout & Style**: Choose layout type and media position
+3. **Visual**: Customize colors, background, and effects
+4. **Advanced**: Adjust sizing, positioning, and behavior
+5. **Links**: Copy the generated Player URL
 
-### Themes
-- Spotify, OBS Dark, Minimal, Neon, Gaming, Lo-Fi, Retro Wave, Elegant, Cyberpunk, Sunset, Ocean, Forest, Midnight, Aurora, Gradient, Monochrome, Party, Cozy, Focus
+### Queue Configuration
+1. **Queue Behavior**: Set max items and connection settings
+2. **Queue Styling**: Customize colors and layout options
+3. **Queue URL**: Copy the generated Queue URL
 
-### Elements
-- Status pill, Progress bar, Time display, Title, Artist, Next track preview
-- Text scrolling, Auto-accent from album art, Marquee speed control
-
-## Queue Overlay Configuration
-
-### Behavior
-- **Queue Max**: Number of items to display (0-20, default: 5)
-- **Show Artists**: Toggle artist names display
-- **WebSocket URL**: Connection endpoint (default: ws://localhost:5173)
-- **Poll Interval**: HTTP fallback interval in milliseconds (min: 3000, default: 15000)
-
-### WebSocket Connection
-The queue overlay automatically connects to your local Queuefy server:
-- **Default URL**: `ws://localhost:5173`
-- **Custom URL**: Use `?ws=ws://your-server:port` parameter
-- **Socket.IO**: Uses Socket.IO client for reliable WebSocket communication
-- **Event**: Listens for `queue:update` events with track data
-- **Fallback**: HTTP polling if WebSocket connection fails
-- **Demo Mode**: Use `?demo=true` for static demo data without connection
-
-### Styling
-- **Theme**: Minimal, OBS Dark, Elegant presets
-- **Card Radius**: Corner radius in pixels
-- **Card Shadow**: Toggle drop shadow
-- **Item Gap**: Vertical spacing between items
-- **Colors**: Card background, text, and muted colors
-- **Typography**: Title size, artist size, font family, uppercase toggle
-- **Alignment**: Left, center, or right alignment
-
-## OBS Setup
-
-1. **Player Overlay**: Add the Player URL as a Browser Source
-2. **Queue Overlay**: Add the Queue URL as a second Browser Source
-3. **Positioning**: Arrange both overlays as desired in your scene
-4. **Testing**: Use demo mode to test without Spotify connection
-
-## Queuefy App Integration
-
-The Queue overlay connects to a local Queuefy app running on the streaming PC:
-
-- **WebSocket**: Real-time updates via ws://localhost:5173
-- **HTTP Fallback**: Polling via http://localhost:5173/queue.json
-- **Chat Commands**: Use !sr, !queue, !song, !skip to test functionality
+### OBS Setup
+1. Add Player URL as a Browser Source in OBS
+2. Add Queue URL as a Browser Source in OBS
+3. Use chat commands (!sr, !queue, !song, !skip) to test
 
 ## File Structure
 
 ```
-Queuefy/
-├── config.html          # Main dashboard
-├── overlay.html         # Player overlay
+queuefy/
+├── index.html          # New dashboard UI
+├── styles.css          # Design system and components
+├── app.js              # Dashboard functionality
+├── config.html         # Legacy dashboard (backup)
+├── overlay.html        # Player overlay
 ├── queue.html          # Queue overlay
-├── assets/
-│   ├── queue.css       # Queue overlay styles
-│   ├── queue.js        # Queue overlay logic
-│   ├── demo-albumcover.jpg
-│   ├── queue.css
-│   └── queue.js
-└── README.md
+├── assets/             # Images and resources
+└── README.md           # This file
 ```
 
-## Browser Compatibility
+## Design System
 
-- Modern browsers with ES6+ support
-- Local file access for testing
-- WebSocket support for real-time updates
-- LocalStorage for settings persistence
+### Color Palette
+- **Background**: `#0e1116` (dark)
+- **Panel**: `#151a21` (medium dark)
+- **Text**: `#e7ebf3` (light)
+- **Accent**: `#22c55e` (green)
+- **Muted**: `#9aa7b6` (gray)
+
+### Spacing Scale
+- `--s1`: 6px, `--s2`: 10px, `--s3`: 14px
+- `--s4`: 18px, `--s5`: 22px, `--s6`: 28px, `--s7`: 36px
+
+### Typography
+- **System Font Stack**: System UI, Inter, Arial
+- **Line Height**: 1.5
+- **Font Sizes**: 12px, 14px, 16px, 18px, 20px, 24px
+
+## Browser Support
+
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
 
 ## Development
 
-- No build tools required
-- Vanilla HTML/CSS/JavaScript
-- Local development server recommended for testing
-- File:// protocol works for basic functionality
+### Local Development
+```bash
+# Start local server
+python3 -m http.server 8000
+
+# Open in browser
+open http://localhost:8000
+```
+
+### Key Features Maintained
+- ✅ All existing functionality preserved
+- ✅ URL parameter schema unchanged
+- ✅ Same default values and behavior
+- ✅ No external dependencies
+- ✅ Vanilla HTML, CSS, and JavaScript
+
+### New Features Added
+- 🎨 Modern, accessible UI design
+- 📱 Responsive layout for all devices
+- 🧭 Improved navigation and organization
+- 🔄 Real-time preview updates
+- 📋 Enhanced copy/paste functionality
+- 🎯 Better visual feedback and status indicators
+
+## License
+
+MIT License - see LICENSE file for details.

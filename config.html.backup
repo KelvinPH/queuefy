@@ -1,0 +1,2202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Queuefy Configurator</title>
+  <style>
+    /* CSS Reset */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    
+    /* CSS Variables */
+    :root {
+      /* Colors - Dark Theme */
+      --bg-primary: #0a0a0a;
+      --bg-secondary: #1a1a1a;
+      --bg-tertiary: #2a2a2a;
+      --border: #333333;
+      --border-hover: #444444;
+      --text-primary: #ffffff;
+      --text-secondary: #b0b0b0;
+      --text-muted: #666666;
+      --accent: #1db954;
+      --accent-hover: #1ed760;
+      --success: #34c759;
+      --warning: #ff9500;
+      --danger: #ff3b30;
+      
+      /* Spacing */
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 12px;
+      --space-lg: 16px;
+      --space-xl: 20px;
+      --space-2xl: 24px;
+      --space-3xl: 32px;
+      
+      /* Typography */
+      --font-size-xs: 12px;
+      --font-size-sm: 14px;
+      --font-size-md: 16px;
+      --font-size-lg: 20px;
+      --font-size-xl: 24px;
+      --font-size-2xl: 28px;
+      
+      /* Border Radius */
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      
+      /* Shadows */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.4);
+      --shadow-lg: 0 10px 15px rgba(0,0,0,0.5);
+      
+      /* Color Picker Enhancements */
+      --color-picker-size: 60px;
+      --color-picker-border: 3px;
+    }
+    
+    /* Base Styles */
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: var(--font-size-md);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* Layout */
+    .dashboard {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Header */
+    .header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      padding: var(--space-2xl) var(--space-3xl);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(20px);
+    }
+    
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .header h1 {
+      font-size: var(--font-size-xl);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2xl);
+    }
+    
+    .demo-toggle {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      cursor: pointer;
+      font-weight: 500;
+      font-size: var(--font-size-sm);
+      color: var(--text-primary);
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: var(--space-md);
+      align-items: center;
+    }
+    
+    /* Main Content */
+    .main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: var(--space-3xl);
+      display: grid;
+      grid-template-columns: 520px 1fr;
+      gap: var(--space-3xl);
+      flex: 1;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-2xl);
+      height: fit-content;
+      position: sticky;
+      top: 116px;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .sidebar-content {
+      overflow-y: auto;
+      overflow-x: hidden;
+      max-height: calc(100vh - 280px);
+    }
+    
+    .sidebar-content::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .sidebar-content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .sidebar-content::-webkit-scrollbar-thumb {
+      background: var(--border-hover);
+      border-radius: 3px;
+    }
+    
+    .sidebar-content::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+    
+    /* Navigation */
+    .nav-tabs {
+      display: flex;
+      gap: var(--space-xs);
+      background: var(--bg-tertiary);
+      padding: var(--space-xs);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      margin-bottom: var(--space-2xl);
+    }
+    
+    .nav-tab {
+      appearance: none;
+      border: none;
+      background: transparent;
+      padding: var(--space-md) var(--space-lg);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      flex: 1;
+      text-align: center;
+    }
+    
+    .nav-tab.active {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-sm);
+      font-weight: 600;
+    }
+    
+    .nav-tab:hover:not(.active) {
+      color: var(--text-primary);
+      background: var(--bg-tertiary);
+    }
+    
+    /* Sub-tabs */
+    .sub-tabs {
+      display: flex;
+      gap: var(--space-xs);
+      background: var(--bg-tertiary);
+      padding: var(--space-xs);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      margin-bottom: var(--space-2xl);
+    }
+    
+    .sub-tab {
+      appearance: none;
+      border: none;
+      background: transparent;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-xs);
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      flex: 1;
+      text-align: center;
+    }
+    
+    .sub-tab.active {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-sm);
+      font-weight: 600;
+    }
+    
+    .sub-tab:hover:not(.active) {
+      color: var(--text-primary);
+      background: var(--bg-tertiary);
+    }
+    
+    /* Tab Panels */
+    .tab-panel {
+      display: none;
+      gap: var(--space-2xl);
+    }
+    
+    .tab-panel.active {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .sub-panel {
+      display: none;
+      gap: var(--space-2xl);
+    }
+    
+    .sub-panel.active {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Cards */
+    .card {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+    
+    .card:hover {
+      box-shadow: var(--shadow-md);
+    }
+    
+    .card-header {
+      padding: var(--space-2xl) var(--space-2xl) 0 var(--space-2xl);
+      border-bottom: 1px solid var(--border);
+      margin-bottom: var(--space-2xl);
+    }
+    
+    .card-title {
+      margin: 0 0 var(--space-lg) 0;
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+    
+    .card-title::before {
+      content: '';
+      width: 4px;
+      height: 20px;
+      background: linear-gradient(135deg, var(--accent), var(--success));
+      border-radius: 2px;
+    }
+    
+    .card-description {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+    
+    .card-body {
+      padding: 0 var(--space-2xl) var(--space-2xl) var(--space-2xl);
+    }
+    
+    /* Form Elements */
+    .form-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xl);
+      margin-bottom: var(--space-3xl);
+    }
+    
+    .form-section:last-child {
+      margin-bottom: 0;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+    
+    .form-label {
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    
+    .form-input, .form-select {
+      width: 100%;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-md);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      font-size: var(--font-size-sm);
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+    
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.1);
+      background: var(--bg-tertiary);
+    }
+    
+    /* Range Inputs */
+    .range-group {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    
+    .range-input {
+      flex: 1;
+      height: 6px;
+      background: var(--bg-secondary);
+      border-radius: 3px;
+      outline: none;
+      -webkit-appearance: none;
+      border: 1px solid var(--border);
+    }
+    
+    .range-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.15s ease;
+      border: 2px solid var(--bg-secondary);
+    }
+    
+    .range-input::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .range-value {
+      background: var(--bg-secondary);
+      padding: 4px 8px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      color: var(--accent);
+      min-width: 50px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    
+    /* Toggle Switches */
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-md) 0;
+    }
+    
+    .toggle {
+      appearance: none;
+      width: 52px;
+      height: 28px;
+      background: var(--border);
+      border-radius: 14px;
+      position: relative;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+    }
+    
+    .toggle:checked {
+      background: var(--accent);
+    }
+    
+    .toggle::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .toggle:checked::after {
+      left: 26px;
+    }
+    
+    /* Color Picker */
+    .color-picker {
+      width: var(--color-picker-size);
+      height: var(--color-picker-size);
+      border: var(--color-picker-border) solid var(--border);
+      padding: 0;
+      border-radius: var(--radius-md);
+      background: var(--bg-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .color-picker:hover {
+      border-color: var(--accent);
+      transform: scale(1.05);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .color-picker:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.3);
+    }
+    
+    /* Enhanced color section styling */
+    #colorsBlock, #queueColorsBlock {
+      background: rgba(29, 185, 84, 0.05);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin-top: var(--space-md);
+      border: 1px solid rgba(29, 185, 84, 0.1);
+    }
+    
+    #colorsBlock.muted, #queueColorsBlock.muted {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    
+    /* Preset Grid */
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: var(--space-sm);
+      margin-top: var(--space-md);
+    }
+    
+    .preset-btn {
+      padding: 10px 12px;
+      font-size: var(--font-size-xs);
+      font-weight: 500;
+    }
+    
+    /* URL Display */
+    .url-display {
+      font-family: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      padding: var(--space-lg);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      overflow: auto;
+      font-size: var(--font-size-sm);
+      line-height: 1.4;
+      word-break: break-all;
+      min-height: 60px;
+    }
+    
+    /* Badge */
+    .badge {
+      font-size: var(--font-size-xs);
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    
+    /* Helper Text */
+    .helper-text {
+      font-size: var(--font-size-xs);
+      color: var(--text-muted);
+      margin-top: var(--space-xs);
+    }
+    
+    /* Muted State */
+    .muted {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    
+    /* Disabled State */
+    .disabled {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+    
+    .disabled .form-label {
+      color: var(--text-muted);
+    }
+    
+    .disabled .toggle {
+      background: var(--text-muted);
+      cursor: not-allowed;
+    }
+    
+    .disabled .form-select {
+      background: var(--bg-primary);
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
+    
+    .disabled .range-input {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+    
+    /* Buttons */
+    .btn {
+      appearance: none;
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 500;
+      padding: var(--space-md) var(--space-xl);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: var(--font-size-sm);
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-family: inherit;
+    }
+    
+    .btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .btn-secondary {
+      background: var(--success);
+    }
+    
+    .btn-secondary:hover {
+      background: #28a745;
+    }
+    
+    .btn-outline {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+    
+    .btn-outline:hover {
+      background: var(--bg-secondary);
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+      transform: none;
+    }
+    
+    .btn-sm {
+      padding: var(--space-sm) var(--space-md);
+      font-size: var(--font-size-xs);
+    }
+    
+    /* Preview Area */
+    .preview-area {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      min-height: 600px;
+    }
+    
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-xl) var(--space-2xl);
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .preview-title {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0;
+    }
+    
+    .preview-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      margin: var(--space-xs) 0 0 0;
+    }
+    
+    .preview-content {
+      padding: var(--space-xl);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xl);
+      flex: 1;
+    }
+    
+    .preview-iframe {
+      width: 100%;
+      height: 400px;
+      border: none;
+      border-radius: var(--radius-md);
+      background: #000;
+      min-height: 400px;
+      transition: opacity 0.2s ease;
+    }
+    
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: var(--space-2xl) 0;
+    }
+    
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .main {
+        grid-template-columns: 1fr;
+        gap: var(--space-2xl);
+      }
+      
+      .sidebar {
+        position: static;
+      }
+      
+      .preview-area {
+        min-height: 400px;
+      }
+      
+      .preview-iframe {
+        height: 300px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .header {
+        padding: var(--space-xl) var(--space-lg);
+      }
+      
+      .main {
+        padding: var(--space-lg);
+      }
+      
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .preset-grid {
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      }
+      
+      .range-group {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-sm);
+      }
+      
+      .range-value {
+        align-self: center;
+        min-width: 60px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <header class="header">
+      <div class="header-content">
+        <h1>Queuefy Configurator</h1>
+        <div class="header-controls">
+          <div class="demo-toggle">
+            <label class="toggle-label">
+              <input id="demo" type="checkbox" class="toggle" checked/>
+              <span class="toggle-text">Demo Mode</span>
+            </label>
+          </div>
+          <div class="header-actions">
+            <button id="copy" class="btn btn-sm">Copy URL</button>
+            <button id="open" class="btn-secondary btn-sm">Open Preview</button>
+            <button id="reset" class="btn-outline btn-sm">Reset</button>
+          </div>
+        </div>
+      </div>
+    </header>
+    
+    <main class="main">
+      <aside class="sidebar">
+        <nav class="nav-tabs" role="tablist">
+          <button class="nav-tab active" data-tab="player" role="tab" aria-selected="true">Player</button>
+          <button class="nav-tab" data-tab="queue" role="tab" aria-selected="false">Queue</button>
+        </nav>
+        
+        <div class="sidebar-content">
+          <!-- Player Tab Panel -->
+          <div class="tab-panel active" id="player-tab" role="tabpanel">
+            <div class="sub-tabs" role="tablist">
+              <button class="sub-tab active" data-subtab="basics" role="tab" aria-selected="true">Basics</button>
+              <button class="sub-tab" data-subtab="links" role="tab" aria-selected="false">Links</button>
+            </div>
+            
+            <!-- Player Basics Sub-panel -->
+            <div class="sub-panel active" id="player-basics">
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="card-title">Quick Start</h2>
+                  <p class="card-description">Configure your player overlay with quick presets and basic settings</p>
+                </div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="form-group">
+                      <label class="form-label">Base URL</label>
+                      <input id="base" class="form-input" type="url" placeholder="https://<user>.github.io/queuefy/overlay.html" value="https://kelvinph.github.io/queuefy/overlay.html"/>
+                    </div>
+                    
+                    
+                    
+                                         <div class="form-group">
+                       <label class="form-label">Generated Player URL</label>
+                       <div id="url" class="url-display"></div>
+                       <div class="badge">Add this URL to OBS → Browser Source</div>
+
+                     </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="card-title">Layout & Style</h2>
+                  <p class="card-description">Configure the basic layout and appearance</p>
+                </div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Layout</label>
+                        <select id="layout" class="form-select">
+                          <option value="record">Record (Vinyl) - Classic spinning vinyl with tonearm</option>
+                          <option value="card">Card (Cover) - Album art card layout</option>
+                          <option value="bar">Bar (Minimal) - Text-only minimal bar</option>
+                          <option value="stacked">Stacked (Center) - Centered stacked layout</option>
+                          <option value="compact">Compact (Mini) - Small compact layout</option>
+                          <option value="wide">Wide (Cinematic) - Wide cinematic layout</option>
+                          <option value="split">Split (Dual) - Split media and text</option>
+                          <option value="floating">Floating (Overlay) - Floating overlay panel</option>
+                          <option value="corner">Corner (Tiny) - Small corner overlay</option>
+                          <option value="ticker">Ticker (Scroll) - Scrolling ticker bar</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Media Position</label>
+                        <select id="align" class="form-select">
+                          <option value="left">Left</option>
+                          <option value="right">Right</option>
+                          <option value="center">Center</option>
+                          <option value="top">Top</option>
+                          <option value="bottom">Bottom</option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                                         <div class="form-row">
+                       <div class="form-group">
+                         <label class="form-label">Accent Style</label>
+                         <select id="accentstyle" class="form-select">
+                           <option value="solid">Solid</option>
+                           <option value="glow">Glow</option>
+                           <option value="gradient">Gradient</option>
+                           <option value="pulse">Pulse</option>
+                           <option value="rainbow">Rainbow</option>
+                         </select>
+                       </div>
+
+                     </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="card-title">🎨 Colors & Custom</h2>
+                  <p class="card-description">Customize colors and visual appearance</p>
+                </div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="form-group">
+                      <label class="form-label">Color Mode</label>
+                      <select id="colorMode" class="form-select">
+                        <option value="custom">Custom Colors</option>
+                        <option value="theme">Theme (Legacy)</option>
+                      </select>
+                    </div>
+                    <div id="colorsBlock" class="form-section">
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label class="form-label">🎯 Accent Color</label>
+                          <input id="accent" type="color" class="color-picker" value="#1db954"/>
+                          <div class="helper-text">Primary accent color for highlights and progress</div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">📝 Text Color</label>
+                          <input id="text" type="color" class="color-picker" value="#eaeaea"/>
+                          <div class="helper-text">Main text color</div>
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label class="form-label">🔇 Muted Color</label>
+                          <input id="muted" type="color" class="color-picker" value="#b6bcc4"/>
+                          <div class="helper-text">Secondary text and muted elements</div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">🎨 Panel Color</label>
+                          <input id="panel" type="color" class="color-picker" value="#121212"/>
+                          <div class="helper-text">Background panel color</div>
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label class="form-label">💫 Glow Color</label>
+                          <input id="glowColor" type="color" class="color-picker" value="#00ff00"/>
+                          <div class="helper-text">Glow effect color</div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">🔄 Border Color</label>
+                          <input id="borderColor" type="color" class="color-picker" value="#ffffff"/>
+                          <div class="helper-text">Border color for elements</div>
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label class="form-label">🎭 Background</label>
+                          <select id="backgroundType" class="form-select">
+                            <option value="panel">Panel Background</option>
+                            <option value="transparent">Transparent</option>
+                          </select>
+                          <div class="helper-text">Choose between panel background or transparent</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="card-title">Background</h2>
+                  <p class="card-description">Configure background styling and transparency</p>
+                </div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="toggle-group">
+                      <label class="form-label">Transparent panel</label>
+                      <input id="transparent" type="checkbox" class="toggle"/>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Panel Opacity</label>
+                      <div class="range-group">
+                        <input id="panelAlpha" class="range-input" type="range" min="0" max="100" step="1" value="72" oninput="paOut.textContent=this.value"/>
+                        <div class="range-value"><span id="paOut">72</span>%</div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Panel Color</label>
+                      <input id="panelColor" type="color" class="color-picker" value="#121212"/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="card-title">Sizing & Positioning</h2>
+                  <p class="card-description">Adjust dimensions and positioning</p>
+                </div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="form-row">
+                                             <div class="form-group">
+                         <label class="form-label">Media Size</label>
+                         <div class="range-group">
+                           <input id="disc" class="range-input" type="range" min="120" max="360" step="2" value="200" oninput="discOut.textContent=this.value"/>
+                           <div class="range-value"><span id="discOut">200</span>px</div>
+                         </div>
+                         <div class="helper-text">Not applicable for Bar layout (no media display)</div>
+                       </div>
+                      <div class="form-group">
+                        <label class="form-label">Progress Height</label>
+                        <div class="range-group">
+                          <input id="bar" class="range-input" type="range" min="0" max="16" step="1" value="6" oninput="barOut.textContent=this.value"/>
+                          <div class="range-value"><span id="barOut">6</span>px</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Progress Width</label>
+                        <div class="range-group">
+                          <input id="progressWidth" class="range-input" type="range" min="50" max="100" step="5" value="100" oninput="progWidthOut.textContent=this.value"/>
+                          <div class="range-value"><span id="progWidthOut">100</span>%</div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Text Alignment</label>
+                        <select id="textAlign" class="form-select">
+                          <option value="auto">Auto (follows media)</option>
+                          <option value="left">Left</option>
+                          <option value="center">Center</option>
+                          <option value="right">Right</option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Corner Radius</label>
+                        <div class="range-group">
+                          <input id="radius" class="range-input" type="range" min="0" max="24" step="1" value="16" oninput="radOut.textContent=this.value"/>
+                          <div class="range-value"><span id="radOut">16</span>px</div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Blur</label>
+                        <div class="range-group">
+                          <input id="blur" class="range-input" type="range" min="0" max="16" step="1" value="8" oninput="blurOut.textContent=this.value"/>
+                          <div class="range-value"><span id="blurOut">8</span>px</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Safe Padding</label>
+                        <div class="range-group">
+                          <input id="pad" class="range-input" type="range" min="0" max="32" step="1" value="16" oninput="padOut.textContent=this.value"/>
+                          <div class="range-value"><span id="padOut">16</span>px</div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Title Outline</label>
+                        <div class="range-group">
+                          <input id="outline" class="range-input" type="range" min="0" max="2" step="1" value="0" oninput="outlineOut.textContent=this.value"/>
+                          <div class="range-value"><span id="outlineOut">0</span>px</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="card-title">Behavior</h2>
+                  <p class="card-description">Control how the player behaves</p>
+                </div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="toggle-group">
+                      <label class="form-label">Compact spacing</label>
+                      <input id="compact" type="checkbox" class="toggle"/>
+                    </div>
+                    <div class="toggle-group">
+                      <label class="form-label">Spin while playing</label>
+                      <input id="spin" type="checkbox" class="toggle" checked/>
+                    </div>
+                    <div class="toggle-group" id="labelStaticGroup">
+                      <label class="form-label">Keep label upright</label>
+                      <input id="labelStatic" type="checkbox" class="toggle"/>
+                      <div class="helper-text">Only works with Record layout</div>
+                    </div>
+                                         <div class="toggle-group">
+                       <label class="form-label">Show tonearm (record)</label>
+                       <input id="tonearm" type="checkbox" class="toggle" checked/>
+                       <div class="helper-text">Only works with Record layout</div>
+                     </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="card-title">Elements</h2>
+                  <p class="card-description">Toggle which elements to display</p>
+                </div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="toggle-group">
+                      <label class="form-label">Status pill</label>
+                      <input id="showStatus" type="checkbox" class="toggle" checked/>
+                    </div>
+                    <div class="toggle-group">
+                      <label class="form-label">Progress bar</label>
+                      <input id="showProgress" type="checkbox" class="toggle" checked/>
+                    </div>
+                    <div class="toggle-group">
+                      <label class="form-label">Time (elapsed/total)</label>
+                      <input id="showTime" type="checkbox" class="toggle" checked/>
+                    </div>
+                    <div class="toggle-group">
+                      <label class="form-label">Title</label>
+                      <input id="showTitle" type="checkbox" class="toggle" checked/>
+                    </div>
+                    <div class="toggle-group">
+                      <label class="form-label">Artist</label>
+                      <input id="showArtist" type="checkbox" class="toggle" checked/>
+                    </div>
+                                         <div class="toggle-group">
+                       <label class="form-label">Show Next (stacked)</label>
+                       <input id="showNext" type="checkbox" class="toggle"/>
+                       <div class="helper-text">Only works with Stacked layout</div>
+                     </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="card-title">Text & Motion</h2>
+                  <p class="card-description">Configure text behavior and animations</p>
+                </div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="toggle-group">
+                      <label class="form-label">Scroll long text</label>
+                      <input id="scroll" type="checkbox" class="toggle" checked/>
+                    </div>
+                    <div class="toggle-group">
+                      <label class="form-label">Auto-accent from album art</label>
+                      <input id="autoAccent" type="checkbox" class="toggle"/>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Marquee Speed</label>
+                      <div class="range-group">
+                        <input id="marq" class="range-input" type="range" min="8" max="30" step="1" value="18" oninput="marqOut.textContent=this.value"/>
+                        <div class="range-value"><span id="marqOut">18</span>s</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Player Links Sub-panel -->
+                             <div class="card">
+                 <div class="card-header">
+                   <h2 class="card-title">Typography</h2>
+                   <p class="card-description">Customize fonts and text styling</p>
+                 </div>
+                 <div class="card-body">
+                   <div class="form-section">
+                     <div class="form-row">
+                       <div class="form-group">
+                         <label class="form-label">Font</label>
+                         <select id="font" class="form-select">
+                           <option value="">System</option>
+                           <option value="inter">Inter</option>
+                           <option value="roboto">Roboto</option>
+                           <option value="mono">Mono</option>
+                         </select>
+                       </div>
+                       <div class="form-group">
+                         <label class="form-label">Text Shadow</label>
+                         <select id="shadow" class="form-select">
+                           <option value="0">Off</option>
+                           <option value="1">On</option>
+                         </select>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+
+               <div class="card">
+                 <div class="card-header">
+                   <h2 class="card-title">Background</h2>
+                   <p class="card-description">Configure background styling and transparency</p>
+                 </div>
+                 <div class="card-body">
+                   <div class="form-section">
+                     <div class="toggle-group">
+                       <label class="form-label">Transparent panel</label>
+                       <input id="transparent" type="checkbox" class="toggle"/>
+                     </div>
+                     <div class="form-group">
+                       <label class="form-label">Panel Opacity</label>
+                       <div class="range-group">
+                         <input id="panelAlpha" class="range-input" type="range" min="0" max="100" step="1" value="72" oninput="paOut.textContent=this.value"/>
+                         <div class="range-value"><span id="paOut">72</span>%</div>
+                       </div>
+                     </div>
+                     <div class="form-group">
+                       <label class="form-label">Panel Color</label>
+                       <input id="panelColor" type="color" class="color-picker" value="#121212"/>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+
+               <div class="card">
+                 <div class="card-header">
+                   <h2 class="card-title">Quick Actions</h2>
+                   <p class="card-description">One-click presets for common use cases</p>
+                 </div>
+                 <div class="card-body">
+                   <div class="form-section">
+                     <button id="transparentPreset" class="btn-outline">1-click Transparent</button>
+                   </div>
+                 </div>
+               </div>
+
+
+
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="card-title">Background</h2>
+                  <p class="card-description">Configure background styling and transparency</p>
+                </div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="form-group">
+                      <label class="form-label">Type</label>
+                      <select id="bgType" class="form-select">
+                        <option value="none">None</option>
+                        <option value="solid">Solid</option>
+                        <option value="gradient">Gradient</option>
+                        <option value="image">Image</option>
+                      </select>
+                    </div>
+                    <div id="bgSolid" class="form-group">
+                      <label class="form-label">Background Color</label>
+                      <input id="bgColor" type="color" class="color-picker" value="#121212"/>
+                    </div>
+                    <div id="bgGradient" class="form-section" style="display: none;">
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label class="form-label">Gradient Start</label>
+                          <input id="bgGradientStart" type="color" class="color-picker" value="#1db954"/>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">Gradient End</label>
+                          <input id="bgGradientEnd" type="color" class="color-picker" value="#191414"/>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Gradient Angle</label>
+                        <div class="range-group">
+                          <input id="bgGradientAngle" class="range-input" type="range" min="0" max="360" step="1" value="45" oninput="bgAngleOut.textContent=this.value"/>
+                          <div class="range-value"><span id="bgAngleOut">45</span>°</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div id="bgImage" class="form-section" style="display: none;">
+                      <div class="form-group">
+                        <label class="form-label">Image URL</label>
+                        <input id="bgImageUrl" class="form-input" type="url" placeholder="https://example.com/image.jpg"/>
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label class="form-label">Blur</label>
+                          <div class="range-group">
+                            <input id="bgImageBlur" class="range-input" type="range" min="0" max="20" step="1" value="0" oninput="bgBlurOut.textContent=this.value"/>
+                            <div class="range-value"><span id="bgBlurOut">0</span>px</div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">Opacity</label>
+                          <div class="range-group">
+                            <input id="bgImageOpacity" class="range-input" type="range" min="0" max="1" step="0.1" value="1" oninput="bgOpacityOut.textContent=this.value"/>
+                            <div class="range-value"><span id="bgOpacityOut">1</span></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Player Links Sub-panel -->
+            <div class="sub-panel" id="player-links">
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="card-title">OBS URLs</h2>
+                  <p class="card-description">Copy these URLs to add as Browser Sources in OBS</p>
+                </div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="form-group">
+                      <label class="form-label">Player URL</label>
+                      <div id="playerUrl" class="url-display"></div>
+                      <div class="badge">Add this URL to OBS → Browser Source</div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Queue URL</label>
+                      <div id="queueUrlLinks" class="url-display"></div>
+                      <div class="badge">Add this URL to OBS → Browser Source</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="card-title">How to Use</h2>
+                  <p class="card-description">Step-by-step setup instructions</p>
+                </div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="form-group">
+                      <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
+                        <li>Run Queuefy app on streaming PC</li>
+                        <li>Add Player URL to OBS (Browser Source)</li>
+                        <li>Add Queue URL to OBS (Browser Source)</li>
+                        <li>Use chat commands (!sr, !queue, !song, !skip) to test</li>
+                      </ol>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Queue Tab Panel -->
+          <div class="tab-panel" id="queue-tab" role="tabpanel">
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">Queue Behavior</h2>
+                <p class="card-description">Configure how the queue overlay behaves and connects to your server</p>
+              </div>
+              <div class="card-body">
+                <div class="form-section">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label">Queue Max (items)</label>
+                      <input id="queueMax" class="form-input" type="number" min="0" max="20" value="5">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Show Artists</label>
+                      <select id="showArtists" class="form-select">
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label">WebSocket URL</label>
+                      <input id="ws" class="form-input" placeholder="ws://localhost:5173" value="ws://localhost:5173">
+                      <div class="helper-text">Default: ws://localhost:5173 - connects to your local Queuefy server</div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Poll Interval (ms)</label>
+                      <input id="pollMs" class="form-input" type="number" min="3000" value="15000">
+                      <div class="helper-text">HTTP fallback interval if WebSocket fails</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">🎨 Queue Colors & Custom</h2>
+                <p class="card-description">Customize colors and visual appearance of the queue</p>
+              </div>
+              <div class="card-body">
+                <div class="form-section">
+                  <div class="form-group">
+                    <label class="form-label">Color Mode</label>
+                    <select id="queueColorMode" class="form-select">
+                      <option value="custom">Custom Colors</option>
+                      <option value="theme">Theme (Legacy)</option>
+                    </select>
+                  </div>
+                  
+                  <div id="queueColorsBlock" class="form-section">
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">🎯 Accent Color</label>
+                        <input id="queueAccent" type="color" class="color-picker" value="#1db954"/>
+                        <div class="helper-text">Primary accent color for highlights</div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">📝 Text Color</label>
+                        <input id="queueText" type="color" class="color-picker" value="#ffffff"/>
+                        <div class="helper-text">Main text color</div>
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">🔇 Muted Color</label>
+                        <input id="queueMuted" type="color" class="color-picker" value="#cfcfcf"/>
+                        <div class="helper-text">Secondary text and muted elements</div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">🎨 Card Color</label>
+                        <input id="queueCard" type="color" class="color-picker" value="#000000"/>
+                        <div class="helper-text">Background color for queue items</div>
+                      </div>
+                    </div>
+                                          <div class="form-row">
+                        <div class="form-group">
+                          <label class="form-label">💫 Glow Color</label>
+                          <input id="queueGlowColor" type="color" class="color-picker" value="#00ff00"/>
+                          <div class="helper-text">Glow effect color</div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">🔄 Border Color</label>
+                          <input id="queueBorderColor" type="color" class="color-picker" value="#ffffff"/>
+                          <div class="helper-text">Border color for queue items</div>
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label class="form-label">🎭 Background</label>
+                          <select id="queueBackgroundType" class="form-select">
+                            <option value="card">Card Background</option>
+                            <option value="transparent">Transparent</option>
+                          </select>
+                          <div class="helper-text">Choose between card background or transparent</div>
+                        </div>
+                      </div>
+                  </div>
+                  
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label">Layout</label>
+                      <select id="queueLayout" class="form-select">
+                        <option value="list">List - Standard vertical list</option>
+                        <option value="grid">Grid - Responsive grid layout</option>
+                        <option value="cards">Cards - Card-style layout</option>
+                        <option value="compact">Compact - Minimal spacing</option>
+                        <option value="minimal">Minimal - No background/borders</option>
+                        <option value="slider">Vertical Slider - Scrollable list</option>
+                        <option value="ticker">Horizontal Ticker - Side-scrolling</option>
+                        <option value="masonry">Masonry - Pinterest-style grid</option>
+                        <option value="timeline">Timeline - Timeline with dots</option>
+                        <option value="carousel">Carousel - Horizontal carousel</option>
+                        <option value="stack">Stack - Stacked card effect</option>
+                      </select>
+                    </div>
+                  </div>
+                     <div class="form-row">
+                       <div class="form-group">
+                         <label class="form-label">Card Radius</label>
+                         <div class="range-group">
+                           <input id="queueRadius" class="range-input" type="range" min="4" max="28" step="1" value="12" oninput="queueRadiusOut.textContent=this.value"/>
+                           <div class="range-value"><span id="queueRadiusOut">12</span>px</div>
+                         </div>
+                       </div>
+                       <div class="form-group">
+                         <label class="form-label">Slider Height</label>
+                         <div class="range-group">
+                           <input id="queueSliderHeight" class="range-input" type="range" min="200" max="800" step="50" value="400" oninput="queueSliderHeightOut.textContent=this.value"/>
+                           <div class="range-value"><span id="queueSliderHeightOut">400</span>px</div>
+                         </div>
+                         <div class="helper-text">Only applies to Vertical Slider layout</div>
+                       </div>
+                     </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label">Card Shadow</label>
+                      <select id="queueShadow" class="form-select">
+                        <option value="none">None</option>
+                        <option value="soft">Soft</option>
+                        <option value="medium">Medium</option>
+                        <option value="strong">Strong</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Item Gap</label>
+                      <div class="range-group">
+                        <input id="queueGap" class="range-input" type="range" min="0" max="24" step="1" value="6" oninput="queueGapOut.textContent=this.value"/>
+                        <div class="range-value"><span id="queueGapOut">6</span>px</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">Generated Queue URL</h2>
+                <p class="card-description">Copy this URL to add as a Browser Source in OBS</p>
+              </div>
+              <div class="card-body">
+                <div class="form-section">
+                  <div class="form-group">
+                    <label class="form-label">Queue URL</label>
+                    <div id="queueUrl" class="url-display"></div>
+                    <div style="display: flex; gap: 8px; margin-top: 8px;">
+                      <button id="copyQueueUrl" class="btn btn-sm" style="flex-shrink: 0;">📋 Copy Queue URL</button>
+                      <div class="badge" style="flex: 1; display: flex; align-items: center;">Paste this URL into OBS → Browser Source</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+      
+      <section class="preview-area">
+        <div class="preview-header">
+          <div>
+            <h2 class="preview-title">Live Previews</h2>
+            <p class="preview-subtitle">Player preview connects to real Spotify when Demo Mode is off; Queue preview shows sample data in Demo Mode and real data otherwise (requires local Queuefy server)</p>
+          </div>
+          <div class="badge">Resize to test different scales</div>
+        </div>
+        <div class="preview-content">
+          <!-- Player preview -->
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px;margin-bottom:8px;">
+              <div class="preview-title" style="font-size:16px;margin:0;">Player Preview</div>
+              <div class="badge" id="demoStatus">Turn off demo mode to connect to Spotify</div>
+            </div>
+            <iframe id="preview" class="preview-iframe" src="" allow="clipboard-read; clipboard-write" loading="lazy"></iframe>
+          </div>
+          
+          <!-- Queue preview -->
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px;margin-bottom:8px;">
+              <div class="preview-title" style="font-size:16px;margin:0;">Queue Preview</div>
+              <div class="badge" id="queuePreviewStatus">🎯 Live preview with demo data - shows exactly how it will look in OBS</div>
+            </div>
+            <iframe id="queuePreview" class="preview-iframe" src="" allow="clipboard-read; clipboard-write" loading="lazy"></iframe>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+
+  <script>
+    // Element references - will be initialized after DOM loads
+    const $ = id => document.getElementById(id);
+    let els = {};
+    
+    function initializeElements() {
+      els = {
+        // Player elements
+        base: $('base'), layout: $('layout'), align: $('align'), accentstyle: $('accentstyle'),
+        colorMode: $('colorMode'), accent: $('accent'), text: $('text'), muted: $('muted'), panel: $('panel'), glowColor: $('glowColor'), borderColor: $('borderColor'), backgroundType: $('backgroundType'),
+        disc: $('disc'), bar: $('bar'), progressWidth: $('progressWidth'), textAlign: $('textAlign'),
+        radius: $('radius'), blur: $('blur'), pad: $('pad'), outline: $('outline'),
+        compact: $('compact'), spin: $('spin'), labelStatic: $('labelStatic'), tonearm: $('tonearm'),
+        showStatus: $('showStatus'), showProgress: $('showProgress'), showTime: $('showTime'), 
+        showTitle: $('showTitle'), showArtist: $('showArtist'), showNext: $('showNext'),
+        scroll: $('scroll'), autoAccent: $('autoAccent'), marq: $('marq'),
+
+        font: $('font'), shadow: $('shadow'), colorMode: $('colorMode'), accent: $('accent'), text: $('text'), muted: $('muted'),
+        transparent: $('transparent'), panelAlpha: $('panelAlpha'), panelColor: $('panelColor'),
+        
+        // Queue elements
+        queueMax: $('queueMax'), showArtists: $('showArtists'), ws: $('ws'), pollMs: $('pollMs'),
+        queueColorMode: $('queueColorMode'), queueAccent: $('queueAccent'), queueText: $('queueText'), queueMuted: $('queueMuted'), queueCard: $('queueCard'), queueGlowColor: $('queueGlowColor'), queueBorderColor: $('queueBorderColor'), queueBackgroundType: $('queueBackgroundType'),
+        queueLayout: $('queueLayout'), queueRadius: $('queueRadius'), queueShadow: $('queueShadow'), queueGap: $('queueGap'), queueSliderHeight: $('queueSliderHeight'),
+        
+        // UI elements
+        demo: $('demo'), url: $('url'), copy: $('copy'), open: $('open'), reset: $('reset'), preview: $('preview'),
+        colorsBlock: $('colorsBlock'), queuePreview: $('queuePreview'), queueUrl: $('queueUrl'),
+        playerUrl: $('playerUrl'), queueUrlLinks: $('queueUrlLinks'), copyQueueUrl: $('copyQueueUrl'),
+        transparentPreset: $('transparentPreset')
+      };
+      
+      console.log('Elements initialized:', {
+        showStatus: els.showStatus,
+        disc: els.disc,
+        compact: els.compact,
+        scroll: els.scroll
+      });
+    }
+
+    // Default configuration
+    const defaultConfig = {
+      layout: 'record',
+      align: 'left',
+      
+              accentstyle: 'solid',
+        colorMode: 'custom',
+        accent: '#1db954',
+        text: '#eaeaea',
+        muted: '#b6bcc4',
+        panel: '#121212',
+        glowColor: '#00ff00',
+        borderColor: '#ffffff',
+        backgroundType: 'panel',
+      disc: 200,
+      progressWidth: 100,
+      textAlign: 'auto',
+      compact: 0,
+      spin: 1,
+      labelStatic: 0,
+      tonearm: 1,
+      showStatus: 1,
+      showProgress: 1,
+      showTime: 1,
+      showTitle: 1,
+      showArtist: 1,
+      showNext: 0,
+      
+    };
+
+    // State management
+    function setState(s) {
+      for(const k in s) {
+        if(els[k] && 'value' in els[k]) els[k].value = s[k];
+        if(els[k] && 'checked' in els[k]) els[k].checked = !!s[k];
+      }
+      render();
+    }
+
+    function getState() {
+      return {
+        // Player state
+        base: els.base.value.trim(),
+        layout: els.layout?.value || 'record', 
+        align: els.align?.value || 'left', 
+   
+        accentstyle: els.accentstyle?.value || 'solid',
+        disc: els.disc?.value || '200', 
+        bar: els.bar?.value || '6', 
+        progressWidth: els.progressWidth?.value || '100', 
+        textAlign: els.textAlign?.value || 'auto',
+        radius: els.radius?.value || '16', 
+        blur: els.blur?.value || '8', 
+        pad: els.pad?.value || '16', 
+        outline: els.outline?.value || '0',
+        compact: +(els.compact?.checked || false), 
+        spin: +(els.spin?.checked || true), 
+        labelStatic: +(els.labelStatic?.checked || false), 
+        tonearm: +(els.tonearm?.checked || true),
+        showStatus: +(els.showStatus?.checked || false), 
+        showProgress: +(els.showProgress?.checked || false), 
+        showTime: +(els.showTime?.checked || false), 
+        showTitle: +(els.showTitle?.checked || false), 
+        showArtist: +(els.showArtist?.checked || false), 
+        showNext: +(els.showNext?.checked || false),
+        scroll: +(els.scroll?.checked || false), 
+        autoAccent: +(els.autoAccent?.checked || false), 
+        marq: els.marq?.value || '18',
+
+        font: els.font?.value || '', 
+        shadow: els.shadow?.value || '1', 
+        colorMode: els.colorMode?.value || 'theme', 
+        accent: els.accent?.value || '#1db954', 
+        text: els.text?.value || '#eaeaea', 
+        muted: els.muted?.value || '#b6bcc4',
+        transparent: +(els.transparent?.checked || false), 
+        panelAlpha: els.panelAlpha?.value || '72', 
+        panelColor: els.panelColor?.value || '#121212',
+        
+        // Queue state
+        queueMax: els.queueMax?.value || '5',
+        showArtists: els.showArtists?.value || 'true',
+        ws: els.ws?.value || 'ws://localhost:5173',
+        pollMs: els.pollMs?.value || '15000',
+  
+        queueLayout: els.queueLayout?.value || 'list',
+        queueColorMode: els.queueColorMode?.value || 'custom',
+        queueAccent: els.queueAccent?.value || '#1db954',
+        queueText: els.queueText?.value || '#ffffff',
+        queueMuted: els.queueMuted?.value || '#cfcfcf',
+        queueCard: els.queueCard?.value || '#000000',
+        queueGlowColor: els.queueGlowColor?.value || '#00ff00',
+        queueBorderColor: els.queueBorderColor?.value || '#ffffff',
+        queueBackgroundType: els.queueBackgroundType?.value || 'card',
+        queueRadius: els.queueRadius?.value || '12',
+        queueShadow: els.queueShadow?.value || 'soft',
+        queueGap: els.queueGap?.value || '6',
+        queueSliderHeight: els.queueSliderHeight?.value || '400',
+        
+                 // UI state
+         demo: +(els.demo.checked)
+       };
+     }
+
+     // URL building functions
+     function buildPlayerURL() {
+       const s = getState();
+       if(!s.base) return '';
+       const q = new URLSearchParams();
+
+       if(s.layout && s.layout !== 'record') q.set('layout', s.layout);
+       if(s.align && s.align !== 'left') q.set('align', s.align);
+ 
+       if(s.accentstyle && s.accentstyle !== 'solid') q.set('accentstyle', s.accentstyle);
+       if(s.disc) q.set('disc', s.disc);
+       if(s.bar) q.set('bar', s.bar);
+       if(s.progressWidth && s.progressWidth !== '100') q.set('progresswidth', s.progressWidth);
+       if(s.textAlign && s.textAlign !== 'auto') q.set('textalign', s.textAlign);
+       if(s.radius) q.set('radius', s.radius);
+       if(s.blur) q.set('blur', s.blur);
+       if(s.pad) q.set('pad', s.pad);
+       if(s.outline) q.set('outline', s.outline);
+       if(s.compact) q.set('compact','1');
+       if(!s.spin) q.set('spin','0');
+       if(s.labelStatic) q.set('label','static');
+       if(!s.tonearm) q.set('tonearm','0');
+       q.set('showstatus', s.showStatus ? '1' : '0');
+       q.set('showprogress', s.showProgress ? '1' : '0');
+       q.set('showtime', s.showTime ? '1' : '0');
+       q.set('title', s.showTitle ? '1' : '0');
+       q.set('artist', s.showArtist ? '1' : '0');
+       if(s.showNext) q.set('next','1');
+       q.set('scroll', s.scroll ? '1' : '0');
+       if(s.autoAccent) q.set('autoaccent','1');
+       q.set('marq', s.marq);
+
+
+       if(s.font) q.set('font', s.font);
+       if(s.shadow === '0') q.set('shadow','0');
+       if(s.colorMode === 'custom'){
+         if(s.accent) q.set('accent', s.accent);
+         if(s.text) q.set('text', s.text);
+         if(s.muted) q.set('muted', s.muted);
+         if(s.panel) q.set('panel', s.panel);
+         if(s.glowColor) q.set('glowColor', s.glowColor);
+         if(s.borderColor) q.set('borderColor', s.borderColor);
+       }
+       
+       // Handle background type
+       if(s.backgroundType === 'transparent') {
+         q.set('transparent', '1');
+       }
+       if(s.transparent) q.set('transparent','1');
+       else {
+         const hexToRgb = hex => {
+           const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex) || [];
+           return {r:parseInt(m[1]||'00',16), g:parseInt(m[2]||'00',16), b:parseInt(m[3]||'00',16)};
+         };
+         const {r,g,b} = hexToRgb(s.panelColor);
+         const a = Math.max(0,Math.min(100,parseInt(s.panelAlpha||'72',10)))/100;
+         q.set('panel', `rgba(${r},${g},${b},${a})`);
+       }
+
+       const sep = s.base.includes('?') ? '&' : '?';
+       const finalUrl = s.base + (q.toString() ? sep + q.toString() : '');
+       console.log('Built player URL with params:', q.toString());
+
+
+       return finalUrl;
+     }
+
+     function buildQueueURL() {
+       const s = getState();
+       if(!s.base) return '';
+       
+       // swap overlay.html → queue.html (same folder)
+       const u = new URL(s.base);
+       u.pathname = u.pathname.replace(/overlay\.html$/,'queue.html');
+       const q = new URLSearchParams();
+       
+       // Behavior params
+       if(s.queueMax && s.queueMax !== '5') q.set('queueMax', s.queueMax);
+       if(s.showArtists === 'false') q.set('showArtists', 'false');
+       if(s.ws && s.ws !== 'ws://localhost:5173') q.set('ws', s.ws);
+       if(s.pollMs && s.pollMs !== '15000') q.set('pollMs', s.pollMs);
+       
+       // Styling params
+       if(s.queueColorMode === 'custom'){
+         if(s.queueAccent) q.set('accent', s.queueAccent);
+         if(s.queueText) q.set('text', s.queueText);
+         if(s.queueMuted) q.set('muted', s.queueMuted);
+         if(s.queueCard) q.set('card', s.queueCard);
+         if(s.queueGlowColor) q.set('glowColor', s.queueGlowColor);
+         if(s.queueBorderColor) q.set('borderColor', s.queueBorderColor);
+       }
+       
+       // Handle queue background type
+       if(s.queueBackgroundType === 'transparent') {
+         q.set('transparent', '1');
+       }
+ 
+       if(s.queueLayout && s.queueLayout !== 'list') q.set('layout', s.queueLayout);
+       if(s.queueRadius && s.queueRadius !== '12') q.set('radius', s.queueRadius);
+       if(s.queueShadow && s.queueShadow !== 'soft') q.set('shadow', s.queueShadow);
+       if(s.queueGap && s.queueGap !== '6') q.set('gap', s.queueGap);
+       if(s.queueSliderHeight && s.queueSliderHeight !== '400') q.set('sliderHeight', s.queueSliderHeight);
+       
+       return u.origin + u.pathname + (q.toString() ? '?' + q.toString() : '');
+     }
+
+     // Render function
+     function render() {
+       const s = getState();
+       
+       // Build URLs
+       const playerUrl = buildPlayerURL();
+       const queueUrl = buildQueueURL();
+       
+       // Update URL displays
+       if(els.url) els.url.textContent = playerUrl;
+       if(els.playerUrl) els.playerUrl.textContent = playerUrl;
+       if(els.queueUrl) els.queueUrl.textContent = queueUrl;
+       if(els.queueUrlLinks) els.queueUrlLinks.textContent = queueUrl;
+       
+       // Update demo status text
+       const demoStatus = document.getElementById('demoStatus');
+       if(demoStatus) {
+         demoStatus.textContent = els.demo.checked ? 
+           'Demo mode: showing sample data' : 
+           'Live mode: connecting to Spotify';
+       }
+       
+       // Update queue preview status text
+       const queuePreviewStatus = document.getElementById('queuePreviewStatus');
+       if(queuePreviewStatus) {
+         queuePreviewStatus.textContent = els.demo.checked ? 
+           '🎯 Demo mode: showing sample queue data' : 
+           '🔗 Live mode: connecting to Queuefy server (requires local server)';
+       }
+       
+       // Update player preview - always use demo data for preview
+       if(els.preview) {
+         if (playerUrl && playerUrl !== '') {
+           const previewUrl = playerUrl + (playerUrl.includes('?') ? '&' : '?') + 'demo=true&_t=' + Date.now();
+           console.log('Setting player preview URL:', previewUrl);
+           
+           // Always use demo data for preview to ensure content shows
+           els.preview.src = '';
+           setTimeout(() => {
+             els.preview.src = previewUrl;
+           }, 10);
+         } else {
+           // Fallback to local overlay.html
+           const localOverlay = new URL('overlay.html', location.href).toString();
+           console.log('Setting fallback player preview URL:', localOverlay);
+           
+           els.preview.src = '';
+           setTimeout(() => {
+             els.preview.src = localOverlay + '?demo=true&_t=' + Date.now();
+           }, 10);
+         }
+       }
+       
+       // Queue preview is now handled separately by updateQueueOnly()
+       // This prevents conflicts with player preview updates
+     }
+
+     // Event handlers
+
+
+     // Tab switching
+     document.querySelectorAll('.nav-tab').forEach(tab => {
+       tab.addEventListener('click', () => {
+         document.querySelectorAll('.nav-tab').forEach(t => {
+           t.classList.remove('active');
+           t.setAttribute('aria-selected', 'false');
+         });
+         document.querySelectorAll('.tab-panel').forEach(c => c.classList.remove('active'));
+         tab.classList.add('active');
+         tab.setAttribute('aria-selected', 'true');
+         document.getElementById(tab.dataset.tab + '-tab').classList.add('active');
+       });
+     });
+
+     // Sub-tab switching
+     document.querySelectorAll('.sub-tab').forEach(tab => {
+       tab.addEventListener('click', () => {
+         const parentPanel = tab.closest('.tab-panel');
+         parentPanel.querySelectorAll('.sub-tab').forEach(t => {
+           t.classList.remove('active');
+           t.setAttribute('aria-selected', 'false');
+         });
+         parentPanel.querySelectorAll('.sub-panel').forEach(c => c.classList.remove('active'));
+         tab.classList.add('active');
+         tab.setAttribute('aria-selected', 'true');
+         document.getElementById('player-' + tab.dataset.subtab).classList.add('active');
+       });
+     });
+
+
+
+
+
+     // Layout-specific options management
+     function updateLayoutSpecificOptions() {
+       const layout = els.layout?.value || 'record';
+       
+       // Label Static - only works with record layout
+       const labelStaticGroup = document.querySelector('.toggle-group:has(#labelStatic)');
+       if(labelStaticGroup) {
+         const isLabelStaticCompatible = layout === 'record';
+         labelStaticGroup.classList.toggle('disabled', !isLabelStaticCompatible);
+         
+         if(!isLabelStaticCompatible && els.labelStatic?.checked) {
+           els.labelStatic.checked = false;
+           render();
+         }
+       }
+       
+       // Tonearm - only works with record layout
+       const tonearmGroup = document.querySelector('.toggle-group:has(#tonearm)');
+       if(tonearmGroup) {
+         const isTonearmCompatible = layout === 'record';
+         tonearmGroup.classList.toggle('disabled', !isTonearmCompatible);
+         
+         if(!isTonearmCompatible && els.tonearm?.checked) {
+           els.tonearm.checked = false;
+           render();
+         }
+       }
+       
+       // Show Next - only works with stacked layout
+       const showNextGroup = document.querySelector('.toggle-group:has(#showNext)');
+       if(showNextGroup) {
+         const isShowNextCompatible = layout === 'stacked';
+         showNextGroup.classList.toggle('disabled', !isShowNextCompatible);
+         
+         if(!isShowNextCompatible && els.showNext?.checked) {
+           els.showNext.checked = false;
+           render();
+         }
+       }
+       
+       // Media Size (disc) - not applicable for bar layout
+       const discGroup = document.querySelector('.form-group:has(#disc)');
+       if(discGroup) {
+         const isDiscCompatible = layout !== 'bar';
+         discGroup.classList.toggle('disabled', !isDiscCompatible);
+       }
+       
+       // Progress bar - hidden for corner and ticker layouts
+       const progressGroup = document.querySelector('.toggle-group:has(#showProgress)');
+       if(progressGroup) {
+         const isProgressCompatible = !['corner', 'ticker'].includes(layout);
+         progressGroup.classList.toggle('disabled', !isProgressCompatible);
+         
+         if(!isProgressCompatible && els.showProgress?.checked) {
+           els.showProgress.checked = false;
+           render();
+         }
+       }
+       
+       // Time display - hidden for corner and ticker layouts
+       const timeGroup = document.querySelector('.toggle-group:has(#showTime)');
+       if(timeGroup) {
+         const isTimeCompatible = !['corner', 'ticker'].includes(layout);
+         timeGroup.classList.toggle('disabled', !isTimeCompatible);
+         
+         if(!isTimeCompatible && els.showTime?.checked) {
+           els.showTime.checked = false;
+           render();
+         }
+       }
+       
+       // Status pill - hidden for bar, compact, corner, and ticker layouts
+       const statusGroup = document.querySelector('.toggle-group:has(#showStatus)');
+       if(statusGroup) {
+         const isStatusCompatible = !['bar', 'compact', 'corner', 'ticker'].includes(layout);
+         statusGroup.classList.toggle('disabled', !isStatusCompatible);
+         
+         if(!isStatusCompatible && els.showStatus?.checked) {
+           els.showStatus.checked = false;
+           render();
+         }
+       }
+     }
+
+     // Queue layout-specific options management
+     function updateQueueLayoutSpecificOptions() {
+       const queueLayout = els.queueLayout?.value || 'list';
+       
+       // Slider Height - only applies to slider layout
+       const sliderHeightGroup = document.querySelector('.form-group:has(#queueSliderHeight)');
+       if(sliderHeightGroup) {
+         const isSliderHeightCompatible = queueLayout === 'slider';
+         sliderHeightGroup.classList.toggle('disabled', !isSliderHeightCompatible);
+       }
+     }
+     
+     // Update only queue-related elements without affecting player preview
+     function updateQueueOnly() {
+       const s = getState();
+       
+       // Build queue URL
+       const queueUrl = buildQueueURL();
+       
+       // Update queue URL displays
+       if(els.queueUrl) els.queueUrl.textContent = queueUrl;
+       if(els.queueUrlLinks) els.queueUrlLinks.textContent = queueUrl;
+       
+       // Update queue preview only
+       if(els.queuePreview) {
+         const localQueue = new URL('queue.html', location.href).toString();
+         const queuePreviewParams = new URLSearchParams();
+         
+         // Always include demo mode for preview
+         queuePreviewParams.set('demo', 'true');
+         
+         // Apply current queue settings to preview
+         if(s.queueMax && s.queueMax !== '5') queuePreviewParams.set('queueMax', s.queueMax);
+         if(s.showArtists === 'false') queuePreviewParams.set('showArtists', 'false');
+         
+         // Apply queue colors to preview
+         if(s.queueColorMode === 'custom'){
+           if(s.queueAccent) queuePreviewParams.set('accent', s.queueAccent);
+           if(s.queueText) queuePreviewParams.set('text', s.queueText);
+           if(s.queueMuted) queuePreviewParams.set('muted', s.queueMuted);
+           if(s.queueCard) queuePreviewParams.set('card', s.queueCard);
+           if(s.queueGlowColor) queuePreviewParams.set('glowColor', s.queueGlowColor);
+           if(s.queueBorderColor) queuePreviewParams.set('borderColor', s.queueBorderColor);
+         }
+         
+         // Handle queue background type in preview
+         if(s.queueBackgroundType === 'transparent') {
+           queuePreviewParams.set('transparent', '1');
+         }
+   
+         if(s.queueLayout && s.queueLayout !== 'list') queuePreviewParams.set('layout', s.queueLayout);
+         if(s.queueRadius && s.queueRadius !== '12') queuePreviewParams.set('radius', s.queueRadius);
+         if(s.queueShadow && s.queueShadow !== 'soft') queuePreviewParams.set('shadow', s.queueShadow);
+         if(s.queueGap && s.queueGap !== '6') queuePreviewParams.set('gap', s.queueGap);
+         if(s.queueSliderHeight && s.queueSliderHeight !== '400') queuePreviewParams.set('sliderHeight', s.queueSliderHeight);
+         
+         const previewUrl = localQueue + '?' + queuePreviewParams.toString() + '&_t=' + Date.now();
+         
+         console.log('Queue-only preview URL:', previewUrl);
+         
+         // Force iframe reload with better error handling
+         try {
+           // Show loading state
+           els.queuePreview.style.opacity = '0.5';
+           els.queuePreview.src = '';
+           
+           setTimeout(() => {
+             els.queuePreview.src = previewUrl;
+             
+             // Add error handling for iframe load
+             els.queuePreview.onerror = () => {
+               console.error('Queue preview failed to load, retrying...');
+               setTimeout(() => {
+                 els.queuePreview.src = previewUrl + '&retry=' + Date.now();
+               }, 500);
+             };
+             
+             // Restore opacity after a short delay
+             setTimeout(() => {
+               els.queuePreview.style.opacity = '1';
+             }, 200);
+           }, 100);
+         } catch (error) {
+           console.error('Error updating queue preview:', error);
+           // Fallback: try direct assignment
+           els.queuePreview.src = previewUrl;
+           els.queuePreview.style.opacity = '1';
+         }
+       }
+     }
+
+     // Background type toggle
+     function toggleBackgroundOptions() {
+       const bgType = els.bgType?.value || 'none';
+       const bgSolid = document.getElementById('bgSolid');
+       const bgGradient = document.getElementById('bgGradient');
+       const bgImage = document.getElementById('bgImage');
+       
+       if(bgSolid) bgSolid.style.display = bgType === 'solid' ? 'block' : 'none';
+       if(bgGradient) bgGradient.style.display = bgType === 'gradient' ? 'block' : 'none';
+       if(bgImage) bgImage.style.display = bgType === 'image' ? 'block' : 'none';
+     }
+
+     if(els.bgType) {
+       els.bgType.addEventListener('change', toggleBackgroundOptions);
+       toggleBackgroundOptions();
+     }
+     
+     // Layout change handler
+     if(els.layout) {
+       els.layout.addEventListener('change', updateLayoutSpecificOptions);
+     }
+     
+     // Queue layout change handler
+     if(els.queueLayout) {
+       els.queueLayout.addEventListener('change', updateQueueLayoutSpecificOptions);
+     }
+     
+
+     
+     // Note: Event listeners are added in initializeApp() for all form elements
+
+     // Auto-fill Base URL
+     function autoFillBaseUrl() {
+       if (els.base.value && els.base.value.includes('github.io/Queuefy')) {
+         els.base.value = els.base.value.replace('github.io/Queuefy', 'github.io/queuefy');
+       }
+       
+       if (!els.base.value || els.base.value.includes('github.io/SpotiStream') || els.base.value.includes('github.io/queuefy')) {
+         const currentUrl = new URL(location.href);
+         
+         if (currentUrl.hostname.includes('github.io')) {
+           const username = currentUrl.hostname.split('.')[0];
+           els.base.value = `https://${username}.github.io/queuefy/overlay.html`;
+         } else {
+           const overlayUrl = new URL('overlay.html', currentUrl.origin + currentUrl.pathname);
+           els.base.value = overlayUrl.toString();
+         }
+       }
+     }
+
+     // Color mode toggle function
+     function toggleColorsBlock() {
+       const custom = els.colorMode?.value === 'custom';
+       if(els.colorsBlock) {
+         els.colorsBlock.classList.toggle('muted', !custom);
+       }
+     }
+     
+     function toggleQueueColorsBlock() {
+       const custom = els.queueColorMode?.value === 'custom';
+       if(els.queueColorsBlock) {
+         els.queueColorsBlock.classList.toggle('muted', !custom);
+       }
+     }
+     
+     // Initialize everything after DOM loads
+     function initializeApp() {
+       initializeElements();
+       
+
+       
+       // Wire up form events with specific handling for queue elements
+       for(const k in els) {
+         const n = els[k];
+         if(!n) continue;
+         if(n.tagName === 'INPUT' || n.tagName === 'SELECT') { 
+           // Special handling for queue-specific elements to avoid player preview conflicts
+           if (k.startsWith('queue')) {
+             n.addEventListener('input', updateQueueOnly);
+             n.addEventListener('change', updateQueueOnly);
+           } else {
+             n.addEventListener('input', render); 
+             n.addEventListener('change', render); 
+           }
+         }
+       }
+       
+       // Note: Event listeners are already added in the loop above for all form elements
+       
+       // Button handlers
+       if(els.copy) {
+         els.copy.onclick = async () => { 
+           try { 
+             const activeTab = document.querySelector('.nav-tab.active').dataset.tab;
+             let urlToCopy = '';
+             
+             if(activeTab === 'player' || activeTab === 'links') {
+               urlToCopy = els.playerUrl?.textContent || els.url?.textContent || '';
+             } else if(activeTab === 'queue') {
+               urlToCopy = els.queueUrl?.textContent || '';
+             }
+             
+             if(urlToCopy) {
+               await navigator.clipboard.writeText(urlToCopy); 
+               els.copy.textContent = 'Copied!'; 
+               setTimeout(() => els.copy.textContent = 'Copy URL', 1200);
+             }
+           } catch(e) {} 
+         };
+       }
+       
+       if(els.open) {
+         els.open.onclick = () => { 
+           const activeTab = document.querySelector('.nav-tab.active').dataset.tab;
+           let urlToOpen = '';
+           
+           if(activeTab === 'player' || activeTab === 'links') {
+             urlToOpen = els.playerUrl?.textContent || els.url?.textContent || '';
+           } else if(activeTab === 'queue') {
+             urlToOpen = els.queueUrl?.textContent || '';
+           }
+           
+           if(urlToOpen) window.open(urlToOpen,'_blank'); 
+         };
+       }
+       
+       if(els.reset) {
+         els.reset.onclick = () => { 
+           if(confirm('Reset all settings to defaults?')) {
+             location.reload(); 
+           }
+         };
+       }
+       
+       if(els.transparentPreset) {
+         els.transparentPreset.onclick = () => { 
+           els.transparent.checked = true; 
+           els.blur.value = 0; 
+           els.radius.value = 0; 
+           els.pad.value = 0; 
+           els.shadow.value = '0'; 
+           render(); 
+         };
+       }
+       
+       // Color mode toggle
+       if(els.colorMode) {
+         els.colorMode.addEventListener('change', toggleColorsBlock);
+         toggleColorsBlock();
+       }
+       
+       if(els.queueColorMode) {
+         els.queueColorMode.addEventListener('change', toggleQueueColorsBlock);
+         toggleQueueColorsBlock();
+       }
+       
+       // Layout change handler
+       if(els.layout) {
+         els.layout.addEventListener('change', updateLayoutSpecificOptions);
+       }
+       
+       // Initialize the rest
+       autoFillBaseUrl();
+       render();
+       updateLayoutSpecificOptions();
+       updateQueueLayoutSpecificOptions();
+       
+       // Initialize queue preview on page load
+       updateQueueOnly();
+       
+
+     }
+     
+     // Wait for DOM to load
+     if (document.readyState === 'loading') {
+       document.addEventListener('DOMContentLoaded', initializeApp);
+     } else {
+       initializeApp();
+     }
+  </script>
+</body>
+</html> 

@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Queuefy Configurator</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <!-- App Header -->
+    <header class="app-header">
+      <div class="header-content">
+        <h1 class="header-title">Queuefy Configurator</h1>
+        <div class="header-actions">
+          <div class="demo-toggle">
+            <label class="toggle-label">
+              <input id="demo" type="checkbox" class="toggle" checked/>
+              <span class="toggle-text">Demo Mode</span>
+            </label>
+          </div>
+          <button id="getUrls" class="btn btn--primary">Get URLs/Copy</button>
+          <button id="openPreview" class="btn btn--neutral">Open Preview</button>
+          <button id="reset" class="btn btn--ghost">Reset</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Shell -->
+    <main class="shell">
+      <!-- Config Panel -->
+      <aside class="config">
+        <!-- Top-level Navigation -->
+        <nav class="segmented" role="tablist">
+          <button class="segmented__tab active" data-tab="player" role="tab" aria-selected="true">Player</button>
+          <button class="segmented__tab" data-tab="queue" role="tab" aria-selected="false">Queue</button>
+        </nav>
+
+        <!-- Player Subnav -->
+        <nav class="subnav" id="player-subnav">
+          <a href="#player-basics" class="subnav__item active" data-section="basics">Basics</a>
+          <a href="#player-visual" class="subnav__item" data-section="visual">Visual</a>
+          <a href="#player-advanced" class="subnav__item" data-section="advanced">Advanced</a>
+          <a href="#player-links" class="subnav__item" data-section="links">Links</a>
+        </nav>
+
+        <!-- Player Tab Content -->
+        <div class="tab-panel active" id="player-tab" role="tabpanel">
+          <!-- Basics Section -->
+          <section id="player-basics" class="card">
+            <div class="card__head">
+              <h2 class="card__title">Quick Start</h2>
+              <p class="card__desc">Configure your player overlay with quick presets and basic settings</p>
+            </div>
+            <div class="card__body">
+              <div class="field">
+                <label for="base">Base URL</label>
+                <input id="base" type="url" placeholder="https://<user>.github.io/queuefy/overlay.html" value="https://kelvinph.github.io/queuefy/overlay.html"/>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card__head">
+              <h2 class="card__title">Layout & Style</h2>
+              <p class="card__desc">Configure the basic layout and appearance</p>
+            </div>
+            <div class="card__body">
+              <div class="grid-2">
+                <div class="field">
+                  <label for="layout">Layout</label>
+                  <select id="layout">
+                    <option value="record">Record (Vinyl) - Classic spinning vinyl with tonearm</option>
+                    <option value="card">Card (Cover) - Album art card layout</option>
+                    <option value="bar">Bar (Minimal) - Text-only minimal bar</option>
+                    <option value="stacked">Stacked (Center) - Centered stacked layout</option>
+                    <option value="compact">Compact (Mini) - Small compact layout</option>
+                    <option value="wide">Wide (Cinematic) - Wide cinematic layout</option>
+                    <option value="split">Split (Dual) - Split media and text</option>
+                    <option value="floating">Floating (Overlay) - Floating overlay panel</option>
+                    <option value="corner">Corner (Tiny) - Small corner overlay</option>
+                    <option value="ticker">Ticker (Scroll) - Scrolling ticker bar</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="align">Media Position</label>
+                  <select id="align">
+                    <option value="left">Left</option>
+                    <option value="right">Right</option>
+                    <option value="center">Center</option>
+                    <option value="top">Top</option>
+                    <option value="bottom">Bottom</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="field">
+                <label for="accentstyle">Accent Style</label>
+                <select id="accentstyle">
+                  <option value="solid">Solid</option>
+                  <option value="glow">Glow</option>
+                  <option value="gradient">Gradient</option>
+                  <option value="pulse">Pulse</option>
+                  <option value="rainbow">Rainbow</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <!-- Visual Section -->
+          <section id="player-visual" class="card">
+            <div class="card__head">
+              <h2 class="card__title">🎨 Colors & Custom</h2>
+              <p class="card__desc">Customize colors and visual appearance</p>
+            </div>
+            <div class="card__body">
+              <div class="field">
+                <label for="colorMode">Color Mode</label>
+                <select id="colorMode">
+                  <option value="custom">Custom Colors</option>
+                  <option value="theme">Theme (Legacy)</option>
+                </select>
+              </div>
+              <div id="colorsBlock">
+                <div class="grid-2">
+                  <div class="field">
+                    <label for="accent">🎯 Accent Color</label>
+                    <input id="accent" type="color" class="color-picker" value="#1db954"/>
+                    <div class="help">Primary accent color for highlights and progress</div>
+                  </div>
+                  <div class="field">
+                    <label for="text">📝 Text Color</label>
+                    <input id="text" type="color" class="color-picker" value="#eaeaea"/>
+                    <div class="help">Main text color</div>
+                  </div>
+                </div>
+                <div class="grid-2">
+                  <div class="field">
+                    <label for="muted">🔇 Muted Color</label>
+                    <input id="muted" type="color" class="color-picker" value="#b6bcc4"/>
+                    <div class="help">Secondary text and muted elements</div>
+                  </div>
+                  <div class="field">
+                    <label for="panelColor">🎨 Panel Color</label>
+                    <input id="panelColor" type="color" class="color-picker" value="#121212"/>
+                    <div class="help">Background panel color</div>
+                  </div>
+                </div>
+                <div class="grid-2">
+                  <div class="field">
+                    <label for="glowColor">💫 Glow Color</label>
+                    <input id="glowColor" type="color" class="color-picker" value="#00ff00"/>
+                    <div class="help">Glow effect color</div>
+                  </div>
+                  <div class="field">
+                    <label for="borderColor">🔄 Border Color</label>
+                    <input id="borderColor" type="color" class="color-picker" value="#ffffff"/>
+                    <div class="help">Border color for elements</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card__head">
+              <h2 class="card__title">Background</h2>
+              <p class="card__desc">Configure background styling and transparency</p>
+            </div>
+            <div class="card__body">
+              <div class="toggle-group">
+                <label for="transparent">Transparent panel</label>
+                <input id="transparent" type="checkbox" class="toggle"/>
+              </div>
+              <div class="field">
+                <label for="panelAlpha">Panel Opacity</label>
+                <div class="range-group">
+                  <input id="panelAlpha" class="range-input" type="range" min="0" max="100" step="1" value="72" oninput="paOut.textContent=this.value"/>
+                  <div class="range-value"><span id="paOut">72</span>%</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Advanced Section -->
+          <section id="player-advanced" class="card">
+            <div class="card__head">
+              <h2 class="card__title">Sizing & Positioning</h2>
+              <p class="card__desc">Adjust dimensions and positioning</p>
+            </div>
+            <div class="card__body">
+              <div class="grid-2">
+                <div class="field">
+                  <label for="disc">Media Size</label>
+                  <div class="range-group">
+                    <input id="disc" class="range-input" type="range" min="120" max="360" step="2" value="200" oninput="discOut.textContent=this.value"/>
+                    <div class="range-value"><span id="discOut">200</span>px</div>
+                  </div>
+                  <div class="help">Not applicable for Bar layout (no media display)</div>
+                </div>
+                <div class="field">
+                  <label for="bar">Progress Height</label>
+                  <div class="range-group">
+                    <input id="bar" class="range-input" type="range" min="0" max="16" step="1" value="6" oninput="barOut.textContent=this.value"/>
+                    <div class="range-value"><span id="barOut">6</span>px</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="grid-2">
+                <div class="field">
+                  <label for="progressWidth">Progress Width</label>
+                  <div class="range-group">
+                    <input id="progressWidth" class="range-input" type="range" min="50" max="100" step="5" value="100" oninput="progWidthOut.textContent=this.value"/>
+                    <div class="range-value"><span id="progWidthOut">100</span>%</div>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="textAlign">Text Alignment</label>
+                  <select id="textAlign">
+                    <option value="auto">Auto (follows media)</option>
+                    <option value="left">Left</option>
+                    <option value="center">Center</option>
+                    <option value="right">Right</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="grid-2">
+                <div class="field">
+                  <label for="radius">Corner Radius</label>
+                  <div class="range-group">
+                    <input id="radius" class="range-input" type="range" min="0" max="24" step="1" value="16" oninput="radOut.textContent=this.value"/>
+                    <div class="range-value"><span id="radOut">16</span>px</div>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="blur">Blur</label>
+                  <div class="range-group">
+                    <input id="blur" class="range-input" type="range" min="0" max="16" step="1" value="8" oninput="blurOut.textContent=this.value"/>
+                    <div class="range-value"><span id="blurOut">8</span>px</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="grid-2">
+                <div class="field">
+                  <label for="pad">Safe Padding</label>
+                  <div class="range-group">
+                    <input id="pad" class="range-input" type="range" min="0" max="32" step="1" value="16" oninput="padOut.textContent=this.value"/>
+                    <div class="range-value"><span id="padOut">16</span>px</div>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="outline">Title Outline</label>
+                  <div class="range-group">
+                    <input id="outline" class="range-input" type="range" min="0" max="2" step="1" value="0" oninput="outlineOut.textContent=this.value"/>
+                    <div class="range-value"><span id="outlineOut">0</span>px</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+
+
+          <section class="card">
+            <div class="card__head">
+              <h2 class="card__title">Elements</h2>
+              <p class="card__desc">Toggle which elements to display</p>
+            </div>
+            <div class="card__body">
+              <div class="toggle-group">
+                <label for="showStatus">Status pill</label>
+                <input id="showStatus" type="checkbox" class="toggle" checked/>
+              </div>
+              <div class="toggle-group">
+                <label for="showProgress">Progress bar</label>
+                <input id="showProgress" type="checkbox" class="toggle" checked/>
+              </div>
+              <div class="toggle-group">
+                <label for="showTime">Time (elapsed/total)</label>
+                <input id="showTime" type="checkbox" class="toggle" checked/>
+              </div>
+              <div class="toggle-group">
+                <label for="showTitle">Title</label>
+                <input id="showTitle" type="checkbox" class="toggle" checked/>
+              </div>
+              <div class="toggle-group">
+                <label for="showArtist">Artist</label>
+                <input id="showArtist" type="checkbox" class="toggle" checked/>
+              </div>
+              <div class="toggle-group">
+                <label for="showNext">Show Next (stacked)</label>
+                <input id="showNext" type="checkbox" class="toggle"/>
+                <div class="help">Only works with Stacked layout</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card__head">
+              <h2 class="card__title">Text & Motion</h2>
+              <p class="card__desc">Configure text behavior and animations</p>
+            </div>
+            <div class="card__body">
+              <div class="toggle-group">
+                <label for="scroll">Scroll long text</label>
+                <input id="scroll" type="checkbox" class="toggle" checked/>
+              </div>
+              <div class="toggle-group">
+                <label for="autoAccent">Auto-accent from album art</label>
+                <input id="autoAccent" type="checkbox" class="toggle"/>
+              </div>
+              <div class="field">
+                <label for="marq">Marquee Speed</label>
+                <div class="range-group">
+                  <input id="marq" class="range-input" type="range" min="8" max="30" step="1" value="18" oninput="marqOut.textContent=this.value"/>
+                  <div class="range-value"><span id="marqOut">18</span>s</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Links Section -->
+          <section id="player-links" class="card">
+            <div class="card__head">
+              <h2 class="card__title">OBS URLs</h2>
+              <p class="card__desc">Copy these URLs to use in OBS Browser Sources</p>
+            </div>
+            <div class="card__body">
+              <div class="field">
+                <label for="playerUrl">Player URL</label>
+                <div class="url-display" id="playerUrl"></div>
+                <button id="copyPlayerUrl" class="btn btn--primary">📋 Copy Player URL</button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Queue Tab Content -->
+        <div class="tab-panel" id="queue-tab" role="tabpanel">
+          <section class="card">
+            <div class="card__head">
+              <h2 class="card__title">Queue Behavior</h2>
+              <p class="card__desc">Configure how the queue overlay behaves and connects to your server</p>
+            </div>
+            <div class="card__body">
+              <div class="grid-2">
+                <div class="field">
+                  <label for="queueMax">Queue Max (items)</label>
+                  <input id="queueMax" type="number" min="0" max="20" value="5">
+                </div>
+                <div class="field">
+                  <label for="showArtists">Show Artists</label>
+                  <select id="showArtists">
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label for="ws">WebSocket URL</label>
+                <input id="ws" placeholder="ws://localhost:5173" value="ws://localhost:5173">
+                <div class="help">Default: ws://localhost:5173 - connects to your local Queuefy server</div>
+              </div>
+              <div class="field">
+                <label for="pollMs">Poll Interval (ms)</label>
+                <input id="pollMs" type="number" min="3000" value="15000">
+                <div class="help">HTTP fallback interval if WebSocket fails</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card__head">
+              <h2 class="card__title">🎨 Queue Colors & Custom</h2>
+              <p class="card__desc">Customize colors and visual appearance of the queue</p>
+            </div>
+            <div class="card__body">
+              <div class="field">
+                <label for="queueColorMode">Color Mode</label>
+                <select id="queueColorMode">
+                  <option value="custom">Custom Colors</option>
+                  <option value="theme">Theme (Legacy)</option>
+                </select>
+              </div>
+              
+              <div id="queueColorsBlock">
+                <div class="grid-2">
+                  <div class="field">
+                    <label for="queueAccent">🎯 Accent Color</label>
+                    <input id="queueAccent" type="color" class="color-picker" value="#1db954"/>
+                    <div class="help">Primary accent color for highlights</div>
+                  </div>
+                  <div class="field">
+                    <label for="queueText">📝 Text Color</label>
+                    <input id="queueText" type="color" class="color-picker" value="#ffffff"/>
+                    <div class="help">Main text color</div>
+                  </div>
+                </div>
+                <div class="grid-2">
+                  <div class="field">
+                    <label for="queueMuted">🔇 Muted Color</label>
+                    <input id="queueMuted" type="color" class="color-picker" value="#cfcfcf"/>
+                    <div class="help">Secondary text and muted elements</div>
+                  </div>
+                  <div class="field">
+                    <label for="queueCard">🎨 Card Color</label>
+                    <input id="queueCard" type="color" class="color-picker" value="#000000"/>
+                    <div class="help">Background color for queue items</div>
+                  </div>
+                </div>
+                <div class="grid-2">
+                  <div class="field">
+                    <label for="queueGlowColor">💫 Glow Color</label>
+                    <input id="queueGlowColor" type="color" class="color-picker" value="#00ff00"/>
+                    <div class="help">Glow effect color</div>
+                  </div>
+                  <div class="field">
+                    <label for="queueBorderColor">🔄 Border Color</label>
+                    <input id="queueBorderColor" type="color" class="color-picker" value="#ffffff"/>
+                    <div class="help">Border color for queue items</div>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="queueBackgroundType">🎭 Background</label>
+                  <select id="queueBackgroundType">
+                    <option value="card">Card Background</option>
+                    <option value="transparent">Transparent</option>
+                  </select>
+                  <div class="help">Choose between card background or transparent</div>
+                </div>
+              </div>
+              
+              <div class="field">
+                <label for="queueLayout">Layout</label>
+                <select id="queueLayout">
+                  <option value="list">List - Standard vertical list</option>
+                  <option value="grid">Grid - Responsive grid layout</option>
+                  <option value="cards">Cards - Card-style layout</option>
+                  <option value="compact">Compact - Minimal spacing</option>
+                  <option value="minimal">Minimal - No background/borders</option>
+                  <option value="slider">Vertical Slider - Scrollable list</option>
+                  <option value="ticker">Horizontal Ticker - Side-scrolling</option>
+                  <option value="masonry">Masonry - Pinterest-style grid</option>
+                  <option value="timeline">Timeline - Timeline with dots</option>
+                  <option value="carousel">Carousel - Horizontal carousel</option>
+                  <option value="stack">Stack - Stacked card effect</option>
+                </select>
+              </div>
+              <div class="grid-2">
+                <div class="field">
+                  <label for="queueRadius">Card Radius</label>
+                  <div class="range-group">
+                    <input id="queueRadius" class="range-input" type="range" min="4" max="28" step="1" value="12" oninput="queueRadiusOut.textContent=this.value"/>
+                    <div class="range-value"><span id="queueRadiusOut">12</span>px</div>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="queueSliderHeight">Slider Height</label>
+                  <div class="range-group">
+                    <input id="queueSliderHeight" class="range-input" type="range" min="200" max="800" step="50" value="400" oninput="queueSliderHeightOut.textContent=this.value"/>
+                    <div class="range-value"><span id="queueSliderHeightOut">400</span>px</div>
+                  </div>
+                  <div class="help">Only applies to Vertical Slider layout</div>
+                </div>
+              </div>
+              <div class="grid-2">
+                <div class="field">
+                  <label for="queueShadow">Card Shadow</label>
+                  <select id="queueShadow">
+                    <option value="none">None</option>
+                    <option value="soft">Soft</option>
+                    <option value="medium">Medium</option>
+                    <option value="strong">Strong</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="queueGap">Item Gap</label>
+                  <div class="range-group">
+                    <input id="queueGap" class="range-input" type="range" min="0" max="24" step="1" value="6" oninput="queueGapOut.textContent=this.value"/>
+                    <div class="range-value"><span id="queueGapOut">6</span>px</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card__head">
+              <h2 class="card__title">Queue URL</h2>
+              <p class="card__desc">Copy this URL to use in OBS Browser Sources</p>
+            </div>
+            <div class="card__body">
+              <div class="field">
+                <label for="queueUrl">Queue URL</label>
+                <div class="url-display" id="queueUrl"></div>
+                <button id="copyQueueUrl" class="btn btn--primary">📋 Copy Queue URL</button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </aside>
+
+      <!-- Live Previews -->
+      <section class="previews">
+        <div class="preview-card">
+          <div class="preview-card__head">
+            <h2 class="preview-card__title">Live Previews</h2>
+            <p class="preview-card__desc">Player preview connects to real Spotify when Demo Mode is off; Queue preview shows sample data in Demo Mode and real data otherwise (requires local Queuefy server)</p>
+          </div>
+          <div class="preview-card__body">
+            <!-- Player Preview -->
+            <div class="preview-item">
+              <div class="preview-item__head">
+                <h3 class="preview-item__title">Player Preview</h3>
+                <div class="badge" id="demoStatus">Demo mode: showing sample data</div>
+              </div>
+              <div class="preview-item__body">
+                <iframe id="preview" src="" allow="clipboard-read; clipboard-write" loading="lazy"></iframe>
+              </div>
+            </div>
+            
+            <!-- Queue Preview -->
+            <div class="preview-item">
+              <div class="preview-item__head">
+                <h3 class="preview-item__title">Queue Preview</h3>
+                <div class="badge" id="queuePreviewStatus">🎯 Demo mode: showing sample queue data</div>
+              </div>
+              <div class="preview-item__body">
+                <iframe id="queuePreview" src="" allow="clipboard-read; clipboard-write" loading="lazy"></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- URL Modal -->
+  <div id="urlModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">OBS URLs</h2>
+        <button onclick="document.getElementById('urlModal').style.display='none'" class="modal-close">&times;</button>
+      </div>
+      
+      <div class="modal-grid">
+        <div>
+          <div class="modal-label">Player URL</div>
+          <div id="modalPlayerUrl" class="url-display"></div>
+          <button id="copyPlayerBtn" class="btn btn--primary">📋 Copy Player URL</button>
+        </div>
+        <div>
+          <div class="modal-label">Queue URL</div>
+          <div id="modalQueueUrl" class="url-display"></div>
+          <button id="copyQueueBtn" class="btn btn--primary">📋 Copy Queue URL</button>
+        </div>
+      </div>
+      
+      <div class="modal-help">
+        <h3>How to Use</h3>
+        <ol>
+          <li>Run Queuefy app on your streaming PC</li>
+          <li>Add Player URL to OBS as a Browser Source</li>
+          <li>Add Queue URL to OBS as a Browser Source</li>
+          <li>Use chat commands (!sr, !queue, !song, !skip) to test</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html> 

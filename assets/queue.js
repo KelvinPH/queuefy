@@ -3,7 +3,6 @@
   const ws = params.get('ws') || 'ws://localhost:5173'; // Default to localhost:5173
   const queueMax = Math.max(0, +(params.get('queueMax') || 5));
   const isDemo = params.get('demo') === 'true';
-  const theme = params.get('theme') || '';
   const showArt = (params.get('showArtists') ?? 'true') !== 'false';
 
   // Enhanced styling parameters
@@ -22,6 +21,7 @@
   const glowColor = params.get('glowColor') || '#00ff00';
   const align = params.get('align') || 'left';
   const layout = params.get('layout') || 'list';
+  const sliderHeight = params.get('sliderHeight') || '400';
   const titleSize = params.get('titleSize') || '15';
   const artistSize = params.get('artistSize') || '12';
   const lineHeight = params.get('lineHeight') || '1.4';
@@ -35,48 +35,48 @@
   const animSpeed = params.get('animSpeed') || '1';
   const hoverEffect = params.get('hoverEffect') || 'none';
 
-  // Apply theme if specified
-  if (theme) document.body.classList.add('theme-'+theme);
-
-  // Apply custom styling via CSS variables AFTER theme is applied
+  // Apply custom styling via CSS variables
   const root = document.documentElement;
   
-  // Force override theme variables by setting them with higher specificity
-  const style = document.createElement('style');
-  style.textContent = `
-    :root {
-      --radius: ${radius}px !important;
-      --shadow: ${shadow ? '0 6px 16px rgba(0,0,0,.25)' : 'none'} !important;
-      --gap: ${gap}px !important;
-      --border: ${border}px !important;
-      --opacity: ${opacity}% !important;
-      --blur: ${blur}px !important;
-      --glow: ${glow}px !important;
-      --now-playing-glow: ${glow === '0' ? 'none' : `0 0 ${glow}px ${accentColor}`} !important;
-      --hover-glow: ${glow === '0' ? 'none' : `0 0 ${glow}px ${glowColor}`} !important;
-      --hover-glow-filter: ${glow === '0' ? 'none' : `drop-shadow(0 0 ${glow}px ${glowColor})`} !important;
-      --card: ${cardColor} !important;
-      --text: ${textColor} !important;
-      --muted: ${mutedColor} !important;
-      --accent: ${accentColor} !important;
-      --border-color: ${borderColor} !important;
-      --glow-color: ${glowColor} !important;
-      --align: ${align} !important;
-      --layout: ${layout} !important;
-      --title-size: ${titleSize}px !important;
-      --artist-size: ${artistSize}px !important;
-      --line-height: ${lineHeight} !important;
-      --letter-spacing: ${letterSpacing}px !important;
-      --padding: ${padding}px !important;
-      --margin: ${margin}px !important;
-      --font-weight: ${fontWeight} !important;
-      --text-transform: ${textTransform} !important;
-      --text-shadow: ${textShadow ? '0 1px 3px rgba(0,0,0,0.5)' : 'none'} !important;
-      --anim-speed: ${animSpeed} !important;
-      --hover-effect: ${hoverEffect} !important;
-    }
-  `;
-  document.head.appendChild(style);
+  // Apply custom styling
+  {
+    const style = document.createElement('style');
+    style.textContent = `
+      :root {
+        --radius: ${radius}px !important;
+        --shadow: ${shadow ? '0 6px 16px rgba(0,0,0,.25)' : 'none'} !important;
+        --gap: ${gap}px !important;
+        --border: ${border}px !important;
+        --opacity: ${opacity}% !important;
+        --blur: ${blur}px !important;
+        --glow: ${glow}px !important;
+        --now-playing-glow: ${glow === '0' ? 'none' : `0 0 ${glow}px ${accentColor}`} !important;
+        --hover-glow: ${glow === '0' ? 'none' : `0 0 ${glow}px ${glowColor}`} !important;
+        --hover-glow-filter: ${glow === '0' ? 'none' : `drop-shadow(0 0 ${glow}px ${glowColor})`} !important;
+        --card: ${cardColor} !important;
+        --text: ${textColor} !important;
+        --muted: ${mutedColor} !important;
+        --accent: ${accentColor} !important;
+        --border-color: ${borderColor} !important;
+        --glow-color: ${glowColor} !important;
+        --align: ${align} !important;
+        --layout: ${layout} !important;
+        --slider-height: ${sliderHeight}px !important;
+        --title-size: ${titleSize}px !important;
+        --artist-size: ${artistSize}px !important;
+        --line-height: ${lineHeight} !important;
+        --letter-spacing: ${letterSpacing}px !important;
+        --padding: ${padding}px !important;
+        --margin: ${margin}px !important;
+        --font-weight: ${fontWeight} !important;
+        --text-transform: ${textTransform} !important;
+        --text-shadow: ${textShadow ? '0 1px 3px rgba(0,0,0,0.5)' : 'none'} !important;
+        --anim-speed: ${animSpeed} !important;
+        --hover-effect: ${hoverEffect} !important;
+      }
+    `;
+    document.head.appendChild(style);
+  }
 
   console.log('CSS variables applied with !important:', {
     '--radius': radius + 'px',
@@ -126,7 +126,12 @@
   if (list) {
     list.setAttribute('data-layout', layout);
     list.setAttribute('data-hover', hoverEffect);
+    console.log('Queue layout set to:', layout);
+  } else {
+    console.error('Queue list element not found!');
   }
+
+
 
   function trunc(s, n) { 
     if (!s) return ''; 
@@ -134,7 +139,15 @@
   }
 
   function renderQueue(data) {
+    console.log('Queue: renderQueue called with data:', data);
+    
+    if (!list) {
+      console.error('Queue list element not found in renderQueue');
+      return;
+    }
+    
     if (!data) { 
+      console.log('Queue: No data provided, clearing list');
       list.innerHTML = ''; 
       return; 
     }
@@ -150,8 +163,10 @@
                        textTransform === 'lowercase' ? title.toLowerCase() :
                        textTransform === 'capitalize' ? title.replace(/\b\w/g, l => l.toUpperCase()) : title;
       
-      html += `<div class="ssq-item ssq-now-playing">
-        ${albumArt ? `<div class="ssq-art-thumb"><img src="${albumArt}" alt="Album Art" /></div>` : ''}
+              html += `<div class="ssq-item ssq-now-playing">
+        <div class="ssq-art-thumb" data-title="${titleText}">
+          ${albumArt ? `<img src="${albumArt}" alt="Album Art" onerror="this.style.display='none'; this.parentElement.classList.add('no-image');" />` : ''}
+        </div>
         <div class="ssq-content">
           <div class="ssq-title">▶ Now Playing: ${titleText}</div>
           ${artist ? `<div class="ssq-artist">${artist}</div>` : ''}
@@ -171,7 +186,9 @@
                          textTransform === 'capitalize' ? title.replace(/\b\w/g, l => l.toUpperCase()) : title;
         
         html += `<div class="ssq-item">
-          ${albumArt ? `<div class="ssq-art-thumb"><img src="${albumArt}" alt="Album Art" /></div>` : ''}
+          <div class="ssq-art-thumb" data-title="${titleText}">
+            ${albumArt ? `<img src="${albumArt}" alt="Album Art" onerror="this.style.display='none'; this.parentElement.classList.add('no-image');" />` : ''}
+          </div>
           <div class="ssq-content">
             <div class="ssq-title">${titleText}</div>
             ${artist ? `<div class="ssq-artist">${artist}</div>` : ''}
@@ -189,23 +206,48 @@
       nowPlaying: {
         name: "Midnight Drive",
         artists: [{ name: "Lumen & Co" }],
-        album: { images: [{ url: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMzMzIi8+CjxwYXRoIGQ9Ik0xNiAxNkgyNFYzMkgxNlYxNloiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yNCAxNkgyOFYzMkgyNFYxNloiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo=" }] }
+        album: { images: [{ url: "assets/demo-albumcover.jpg" }] }
       },
       next: [
         { 
           name: "Neon Skyline", 
           artists: [{ name: "City Nights" }],
-          album: { images: [{ url: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMzMzIi8+CjxwYXRoIGQ9Ik0xNiAxNkgyNFYzMkgxNlYxNloiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yNCAxNkgyOFYzMkgyNFYxNloiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo=" }] }
+          album: { images: [{ url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=200&fit=crop&crop=center" }] }
         },
         { 
           name: "Rainy Window", 
           artists: [{ name: "Lofigram" }],
-          album: { images: [{ url: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMzMzIi8+CjxwYXRoIGQ9Ik0xNiAxNkgyNFYzMkgxNlYxNloiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yNCAxNkgyOFYzMkgyNFYxNloiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo=" }] }
+          album: { images: [{ url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=200&fit=crop&crop=center&blur=2" }] }
         },
         { 
           name: "Synth Bloom", 
           artists: [{ name: "Vapor Sun" }],
-          album: { images: [{ url: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMzMzIi8+CjxwYXRoIGQ9Ik0xNiAxNkgyNFYzMkgxNlYxNloiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yNCAxNkgyOFYzMkgyNFYxNloiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo=" }] }
+          album: { images: [{ url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=200&fit=crop&crop=center&blur=1" }] }
+        },
+        { 
+          name: "Digital Dreams", 
+          artists: [{ name: "Cyber Pulse" }],
+          album: { images: [{ url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=200&fit=crop&crop=center&blur=3" }] }
+        },
+        { 
+          name: "Ocean Waves", 
+          artists: [{ name: "Coastal Vibes" }],
+          album: { images: [{ url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=200&fit=crop&crop=center&blur=4" }] }
+        },
+        { 
+          name: "Forest Echo", 
+          artists: [{ name: "Nature Sounds" }],
+          album: { images: [{ url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=200&fit=crop&crop=center&blur=5" }] }
+        },
+        { 
+          name: "Urban Night", 
+          artists: [{ name: "City Lights" }],
+          album: { images: [{ url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=200&fit=crop&crop=center&blur=6" }] }
+        },
+        { 
+          name: "Cosmic Journey", 
+          artists: [{ name: "Space Explorer" }],
+          album: { images: [{ url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=200&fit=crop&crop=center&blur=7" }] }
         }
       ],
       is_playing: true,
@@ -213,8 +255,48 @@
     };
     
     renderQueue(demoData);
+    
+    // Ensure layout is applied after rendering
+    if (list) {
+      list.setAttribute('data-layout', layout);
+      console.log('Demo mode: Layout applied after render:', layout);
+    }
+    
     return; // Stop here in demo mode
   }
+
+  // Show demo data by default if no WebSocket connection is available
+  // This ensures the queue always shows something
+  const defaultDemoData = {
+    nowPlaying: {
+      name: "Midnight Drive",
+      artists: [{ name: "Lumen & Co" }],
+      album: { images: [{ url: "assets/demo-albumcover.jpg" }] }
+    },
+    next: [
+      { 
+        name: "Neon Skyline", 
+        artists: [{ name: "City Nights" }],
+        album: { images: [{ url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=200&fit=crop&crop=center" }] }
+      },
+      { 
+        name: "Rainy Window", 
+        artists: [{ name: "Lofigram" }],
+        album: { images: [{ url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=200&fit=crop&crop=center&blur=2" }] }
+      },
+      { 
+        name: "Synth Bloom", 
+        artists: [{ name: "Vapor Sun" }],
+        album: { images: [{ url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=200&fit=crop&crop=center&blur=1" }] }
+      }
+    ],
+    is_playing: true,
+    lastUpdated: new Date().toISOString()
+  };
+  
+  // Show default demo data immediately
+  console.log('Queue: Rendering default demo data');
+  renderQueue(defaultDemoData);
 
   // WebSocket connection
   function connectWebSocket() {
@@ -284,4 +366,13 @@
 
   // Start WebSocket connection
   connectWebSocket();
+  
+  // Ensure demo data is always visible initially
+  setTimeout(() => {
+    // If no data has been loaded after 2 seconds, show demo data
+    if (list.innerHTML === '') {
+      console.log('Queue: No data loaded, showing demo data');
+      renderQueue(defaultDemoData);
+    }
+  }, 2000);
 })();
