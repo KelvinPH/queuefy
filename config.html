@@ -786,11 +786,18 @@
        u.pathname = u.pathname.replace(/overlay\.html$/,'queue.html');
        const q = new URLSearchParams();
        
-       // Streamer.bot connection params
-       if(s.sbHost && s.sbHost !== '127.0.0.1') q.set('sb_host', s.sbHost);
-       if(s.sbPort && s.sbPort !== '8080') q.set('sb_port', s.sbPort);
-       if(s.sbSsl && s.sbSsl !== '0') q.set('sb_ssl', s.sbSsl);
-       if(s.eventType && s.eventType !== 'queue:update') q.set('event_type', s.eventType);
+       // Streamer.bot connection params - always include these
+       q.set('sb_host', s.sbHost || '127.0.0.1');
+       q.set('sb_port', s.sbPort || '8080');
+       q.set('sb_ssl', s.sbSsl || '0');
+       q.set('event_type', s.eventType || 'queue:update');
+       
+       console.log('Streamer.bot params added:', {
+         sb_host: s.sbHost || '127.0.0.1',
+         sb_port: s.sbPort || '8080',
+         sb_ssl: s.sbSsl || '0',
+         event_type: s.eventType || 'queue:update'
+       });
        
        // Behavior params
        if(s.queueMax && s.queueMax !== '5') q.set('queueMax', s.queueMax);
@@ -819,7 +826,9 @@
        if(s.queueGap && s.queueGap !== '6') q.set('gap', s.queueGap);
        if(s.queueSliderHeight && s.queueSliderHeight !== '400') q.set('sliderHeight', s.queueSliderHeight);
        
-       return u.origin + u.pathname + (q.toString() ? '?' + q.toString() : '');
+       const finalUrl = u.origin + u.pathname + (q.toString() ? '?' + q.toString() : '');
+       console.log('Final Queue URL built:', finalUrl);
+       return finalUrl;
      }
 
      // Render function
@@ -863,13 +872,12 @@
            '🔗 Live mode: connecting to Queuefy server (requires local server)';
        }
        
-       // Update player preview - always use demo data for preview
+       // Update player preview - respect demo mode setting
        if(els.preview) {
          if (playerUrl && playerUrl !== '') {
-           const previewUrl = playerUrl + (playerUrl.includes('?') ? '&' : '?') + 'demo=true&_t=' + Date.now();
+           const previewUrl = playerUrl + (playerUrl.includes('?') ? '&' : '?') + 'demo=' + (els.demo.checked ? 'true' : 'false') + '&_t=' + Date.now();
            console.log('Setting player preview URL:', previewUrl);
            
-           // Always use demo data for preview to ensure content shows
            els.preview.src = '';
            setTimeout(() => {
              els.preview.src = previewUrl;
@@ -881,7 +889,7 @@
            
            els.preview.src = '';
            setTimeout(() => {
-             els.preview.src = localOverlay + '?demo=true&_t=' + Date.now();
+             els.preview.src = localOverlay + '?demo=' + (els.demo.checked ? 'true' : 'false') + '&_t=' + Date.now();
            }, 10);
          }
        }
@@ -1039,11 +1047,11 @@
          // Always include demo mode for preview
          queuePreviewParams.set('demo', 'true');
          
-         // Apply Streamer.bot connection params to preview
-         if(s.sbHost && s.sbHost !== '127.0.0.1') queuePreviewParams.set('sb_host', s.sbHost);
-         if(s.sbPort && s.sbPort !== '8080') queuePreviewParams.set('sb_port', s.sbPort);
-         if(s.sbSsl && s.sbSsl !== '0') queuePreviewParams.set('sb_ssl', s.sbSsl);
-         if(s.eventType && s.eventType !== 'queue:update') queuePreviewParams.set('event_type', s.eventType);
+                   // Apply Streamer.bot connection params to preview - always include these
+          queuePreviewParams.set('sb_host', s.sbHost || '127.0.0.1');
+          queuePreviewParams.set('sb_port', s.sbPort || '8080');
+          queuePreviewParams.set('sb_ssl', s.sbSsl || '0');
+          queuePreviewParams.set('event_type', s.eventType || 'queue:update');
          
          // Apply current queue settings to preview
          if(s.queueMax && s.queueMax !== '5') queuePreviewParams.set('queueMax', s.queueMax);
@@ -1321,6 +1329,11 @@
        if(els.queueColorMode) {
          els.queueColorMode.addEventListener('change', toggleQueueColorsBlock);
          toggleQueueColorsBlock();
+       }
+       
+       // Demo mode toggle - refresh preview when changed
+       if(els.demo) {
+         els.demo.addEventListener('change', render);
        }
        
        // Layout change handler
