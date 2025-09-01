@@ -310,6 +310,9 @@ function render() {
   
   // Update player preview - respect demo mode setting
   updatePlayerPreview(playerUrl);
+  
+  // Also update queue preview to keep them in sync
+  updateQueuePreview();
 }
 
 // Update player preview with robust error handling and retry logic
@@ -329,6 +332,9 @@ function updatePlayerPreview(playerUrl) {
   }
   
   console.log('Setting player preview URL:', previewUrl);
+  console.log('Demo mode checked:', els.demo.checked);
+  console.log('Preview element:', els.preview);
+  console.log('Preview element src:', els.preview.src);
   
   // Force iframe reload with better error handling
   try {
@@ -338,6 +344,7 @@ function updatePlayerPreview(playerUrl) {
     
     // Add load event listener to handle successful loads
     const onLoad = () => {
+      console.log('Player preview iframe loaded successfully');
       setTimeout(() => {
         els.preview.style.opacity = '1';
         els.preview.removeEventListener('load', onLoad);
@@ -347,8 +354,10 @@ function updatePlayerPreview(playerUrl) {
     // Add error event listener for retry logic
     const onError = () => {
       console.error('Player preview failed to load, retrying...');
+      console.error('Failed URL:', previewUrl);
       setTimeout(() => {
         const retryUrl = previewUrl + '&retry=' + Date.now();
+        console.log('Retrying with URL:', retryUrl);
         els.preview.src = retryUrl;
       }, 500);
       els.preview.removeEventListener('error', onError);
@@ -384,8 +393,9 @@ function updateQueuePreview() {
   const localQueue = new URL('queue.html', location.href).toString();
   const queuePreviewParams = new URLSearchParams();
   
-  // Always include demo mode for preview
-  queuePreviewParams.set('demo', 'true');
+  // Respect demo mode setting for preview
+  const demoParam = els.demo.checked ? 'true' : 'false';
+  queuePreviewParams.set('demo', demoParam);
   
   // Apply current queue settings to preview
   if(s.queueMax && s.queueMax !== '5') queuePreviewParams.set('queueMax', s.queueMax);
@@ -420,6 +430,9 @@ function updateQueuePreview() {
   const previewUrl = localQueue + '?' + queuePreviewParams.toString() + '&_t=' + Date.now();
   
   console.log('Queue preview URL:', previewUrl);
+  console.log('Demo mode checked:', els.demo.checked);
+  console.log('Queue preview element:', els.queuePreview);
+  console.log('Queue preview element src:', els.queuePreview.src);
   
   // Force iframe reload with better error handling
   try {
@@ -427,23 +440,26 @@ function updateQueuePreview() {
     els.queuePreview.style.opacity = '0.5';
     els.queuePreview.src = '';
     
-    // Add load event listener to handle successful loads
-    const onLoad = () => {
-      setTimeout(() => {
-        els.queuePreview.style.opacity = '1';
-        els.queuePreview.removeEventListener('load', onLoad);
-      }, 200);
-    };
+         // Add load event listener to handle successful loads
+     const onLoad = () => {
+       console.log('Queue preview iframe loaded successfully');
+       setTimeout(() => {
+         els.queuePreview.style.opacity = '1';
+         els.queuePreview.removeEventListener('load', onLoad);
+       }, 200);
+     };
     
-    // Add error event listener for retry logic
-    const onError = () => {
-      console.error('Queue preview failed to load, retrying...');
-      setTimeout(() => {
-        const retryUrl = previewUrl + '&retry=' + Date.now();
-        els.queuePreview.src = retryUrl;
-      }, 500);
-      els.queuePreview.removeEventListener('error', onError);
-    };
+         // Add error event listener for retry logic
+     const onError = () => {
+       console.error('Queue preview failed to load, retrying...');
+       console.error('Failed URL:', previewUrl);
+       setTimeout(() => {
+         const retryUrl = previewUrl + '&retry=' + Date.now();
+         console.log('Retrying with URL:', retryUrl);
+         els.queuePreview.src = retryUrl;
+       }, 500);
+       els.queuePreview.removeEventListener('error', onError);
+     };
     
     els.queuePreview.addEventListener('load', onLoad);
     els.queuePreview.addEventListener('error', onError);

@@ -470,6 +470,8 @@ function renderTrack(payload){
 const K={clientId:'obs_spotify_client_id', verifier:'obs_spotify_code_verifier',
          access:'obs_spotify_access_token', refresh:'obs_spotify_refresh_token', expires:'obs_spotify_expires_at'};
 
+
+
 async function sha256(str){ const buf=new TextEncoder().encode(str); const d=await crypto.subtle.digest('SHA-256',buf); return new Uint8Array(d); }
 function base64url(bytes){ return btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
 function randString(n=64){ const a=new Uint8Array(n); crypto.getRandomValues(a); return base64url(a).slice(0,n); }
