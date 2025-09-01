@@ -300,6 +300,35 @@
 
           <section class="card">
             <div class="card__head">
+              <h2 class="card__title">Behavior</h2>
+              <p class="card__desc">Configure special behavior options</p>
+            </div>
+            <div class="card__body">
+              <div class="toggle-group">
+                <label for="compact">Compact mode</label>
+                <input id="compact" type="checkbox" class="toggle"/>
+                <div class="help">Reduce spacing and size for compact layouts</div>
+              </div>
+              <div class="toggle-group">
+                <label for="spin">Spin vinyl</label>
+                <input id="spin" type="checkbox" class="toggle" checked/>
+                <div class="help">Animate vinyl spinning (Record layout only)</div>
+              </div>
+              <div class="toggle-group">
+                <label for="labelStatic">Static label</label>
+                <input id="labelStatic" type="checkbox" class="toggle"/>
+                <div class="help">Keep label static instead of spinning (Record layout only)</div>
+              </div>
+              <div class="toggle-group">
+                <label for="tonearm">Show tonearm</label>
+                <input id="tonearm" type="checkbox" class="toggle" checked/>
+                <div class="help">Show tonearm overlay (Record layout only)</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card__head">
               <h2 class="card__title">Text & Motion</h2>
               <p class="card__desc">Configure text behavior and animations</p>
             </div>
@@ -407,6 +436,7 @@
               <div class="field">
                 <button id="downloadOverlay" class="btn btn--primary">📥 Download queue.html</button>
                 <div class="help">Download a self-contained queue overlay with your current settings</div>
+                <button onclick="console.log('Test button clicked'); downloadOverlay();" class="btn btn--neutral" style="margin-top: 10px;">🧪 Test Download</button>
               </div>
             </div>
           </section>

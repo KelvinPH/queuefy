@@ -19,6 +19,8 @@ const sampleQueue = [
 ];
 
 function initializeElements() {
+  console.log('Initializing elements...');
+  
   els = {
     // Player elements
     base: $('base'), layout: $('layout'), align: $('align'), accentstyle: $('accentstyle'),
@@ -50,6 +52,9 @@ function initializeElements() {
   };
   
   console.log('Elements initialized successfully');
+  console.log('Download overlay element:', els.downloadOverlay);
+  console.log('sbHost element:', els.sbHost);
+  console.log('sbPort element:', els.sbPort);
 }
 
 // State management
@@ -62,9 +67,11 @@ function setState(s) {
 }
 
 function getState() {
+  console.log('getState called, els:', els);
+  
   const state = {
     // Player state
-    base: els.base.value.trim(),
+    base: els.base?.value?.trim() || '',
     layout: els.layout?.value || 'record', 
     align: els.align?.value || 'left', 
     accentstyle: els.accentstyle?.value || 'solid',
@@ -122,8 +129,10 @@ function getState() {
     queueSliderHeight: els.queueSliderHeight?.value || '400',
     
     // UI state
-    demo: +(els.demo.checked)
+    demo: +(els.demo?.checked || false)
   };
+  
+  console.log('State generated:', state);
   
   // Debug behavior options
   console.log('Behavior options state:', {
@@ -708,10 +717,14 @@ function initializeNavigation() {
 
 // Download overlay functionality
 function downloadOverlay() {
+  console.log('Download function called');
+  
   const s = getState();
+  console.log('State:', s);
   
   // Validate required fields
   if (!s.sbHost || !s.sbPort) {
+    console.log('Missing required fields:', { sbHost: s.sbHost, sbPort: s.sbPort });
     showToast('❌ Please configure Streamer.bot host and port first', 'error');
     return;
   }
@@ -755,6 +768,8 @@ function downloadOverlay() {
 
 // Generate queue HTML content
 function generateQueueHTML(config) {
+  console.log('Generating queue HTML with config:', config);
+  
   const queueCSS = `
     /* Queue Styles */
     .ssq-body { margin: 0; padding: 0; background: transparent; font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif; }
@@ -882,7 +897,7 @@ function generateQueueHTML(config) {
     });
   `;
   
-  return \`<!doctype html>
+  const htmlContent = \`<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -899,6 +914,9 @@ function generateQueueHTML(config) {
   <script>\${queueJS}</script>
 </body>
 </html>\`;
+  
+  console.log('HTML content generated successfully, length:', htmlContent.length);
+  return htmlContent;
 }
 
 // Initialize everything after DOM loads
@@ -1019,7 +1037,13 @@ function initializeApp() {
   // Download overlay functionality
   const downloadBtn = document.querySelector('#downloadOverlay');
   if(downloadBtn) {
-    downloadBtn.onclick = downloadOverlay;
+    console.log('Setting up download button click handler');
+    downloadBtn.onclick = () => {
+      console.log('Download button clicked');
+      downloadOverlay();
+    };
+  } else {
+    console.error('Download button not found');
   }
   
   // Color mode toggle
@@ -1083,4 +1107,7 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initializeApp);
 } else {
   initializeApp();
-} 
+}
+
+// Make downloadOverlay function globally accessible for debugging
+window.downloadOverlay = downloadOverlay; 
