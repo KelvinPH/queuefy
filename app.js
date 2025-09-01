@@ -8,7 +8,7 @@ const sampleTrack = {
   artist: "Lumen & Co", 
   duration: 212, 
   elapsed: 48, 
-  art: "demo.jpg" 
+  art: "assets/demo-albumcover.jpg" 
 };
 
 const sampleQueue = [
@@ -46,7 +46,7 @@ function initializeElements() {
     demo: $('demo'), getUrls: $('getUrls'), openPreview: $('openPreview'), reset: $('reset'), 
     preview: $('preview'), colorsBlock: $('colorsBlock'), queuePreview: $('queuePreview'),
     playerUrl: $('playerUrl'), queueUrl: $('queueUrl'), copyPlayerUrl: $('copyPlayerUrl'), 
-    copyQueueUrl: $('copyQueueUrl')
+    copyQueueUrl: $('copyQueueUrl'), downloadOverlay: $('downloadOverlay')
   };
   
   console.log('Elements initialized successfully');
@@ -610,9 +610,17 @@ function autoFillBaseUrl() {
 }
 
 // Toast notification
-function showToast(message, duration = 3000) {
+function showToast(message, type = 'info', duration = 3000) {
   const toast = document.getElementById('toast');
   if (toast) {
+    // Remove existing type classes
+    toast.classList.remove('success', 'error', 'warning');
+    
+    // Add type class if specified
+    if (type && type !== 'info') {
+      toast.classList.add(type);
+    }
+    
     toast.textContent = message;
     toast.classList.add('show');
     
@@ -696,6 +704,201 @@ function initializeNavigation() {
   // Handle initial hash and hash changes
   handleHashChange();
   window.addEventListener('hashchange', handleHashChange);
+}
+
+// Download overlay functionality
+function downloadOverlay() {
+  const s = getState();
+  
+  // Validate required fields
+  if (!s.sbHost || !s.sbPort) {
+    showToast('❌ Please configure Streamer.bot host and port first', 'error');
+    return;
+  }
+  
+  // Disable button during export
+  const downloadBtn = document.querySelector('#downloadOverlay');
+  if (downloadBtn) {
+    const originalText = downloadBtn.textContent;
+    downloadBtn.disabled = true;
+    downloadBtn.textContent = '⏳ Exporting...';
+    
+    try {
+      // Generate the HTML content
+      const htmlContent = generateQueueHTML(s);
+      
+      // Create and download the file
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'queue.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      // Show success message
+      showToast('✅ Downloaded queue.html successfully!', 'success');
+    } catch (error) {
+      console.error('Error generating overlay:', error);
+      showToast('❌ Failed to generate overlay: ' + error.message, 'error');
+    } finally {
+      // Re-enable button
+      if (downloadBtn) {
+        downloadBtn.disabled = false;
+        downloadBtn.textContent = originalText;
+      }
+    }
+  }
+}
+
+// Generate queue HTML content
+function generateQueueHTML(config) {
+  const queueCSS = `
+    /* Queue Styles */
+    .ssq-body { margin: 0; padding: 0; background: transparent; font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif; }
+    .ssq-wrap { padding: 20px; }
+    .ssq-heading { font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #ffffff; }
+    .ssq-list { display: flex; flex-direction: column; gap: 8px; }
+    .ssq-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(0,0,0,0.7); border-radius: 8px; backdrop-filter: blur(10px); }
+    .ssq-art { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; }
+    .ssq-info { flex: 1; min-width: 0; }
+    .ssq-title { font-size: 14px; font-weight: 500; color: #ffffff; margin: 0 0 4px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ssq-artist { font-size: 12px; color: #b6bcc4; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ssq-requested { font-size: 11px; color: #9aa7b6; margin: 0; }
+    
+    /* Connection Status */
+    .connection-status { position: fixed; top: 10px; right: 10px; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; z-index: 1000; opacity: 0.7; transition: opacity 0.3s ease; }
+    .connection-status.connected { background: #22c55e; color: #000; }
+    .connection-status.connecting { background: #f59e0b; color: #000; }
+    .connection-status.disconnected { background: #ef4444; color: #fff; }
+    .connection-status.error { background: #dc2626; color: #fff; }
+    .connection-status.demo { background: #3b82f6; color: #fff; }
+  `;
+  
+  const queueJS = `
+    // Queue functionality
+    let webSocket = null;
+    let reconnectAttempts = 0;
+    let reconnectTimeout = null;
+    let lastUpdateTime = null;
+    
+    const params = new URLSearchParams(location.search);
+    const sbHost = params.get('sb_host') || '${config.sbHost}';
+    const sbPort = params.get('sb_port') || '${config.sbPort}';
+    const sbSsl = params.get('sb_ssl') === '1' || ${config.sbSsl};
+    const eventType = params.get('event_type') || '${config.eventType}';
+    const maxItems = Math.max(1, Math.min(10, +(params.get('max_items') || ${config.queueMax})));
+    
+    function connectStreamerBot() {
+      try {
+        const protocol = sbSsl ? 'wss' : 'ws';
+        const wsUrl = \`\${protocol}://\${sbHost}:\${sbPort}\`;
+        console.log('[Queuefy] Connecting to:', wsUrl);
+        
+        webSocket = new WebSocket(wsUrl);
+        updateConnectionStatus('connecting');
+        
+        webSocket.onopen = function() {
+          console.log('[Queuefy] WebSocket connected');
+          updateConnectionStatus('connected');
+          reconnectAttempts = 0;
+        };
+        
+        webSocket.onmessage = function(event) {
+          try {
+            const data = JSON.parse(event.data);
+            if (data.type === eventType) {
+              lastUpdateTime = Date.now();
+              renderQueue(data);
+            }
+          } catch (error) {
+            console.warn('[Queuefy] Failed to parse message:', error);
+          }
+        };
+        
+        webSocket.onclose = function(event) {
+          console.log('[Queuefy] WebSocket closed:', event.code);
+          updateConnectionStatus('disconnected');
+          
+          if (reconnectAttempts < 5) {
+            const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
+            reconnectTimeout = setTimeout(() => {
+              reconnectAttempts++;
+              connectStreamerBot();
+            }, delay);
+          }
+        };
+        
+        webSocket.onerror = function(error) {
+          console.error('[Queuefy] WebSocket error:', error);
+          updateConnectionStatus('error');
+        };
+      } catch (error) {
+        console.error('[Queuefy] Connection failed:', error);
+        updateConnectionStatus('error');
+      }
+    }
+    
+    function updateConnectionStatus(status, message = '') {
+      const indicator = document.getElementById('connectionStatus');
+      if (indicator) {
+        indicator.className = \`connection-status \${status}\`;
+        indicator.textContent = message || status.charAt(0).toUpperCase() + status.slice(1);
+      }
+    }
+    
+    function renderQueue(data) {
+      const list = document.getElementById('ssq-list');
+      if (!list) return;
+      
+      const items = data.upNext || data.next || [];
+      const maxDisplay = Math.min(items.length, maxItems);
+      
+      list.innerHTML = items.slice(0, maxDisplay).map((item, index) => \`
+        <div class="ssq-item">
+          <img class="ssq-art" src="\${item.artUrl || item.album?.images?.[0]?.url || 'https://via.placeholder.com/40x40/333/666?text=?'}" alt="Album Art" onerror="this.style.display='none'">
+          <div class="ssq-info">
+            <div class="ssq-title">\${item.title || item.name || 'Unknown Track'}</div>
+            <div class="ssq-artist">\${(item.artists || []).map(a => a.name || a).join(', ') || 'Unknown Artist'}</div>
+            \${item.requestedBy ? \`<div class="ssq-requested">Requested by \${item.requestedBy}</div>\` : ''}
+          </div>
+        </div>
+      \`).join('');
+    }
+    
+    // Initialize
+    connectStreamerBot();
+    
+    // Cleanup
+    window.addEventListener('beforeunload', function() {
+      if (webSocket) {
+        webSocket.close();
+      }
+      if (reconnectTimeout) {
+        clearTimeout(reconnectTimeout);
+      }
+    });
+  `;
+  
+  return \`<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Queuefy – Queue Overlay</title>
+<style>\${queueCSS}</style>
+</head>
+<body class="ssq-body">
+  <div id="connectionStatus" class="connection-status connecting">Connecting...</div>
+  <div class="ssq-wrap">
+    <div class="ssq-heading">Up Next</div>
+    <div id="ssq-list" class="ssq-list"></div>
+  </div>
+  <script>\${queueJS}</script>
+</body>
+</html>\`;
 }
 
 // Initialize everything after DOM loads
@@ -811,6 +1014,12 @@ function initializeApp() {
         showToast('Failed to copy URL');
       }
     };
+  }
+  
+  // Download overlay functionality
+  const downloadBtn = document.querySelector('#downloadOverlay');
+  if(downloadBtn) {
+    downloadBtn.onclick = downloadOverlay;
   }
   
   // Color mode toggle

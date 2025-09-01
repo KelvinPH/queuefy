@@ -3,10 +3,53 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SpotiStream – Queue</title>
+<title>Queuefy – Queue Overlay</title>
 <link rel="stylesheet" href="assets/queue.css">
+<style>
+  /* Connection status indicator */
+  .connection-status {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    z-index: 1000;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+  }
+  
+  .connection-status.connected {
+    background: #22c55e;
+    color: #000;
+  }
+  
+  .connection-status.connecting {
+    background: #f59e0b;
+    color: #000;
+  }
+  
+  .connection-status.disconnected {
+    background: #ef4444;
+    color: #fff;
+  }
+  
+  .connection-status.error {
+    background: #dc2626;
+    color: #fff;
+  }
+  
+  .connection-status.demo {
+    background: #3b82f6;
+    color: #fff;
+  }
+</style>
 </head>
 <body class="ssq-body">
+  <!-- Connection Status Indicator -->
+  <div id="connectionStatus" class="connection-status demo">Demo Mode</div>
+  
   <div class="ssq-wrap">
     <div class="ssq-heading">Up Next</div>
     <div id="ssq-list" class="ssq-list"></div>

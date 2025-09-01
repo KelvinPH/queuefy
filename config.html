@@ -3,30 +3,755 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-      <title>Queuefy Configurator</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Queuefy Configurator</title>
+  <style>
+    /* CSS Reset */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
     
-
+    /* CSS Variables */
+    :root {
+      /* Colors - Dark Theme */
+      --bg-primary: #0a0a0a;
+      --bg-secondary: #1a1a1a;
+      --bg-tertiary: #2a2a2a;
+      --border: #333333;
+      --border-hover: #444444;
+      --text-primary: #ffffff;
+      --text-secondary: #b0b0b0;
+      --text-muted: #666666;
+      --accent: #1db954;
+      --accent-hover: #1ed760;
+      --success: #34c759;
+      --warning: #ff9500;
+      --danger: #ff3b30;
+      
+      /* Spacing */
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 12px;
+      --space-lg: 16px;
+      --space-xl: 20px;
+      --space-2xl: 24px;
+      --space-3xl: 32px;
+      
+      /* Typography */
+      --font-size-xs: 12px;
+      --font-size-sm: 14px;
+      --font-size-md: 16px;
+      --font-size-lg: 20px;
+      --font-size-xl: 24px;
+      --font-size-2xl: 28px;
+      
+      /* Border Radius */
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      
+      /* Shadows */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.4);
+      --shadow-lg: 0 10px 15px rgba(0,0,0,0.5);
+      
+      /* Color Picker Enhancements */
+      --color-picker-size: 60px;
+      --color-picker-border: 3px;
+    }
+    
+    /* Base Styles */
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: var(--font-size-md);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* Layout */
+    .dashboard {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Header */
+    .header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      padding: var(--space-2xl) var(--space-3xl);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(20px);
+    }
+    
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .header h1 {
+      font-size: var(--font-size-xl);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2xl);
+    }
+    
+    .demo-toggle {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      cursor: pointer;
+      font-weight: 500;
+      font-size: var(--font-size-sm);
+      color: var(--text-primary);
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: var(--space-md);
+      align-items: center;
+    }
+    
+    /* Main Content */
+    .main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: var(--space-3xl);
+      display: grid;
+      grid-template-columns: 520px 1fr;
+      gap: var(--space-3xl);
+      flex: 1;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-2xl);
+      height: fit-content;
+      position: sticky;
+      top: 116px;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .sidebar-content {
+      overflow-y: auto;
+      overflow-x: hidden;
+      max-height: calc(100vh - 280px);
+    }
+    
+    .sidebar-content::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .sidebar-content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .sidebar-content::-webkit-scrollbar-thumb {
+      background: var(--border-hover);
+      border-radius: 3px;
+    }
+    
+    .sidebar-content::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+    
+    /* Navigation */
+    .nav-tabs {
+      display: flex;
+      gap: var(--space-xs);
+      background: var(--bg-tertiary);
+      padding: var(--space-xs);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      margin-bottom: var(--space-2xl);
+    }
+    
+    .nav-tab {
+      appearance: none;
+      border: none;
+      background: transparent;
+      padding: var(--space-md) var(--space-lg);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      flex: 1;
+      text-align: center;
+    }
+    
+    .nav-tab.active {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-sm);
+      font-weight: 600;
+    }
+    
+    .nav-tab:hover:not(.active) {
+      color: var(--text-primary);
+      background: var(--bg-tertiary);
+    }
+    
+    /* Sub-tabs */
+    .sub-tabs {
+      display: flex;
+      gap: var(--space-xs);
+      background: var(--bg-tertiary);
+      padding: var(--space-xs);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      margin-bottom: var(--space-2xl);
+    }
+    
+    .sub-tab {
+      appearance: none;
+      border: none;
+      background: transparent;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-xs);
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      flex: 1;
+      text-align: center;
+    }
+    
+    .sub-tab.active {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-sm);
+      font-weight: 600;
+    }
+    
+    .sub-tab:hover:not(.active) {
+      color: var(--text-primary);
+      background: var(--bg-tertiary);
+    }
+    
+    /* Tab Panels */
+    .tab-panel {
+      display: none;
+      gap: var(--space-2xl);
+    }
+    
+    .tab-panel.active {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .sub-panel {
+      display: none;
+      gap: var(--space-2xl);
+    }
+    
+    .sub-panel.active {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Cards */
+    .card {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+    
+    .card:hover {
+      box-shadow: var(--shadow-md);
+    }
+    
+    .card-header {
+      padding: var(--space-2xl) var(--space-2xl) 0 var(--space-2xl);
+      border-bottom: 1px solid var(--border);
+      margin-bottom: var(--space-2xl);
+    }
+    
+    .card-title {
+      margin: 0 0 var(--space-lg) 0;
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+    
+    .card-title::before {
+      content: '';
+      width: 4px;
+      height: 20px;
+      background: linear-gradient(135deg, var(--accent), var(--success));
+      border-radius: 2px;
+    }
+    
+    .card-description {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+    
+    .card-body {
+      padding: 0 var(--space-2xl) var(--space-2xl) var(--space-2xl);
+    }
+    
+    /* Form Elements */
+    .form-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xl);
+      margin-bottom: var(--space-3xl);
+    }
+    
+    .form-section:last-child {
+      margin-bottom: 0;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-md);
+    }
+    
+    .form-label {
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    
+    .form-input, .form-select {
+      width: 100%;
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-md);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      font-size: var(--font-size-sm);
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+    
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.1);
+      background: var(--bg-tertiary);
+    }
+    
+    /* Range Inputs */
+    .range-group {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    
+    .range-input {
+      flex: 1;
+      height: 6px;
+      background: var(--bg-secondary);
+      border-radius: 3px;
+      outline: none;
+      -webkit-appearance: none;
+      border: 1px solid var(--border);
+    }
+    
+    .range-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.15s ease;
+      border: 2px solid var(--bg-secondary);
+    }
+    
+    .range-input::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .range-value {
+      background: var(--bg-secondary);
+      padding: 4px 8px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      color: var(--accent);
+      min-width: 50px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    
+    /* Toggle Switches */
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-md) 0;
+    }
+    
+    .toggle {
+      appearance: none;
+      width: 52px;
+      height: 28px;
+      background: var(--border);
+      border-radius: 14px;
+      position: relative;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+    }
+    
+    .toggle:checked {
+      background: var(--accent);
+    }
+    
+    .toggle::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .toggle:checked::after {
+      left: 26px;
+    }
+    
+    /* Color Picker */
+    .color-picker {
+      width: var(--color-picker-size);
+      height: var(--color-picker-size);
+      border: var(--color-picker-border) solid var(--border);
+      padding: 0;
+      border-radius: var(--radius-md);
+      background: var(--bg-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .color-picker:hover {
+      border-color: var(--accent);
+      transform: scale(1.05);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .color-picker:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.3);
+    }
+    
+    /* Enhanced color section styling */
+    #colorsBlock, #queueColorsBlock {
+      background: rgba(29, 185, 84, 0.05);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin-top: var(--space-md);
+      border: 1px solid rgba(29, 185, 84, 0.1);
+    }
+    
+    #colorsBlock.muted, #queueColorsBlock.muted {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    
+    /* Preset Grid */
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: var(--space-sm);
+      margin-top: var(--space-md);
+    }
+    
+    .preset-btn {
+      padding: 10px 12px;
+      font-size: var(--font-size-xs);
+      font-weight: 500;
+    }
+    
+    /* URL Display */
+    .url-display {
+      font-family: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      padding: var(--space-lg);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      overflow: auto;
+      font-size: var(--font-size-sm);
+      line-height: 1.4;
+      word-break: break-all;
+      min-height: 60px;
+    }
+    
+    /* Badge */
+    .badge {
+      font-size: var(--font-size-xs);
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    
+    /* Helper Text */
+    .helper-text {
+      font-size: var(--font-size-xs);
+      color: var(--text-muted);
+      margin-top: var(--space-xs);
+    }
+    
+    /* Muted State */
+    .muted {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    
+    /* Disabled State */
+    .disabled {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+    
+    .disabled .form-label {
+      color: var(--text-muted);
+    }
+    
+    .disabled .toggle {
+      background: var(--text-muted);
+      cursor: not-allowed;
+    }
+    
+    .disabled .form-select {
+      background: var(--bg-primary);
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
+    
+    .disabled .range-input {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+    
+    /* Buttons */
+    .btn {
+      appearance: none;
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 500;
+      padding: var(--space-md) var(--space-xl);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: var(--font-size-sm);
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-family: inherit;
+    }
+    
+    .btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .btn-secondary {
+      background: var(--success);
+    }
+    
+    .btn-secondary:hover {
+      background: #28a745;
+    }
+    
+    .btn-outline {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+    
+    .btn-outline:hover {
+      background: var(--bg-secondary);
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+      transform: none;
+    }
+    
+    .btn-sm {
+      padding: var(--space-sm) var(--space-md);
+      font-size: var(--font-size-xs);
+    }
+    
+    /* Preview Area */
+    .preview-area {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      min-height: 600px;
+    }
+    
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-xl) var(--space-2xl);
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .preview-title {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0;
+    }
+    
+    .preview-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      margin: var(--space-xs) 0 0 0;
+    }
+    
+    .preview-content {
+      padding: var(--space-xl);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xl);
+      flex: 1;
+    }
+    
+    .preview-iframe {
+      width: 100%;
+      height: 400px;
+      border: none;
+      border-radius: var(--radius-md);
+      background: #000;
+      min-height: 400px;
+      transition: opacity 0.2s ease;
+    }
+    
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: var(--space-2xl) 0;
+    }
+    
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .main {
+        grid-template-columns: 1fr;
+        gap: var(--space-2xl);
+      }
+      
+      .sidebar {
+        position: static;
+      }
+      
+      .preview-area {
+        min-height: 400px;
+      }
+      
+      .preview-iframe {
+        height: 300px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .header {
+        padding: var(--space-xl) var(--space-lg);
+      }
+      
+      .main {
+        padding: var(--space-lg);
+      }
+      
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .preset-grid {
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      }
+      
+      .range-group {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-sm);
+      }
+      
+      .range-value {
+        align-self: center;
+        min-width: 60px;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="dashboard">
     <header class="header">
-      <h1>Queuefy Configurator</h1>
-      <div class="actions">
-        <div class="demo-toggle">
-          <label class="toggle-label">
-            <input id="demo" type="checkbox" class="toggle" checked/>
-            <span class="toggle-text">Demo Mode</span>
-          </label>
+      <div class="header-content">
+        <h1>Queuefy Configurator</h1>
+        <div class="header-controls">
+          <div class="demo-toggle">
+            <label class="toggle-label">
+              <input id="demo" type="checkbox" class="toggle" checked/>
+              <span class="toggle-text">Demo Mode</span>
+            </label>
+          </div>
+          <div class="header-actions">
+            <button id="copy" class="btn btn-sm">Copy URL</button>
+            <button id="open" class="btn-secondary btn-sm">Open Preview</button>
+            <button id="reset" class="btn-outline btn-sm">Reset</button>
+          </div>
         </div>
-        <button id="getUrls" class="btn btn--primary">Get URLs</button>
-        <button id="reset" class="btn btn--ghost">Reset</button>
       </div>
     </header>
     
-    <main class="container">
+    <main class="main">
       <aside class="sidebar">
-        <nav class="tabbar" role="tablist">
+        <nav class="nav-tabs" role="tablist">
           <button class="nav-tab active" data-tab="player" role="tab" aria-selected="true">Player</button>
           <button class="nav-tab" data-tab="queue" role="tab" aria-selected="false">Queue</button>
         </nav>
@@ -34,465 +759,707 @@
         <div class="sidebar-content">
           <!-- Player Tab Panel -->
           <div class="tab-panel active" id="player-tab" role="tabpanel">
-
+            <div class="sub-tabs" role="tablist">
+              <button class="sub-tab active" data-subtab="basics" role="tab" aria-selected="true">Basics</button>
+              <button class="sub-tab" data-subtab="links" role="tab" aria-selected="false">Links</button>
+            </div>
             
-
+            <!-- Player Basics Sub-panel -->
+            <div class="sub-panel active" id="player-basics">
               <div class="card">
-                <h2 class="card__title">Quick Start</h2>
-                <p class="card__desc">Configure your player overlay with quick presets and basic settings</p>
-                <div class="field">
-                  <label for="base">Base URL</label>
-                  <input id="base" type="url" placeholder="https://<user>.github.io/queuefy/overlay.html" value="https://kelvinph.github.io/queuefy/overlay.html"/>
+                <div class="card-header">
+                  <h2 class="card-title">Quick Start</h2>
+                  <p class="card-description">Configure your player overlay with quick presets and basic settings</p>
                 </div>
-              </div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="form-group">
+                      <label class="form-label">Base URL</label>
+                      <input id="base" class="form-input" type="url" placeholder="https://<user>.github.io/queuefy/overlay.html" value="https://kelvinph.github.io/queuefy/overlay.html"/>
+                    </div>
+                    
+                    
+                    
+                                         <div class="form-group">
+                       <label class="form-label">Generated Player URL</label>
+                       <div id="url" class="url-display"></div>
+                       <div class="badge">Add this URL to OBS → Browser Source</div>
 
-              <div class="card">
-                <h2 class="card__title">Layout & Style</h2>
-                <p class="card__desc">Configure the basic layout and appearance</p>
-                <div class="form-row">
-                  <div class="field">
-                    <label for="layout">Layout</label>
-                    <select id="layout">
-                      <option value="record">Record (Vinyl) - Classic spinning vinyl with tonearm</option>
-                      <option value="card">Card (Cover) - Album art card layout</option>
-                      <option value="bar">Bar (Minimal) - Text-only minimal bar</option>
-                      <option value="stacked">Stacked (Center) - Centered stacked layout</option>
-                      <option value="compact">Compact (Mini) - Small compact layout</option>
-                      <option value="wide">Wide (Cinematic) - Wide cinematic layout</option>
-                      <option value="split">Split (Dual) - Split media and text</option>
-                      <option value="floating">Floating (Overlay) - Floating overlay panel</option>
-                      <option value="corner">Corner (Tiny) - Small corner overlay</option>
-                      <option value="ticker">Ticker (Scroll) - Scrolling ticker bar</option>
-                    </select>
-                  </div>
-                  <div class="field">
-                    <label for="align">Media Position</label>
-                    <select id="align">
-                      <option value="left">Left</option>
-                      <option value="right">Right</option>
-                      <option value="center">Center</option>
-                      <option value="top">Top</option>
-                      <option value="bottom">Bottom</option>
-                    </select>
-                  </div>
-                </div>
-                
-                <div class="form-row">
-                  <div class="field">
-                    <label for="accentstyle">Accent Style</label>
-                    <select id="accentstyle">
-                      <option value="solid">Solid</option>
-                      <option value="glow">Glow</option>
-                      <option value="gradient">Gradient</option>
-                      <option value="pulse">Pulse</option>
-                      <option value="rainbow">Rainbow</option>
-                    </select>
+                     </div>
                   </div>
                 </div>
               </div>
 
               <div class="card">
-                <h2 class="card__title">🎨 Colors & Custom</h2>
-                <p class="card__desc">Customize colors and visual appearance</p>
-                <div class="field">
-                  <label for="colorMode">Color Mode</label>
-                  <select id="colorMode">
-                    <option value="custom">Custom Colors</option>
-                    <option value="theme">Theme (Legacy)</option>
-                  </select>
+                <div class="card-header">
+                  <h2 class="card-title">Layout & Style</h2>
+                  <p class="card-description">Configure the basic layout and appearance</p>
                 </div>
-                <div id="colorsBlock">
-                  <div class="form-row">
-                    <div class="field">
-                      <label for="accent">🎯 Accent Color</label>
-                      <input id="accent" type="color" class="color-picker" value="#1db954"/>
-                      <div class="help">Primary accent color for highlights and progress</div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Layout</label>
+                        <select id="layout" class="form-select">
+                          <option value="record">Record (Vinyl) - Classic spinning vinyl with tonearm</option>
+                          <option value="card">Card (Cover) - Album art card layout</option>
+                          <option value="bar">Bar (Minimal) - Text-only minimal bar</option>
+                          <option value="stacked">Stacked (Center) - Centered stacked layout</option>
+                          <option value="compact">Compact (Mini) - Small compact layout</option>
+                          <option value="wide">Wide (Cinematic) - Wide cinematic layout</option>
+                          <option value="split">Split (Dual) - Split media and text</option>
+                          <option value="floating">Floating (Overlay) - Floating overlay panel</option>
+                          <option value="corner">Corner (Tiny) - Small corner overlay</option>
+                          <option value="ticker">Ticker (Scroll) - Scrolling ticker bar</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Media Position</label>
+                        <select id="align" class="form-select">
+                          <option value="left">Left</option>
+                          <option value="right">Right</option>
+                          <option value="center">Center</option>
+                          <option value="top">Top</option>
+                          <option value="bottom">Bottom</option>
+                        </select>
+                      </div>
                     </div>
-                    <div class="field">
-                      <label for="text">📝 Text Color</label>
-                      <input id="text" type="color" class="color-picker" value="#eaeaea"/>
-                      <div class="help">Main text color</div>
+                    
+                                         <div class="form-row">
+                       <div class="form-group">
+                         <label class="form-label">Accent Style</label>
+                         <select id="accentstyle" class="form-select">
+                           <option value="solid">Solid</option>
+                           <option value="glow">Glow</option>
+                           <option value="gradient">Gradient</option>
+                           <option value="pulse">Pulse</option>
+                           <option value="rainbow">Rainbow</option>
+                         </select>
+                       </div>
+
+                     </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="card-title">🎨 Colors & Custom</h2>
+                  <p class="card-description">Customize colors and visual appearance</p>
+                </div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="form-group">
+                      <label class="form-label">Color Mode</label>
+                      <select id="colorMode" class="form-select">
+                        <option value="custom">Custom Colors</option>
+                        <option value="theme">Theme (Legacy)</option>
+                      </select>
+                    </div>
+                    <div id="colorsBlock" class="form-section">
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label class="form-label">🎯 Accent Color</label>
+                          <input id="accent" type="color" class="color-picker" value="#1db954"/>
+                          <div class="helper-text">Primary accent color for highlights and progress</div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">📝 Text Color</label>
+                          <input id="text" type="color" class="color-picker" value="#eaeaea"/>
+                          <div class="helper-text">Main text color</div>
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label class="form-label">🔇 Muted Color</label>
+                          <input id="muted" type="color" class="color-picker" value="#b6bcc4"/>
+                          <div class="helper-text">Secondary text and muted elements</div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">🎨 Panel Color</label>
+                          <input id="panel" type="color" class="color-picker" value="#121212"/>
+                          <div class="helper-text">Background panel color</div>
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label class="form-label">💫 Glow Color</label>
+                          <input id="glowColor" type="color" class="color-picker" value="#00ff00"/>
+                          <div class="helper-text">Glow effect color</div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">🔄 Border Color</label>
+                          <input id="borderColor" type="color" class="color-picker" value="#ffffff"/>
+                          <div class="helper-text">Border color for elements</div>
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label class="form-label">🎭 Background</label>
+                          <select id="backgroundType" class="form-select">
+                            <option value="panel">Panel Background</option>
+                            <option value="transparent">Transparent</option>
+                          </select>
+                          <div class="helper-text">Choose between panel background or transparent</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div class="form-row">
-                    <div class="field">
-                      <label for="muted">🔇 Muted Color</label>
-                      <input id="muted" type="color" class="color-picker" value="#b6bcc4"/>
-                      <div class="help">Secondary text and muted elements</div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="card-title">Background</h2>
+                  <p class="card-description">Configure background styling and transparency</p>
+                </div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="toggle-group">
+                      <label class="form-label">Transparent panel</label>
+                      <input id="transparent" type="checkbox" class="toggle"/>
                     </div>
-                    <div class="field">
-                      <label for="panelColor">🎨 Panel Color</label>
+                    <div class="form-group">
+                      <label class="form-label">Panel Opacity</label>
+                      <div class="range-group">
+                        <input id="panelAlpha" class="range-input" type="range" min="0" max="100" step="1" value="72" oninput="paOut.textContent=this.value"/>
+                        <div class="range-value"><span id="paOut">72</span>%</div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Panel Color</label>
                       <input id="panelColor" type="color" class="color-picker" value="#121212"/>
-                      <div class="help">Background panel color</div>
-                    </div>
-                  </div>
-                  <div class="form-row">
-                    <div class="field">
-                      <label for="glowColor">💫 Glow Color</label>
-                      <input id="glowColor" type="color" class="color-picker" value="#00ff00"/>
-                      <div class="help">Glow effect color</div>
-                    </div>
-                    <div class="field">
-                      <label for="borderColor">🔄 Border Color</label>
-                      <input id="borderColor" type="color" class="color-picker" value="#ffffff"/>
-                      <div class="help">Border color for elements</div>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div class="card">
-                <h2 class="card__title">Background</h2>
-                <p class="card__desc">Configure background styling and transparency</p>
-                <div class="toggle-group">
-                  <label for="transparent">Transparent panel</label>
-                  <input id="transparent" type="checkbox" class="toggle"/>
+                <div class="card-header">
+                  <h2 class="card-title">Sizing & Positioning</h2>
+                  <p class="card-description">Adjust dimensions and positioning</p>
                 </div>
-                <div class="field">
-                  <label for="panelAlpha">Panel Opacity</label>
-                  <div class="range-group">
-                    <input id="panelAlpha" class="range-input" type="range" min="0" max="100" step="1" value="72" oninput="paOut.textContent=this.value"/>
-                    <div class="range-value"><span id="paOut">72</span>%</div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="card">
-                <h2 class="card__title">Sizing & Positioning</h2>
-                <p class="card__desc">Adjust dimensions and positioning</p>
-                <div class="form-row">
-                  <div class="field">
-                    <label for="disc">Media Size</label>
-                    <div class="range-group">
-                      <input id="disc" class="range-input" type="range" min="120" max="360" step="2" value="200" oninput="discOut.textContent=this.value"/>
-                      <div class="range-value"><span id="discOut">200</span>px</div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="form-row">
+                                             <div class="form-group">
+                         <label class="form-label">Media Size</label>
+                         <div class="range-group">
+                           <input id="disc" class="range-input" type="range" min="120" max="360" step="2" value="200" oninput="discOut.textContent=this.value"/>
+                           <div class="range-value"><span id="discOut">200</span>px</div>
+                         </div>
+                         <div class="helper-text">Not applicable for Bar layout (no media display)</div>
+                       </div>
+                      <div class="form-group">
+                        <label class="form-label">Progress Height</label>
+                        <div class="range-group">
+                          <input id="bar" class="range-input" type="range" min="0" max="16" step="1" value="6" oninput="barOut.textContent=this.value"/>
+                          <div class="range-value"><span id="barOut">6</span>px</div>
+                        </div>
+                      </div>
                     </div>
-                    <div class="help">Not applicable for Bar layout (no media display)</div>
-                  </div>
-                  <div class="field">
-                    <label for="bar">Progress Height</label>
-                    <div class="range-group">
-                      <input id="bar" class="range-input" type="range" min="0" max="16" step="1" value="6" oninput="barOut.textContent=this.value"/>
-                      <div class="range-value"><span id="barOut">6</span>px</div>
+                    
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Progress Width</label>
+                        <div class="range-group">
+                          <input id="progressWidth" class="range-input" type="range" min="50" max="100" step="5" value="100" oninput="progWidthOut.textContent=this.value"/>
+                          <div class="range-value"><span id="progWidthOut">100</span>%</div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Text Alignment</label>
+                        <select id="textAlign" class="form-select">
+                          <option value="auto">Auto (follows media)</option>
+                          <option value="left">Left</option>
+                          <option value="center">Center</option>
+                          <option value="right">Right</option>
+                        </select>
+                      </div>
                     </div>
-                  </div>
-                </div>
-                
-                <div class="form-row">
-                  <div class="field">
-                    <label for="progressWidth">Progress Width</label>
-                    <div class="range-group">
-                      <input id="progressWidth" class="range-input" type="range" min="50" max="100" step="5" value="100" oninput="progWidthOut.textContent=this.value"/>
-                      <div class="range-value"><span id="progWidthOut">100</span>%</div>
+                    
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Corner Radius</label>
+                        <div class="range-group">
+                          <input id="radius" class="range-input" type="range" min="0" max="24" step="1" value="16" oninput="radOut.textContent=this.value"/>
+                          <div class="range-value"><span id="radOut">16</span>px</div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Blur</label>
+                        <div class="range-group">
+                          <input id="blur" class="range-input" type="range" min="0" max="16" step="1" value="8" oninput="blurOut.textContent=this.value"/>
+                          <div class="range-value"><span id="blurOut">8</span>px</div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div class="field">
-                    <label for="textAlign">Text Alignment</label>
-                    <select id="textAlign">
-                      <option value="auto">Auto (follows media)</option>
-                      <option value="left">Left</option>
-                      <option value="center">Center</option>
-                      <option value="right">Right</option>
-                    </select>
-                  </div>
-                </div>
-                
-                <div class="form-row">
-                  <div class="field">
-                    <label for="radius">Corner Radius</label>
-                    <div class="range-group">
-                      <input id="radius" class="range-input" type="range" min="0" max="24" step="1" value="16" oninput="radOut.textContent=this.value"/>
-                      <div class="range-value"><span id="radOut">16</span>px</div>
-                    </div>
-                  </div>
-                  <div class="field">
-                    <label for="blur">Blur</label>
-                    <div class="range-group">
-                      <input id="blur" class="range-input" type="range" min="0" max="16" step="1" value="8" oninput="blurOut.textContent=this.value"/>
-                      <div class="range-value"><span id="blurOut">8</span>px</div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="form-row">
-                  <div class="field">
-                    <label for="pad">Safe Padding</label>
-                    <div class="range-group">
-                      <input id="pad" class="range-input" type="range" min="0" max="32" step="1" value="16" oninput="padOut.textContent=this.value"/>
-                      <div class="range-value"><span id="padOut">16</span>px</div>
-                    </div>
-                  </div>
-                  <div class="field">
-                    <label for="outline">Title Outline</label>
-                    <div class="range-group">
-                      <input id="outline" class="range-input" type="range" min="0" max="2" step="1" value="0" oninput="outlineOut.textContent=this.value"/>
-                      <div class="range-value"><span id="outlineOut">0</span>px</div>
+                    
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Safe Padding</label>
+                        <div class="range-group">
+                          <input id="pad" class="range-input" type="range" min="0" max="32" step="1" value="16" oninput="padOut.textContent=this.value"/>
+                          <div class="range-value"><span id="padOut">16</span>px</div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Title Outline</label>
+                        <div class="range-group">
+                          <input id="outline" class="range-input" type="range" min="0" max="2" step="1" value="0" oninput="outlineOut.textContent=this.value"/>
+                          <div class="range-value"><span id="outlineOut">0</span>px</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div class="card">
-                <h2 class="card__title">Behavior</h2>
-                <p class="card__desc">Control how the player behaves</p>
-                <div class="toggle-group">
-                  <label for="compact">Compact spacing</label>
-                  <input id="compact" type="checkbox" class="toggle"/>
+                <div class="card-header">
+                  <h2 class="card-title">Behavior</h2>
+                  <p class="card-description">Control how the player behaves</p>
                 </div>
-                <div class="toggle-group">
-                  <label for="spin">Spin while playing</label>
-                  <input id="spin" type="checkbox" class="toggle" checked/>
-                </div>
-                <div class="toggle-group" id="labelStaticGroup">
-                  <label for="labelStatic">Keep label upright</label>
-                  <input id="labelStatic" type="checkbox" class="toggle"/>
-                  <div class="help">Only works with Record layout</div>
-                </div>
-                <div class="toggle-group">
-                  <label for="tonearm">Show tonearm (record)</label>
-                  <input id="tonearm" type="checkbox" class="toggle" checked/>
-                  <div class="help">Only works with Record layout</div>
-                </div>
-              </div>
-
-              <div class="card">
-                <h2 class="card__title">Elements</h2>
-                <p class="card__desc">Toggle which elements to display</p>
-                <div class="toggle-group">
-                  <label for="showStatus">Status pill</label>
-                  <input id="showStatus" type="checkbox" class="toggle" checked/>
-                </div>
-                <div class="toggle-group">
-                  <label for="showProgress">Progress bar</label>
-                  <input id="showProgress" type="checkbox" class="toggle" checked/>
-                </div>
-                <div class="toggle-group">
-                  <label for="showTime">Time (elapsed/total)</label>
-                  <input id="showTime" type="checkbox" class="toggle" checked/>
-                </div>
-                <div class="toggle-group">
-                  <label for="showTitle">Title</label>
-                  <input id="showTitle" type="checkbox" class="toggle" checked/>
-                </div>
-                <div class="toggle-group">
-                  <label for="showArtist">Artist</label>
-                  <input id="showArtist" type="checkbox" class="toggle" checked/>
-                </div>
-                <div class="toggle-group">
-                  <label for="showNext">Show Next (stacked)</label>
-                  <input id="showNext" type="checkbox" class="toggle"/>
-                  <div class="help">Only works with Stacked layout</div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="toggle-group">
+                      <label class="form-label">Compact spacing</label>
+                      <input id="compact" type="checkbox" class="toggle"/>
+                    </div>
+                    <div class="toggle-group">
+                      <label class="form-label">Spin while playing</label>
+                      <input id="spin" type="checkbox" class="toggle" checked/>
+                    </div>
+                    <div class="toggle-group" id="labelStaticGroup">
+                      <label class="form-label">Keep label upright</label>
+                      <input id="labelStatic" type="checkbox" class="toggle"/>
+                      <div class="helper-text">Only works with Record layout</div>
+                    </div>
+                                         <div class="toggle-group">
+                       <label class="form-label">Show tonearm (record)</label>
+                       <input id="tonearm" type="checkbox" class="toggle" checked/>
+                       <div class="helper-text">Only works with Record layout</div>
+                     </div>
+                  </div>
                 </div>
               </div>
 
               <div class="card">
-                <h2 class="card__title">Text & Motion</h2>
-                <p class="card__desc">Configure text behavior and animations</p>
-                <div class="toggle-group">
-                  <label for="scroll">Scroll long text</label>
-                  <input id="scroll" type="checkbox" class="toggle" checked/>
+                <div class="card-header">
+                  <h2 class="card-title">Elements</h2>
+                  <p class="card-description">Toggle which elements to display</p>
                 </div>
-                <div class="toggle-group">
-                  <label for="autoAccent">Auto-accent from album art</label>
-                  <input id="autoAccent" type="checkbox" class="toggle"/>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="toggle-group">
+                      <label class="form-label">Status pill</label>
+                      <input id="showStatus" type="checkbox" class="toggle" checked/>
+                    </div>
+                    <div class="toggle-group">
+                      <label class="form-label">Progress bar</label>
+                      <input id="showProgress" type="checkbox" class="toggle" checked/>
+                    </div>
+                    <div class="toggle-group">
+                      <label class="form-label">Time (elapsed/total)</label>
+                      <input id="showTime" type="checkbox" class="toggle" checked/>
+                    </div>
+                    <div class="toggle-group">
+                      <label class="form-label">Title</label>
+                      <input id="showTitle" type="checkbox" class="toggle" checked/>
+                    </div>
+                    <div class="toggle-group">
+                      <label class="form-label">Artist</label>
+                      <input id="showArtist" type="checkbox" class="toggle" checked/>
+                    </div>
+                                         <div class="toggle-group">
+                       <label class="form-label">Show Next (stacked)</label>
+                       <input id="showNext" type="checkbox" class="toggle"/>
+                       <div class="helper-text">Only works with Stacked layout</div>
+                     </div>
+                  </div>
                 </div>
-                <div class="field">
-                  <label for="marq">Marquee Speed</label>
-                  <div class="range-group">
-                    <input id="marq" class="range-input" type="range" min="8" max="30" step="1" value="18" oninput="marqOut.textContent=this.value"/>
-                    <div class="range-value"><span id="marqOut">18</span>s</div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="card-title">Text & Motion</h2>
+                  <p class="card-description">Configure text behavior and animations</p>
+                </div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="toggle-group">
+                      <label class="form-label">Scroll long text</label>
+                      <input id="scroll" type="checkbox" class="toggle" checked/>
+                    </div>
+                    <div class="toggle-group">
+                      <label class="form-label">Auto-accent from album art</label>
+                      <input id="autoAccent" type="checkbox" class="toggle"/>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Marquee Speed</label>
+                      <div class="range-group">
+                        <input id="marq" class="range-input" type="range" min="8" max="30" step="1" value="18" oninput="marqOut.textContent=this.value"/>
+                        <div class="range-value"><span id="marqOut">18</span>s</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
             
+            <!-- Player Links Sub-panel -->
+                             <div class="card">
+                 <div class="card-header">
+                   <h2 class="card-title">Typography</h2>
+                   <p class="card-description">Customize fonts and text styling</p>
+                 </div>
+                 <div class="card-body">
+                   <div class="form-section">
+                     <div class="form-row">
+                       <div class="form-group">
+                         <label class="form-label">Font</label>
+                         <select id="font" class="form-select">
+                           <option value="">System</option>
+                           <option value="inter">Inter</option>
+                           <option value="roboto">Roboto</option>
+                           <option value="mono">Mono</option>
+                         </select>
+                       </div>
+                       <div class="form-group">
+                         <label class="form-label">Text Shadow</label>
+                         <select id="shadow" class="form-select">
+                           <option value="0">Off</option>
+                           <option value="1">On</option>
+                         </select>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+               </div>
 
+               <div class="card">
+                 <div class="card-header">
+                   <h2 class="card-title">Background</h2>
+                   <p class="card-description">Configure background styling and transparency</p>
+                 </div>
+                 <div class="card-body">
+                   <div class="form-section">
+                     <div class="toggle-group">
+                       <label class="form-label">Transparent panel</label>
+                       <input id="transparent" type="checkbox" class="toggle"/>
+                     </div>
+                     <div class="form-group">
+                       <label class="form-label">Panel Opacity</label>
+                       <div class="range-group">
+                         <input id="panelAlpha" class="range-input" type="range" min="0" max="100" step="1" value="72" oninput="paOut.textContent=this.value"/>
+                         <div class="range-value"><span id="paOut">72</span>%</div>
+                       </div>
+                     </div>
+                     <div class="form-group">
+                       <label class="form-label">Panel Color</label>
+                       <input id="panelColor" type="color" class="color-picker" value="#121212"/>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+
+               <div class="card">
+                 <div class="card-header">
+                   <h2 class="card-title">Quick Actions</h2>
+                   <p class="card-description">One-click presets for common use cases</p>
+                 </div>
+                 <div class="card-body">
+                   <div class="form-section">
+                     <button id="transparentPreset" class="btn-outline">1-click Transparent</button>
+                   </div>
+                 </div>
+               </div>
+
+
+
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="card-title">Background</h2>
+                  <p class="card-description">Configure background styling and transparency</p>
+                </div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="form-group">
+                      <label class="form-label">Type</label>
+                      <select id="bgType" class="form-select">
+                        <option value="none">None</option>
+                        <option value="solid">Solid</option>
+                        <option value="gradient">Gradient</option>
+                        <option value="image">Image</option>
+                      </select>
+                    </div>
+                    <div id="bgSolid" class="form-group">
+                      <label class="form-label">Background Color</label>
+                      <input id="bgColor" type="color" class="color-picker" value="#121212"/>
+                    </div>
+                    <div id="bgGradient" class="form-section" style="display: none;">
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label class="form-label">Gradient Start</label>
+                          <input id="bgGradientStart" type="color" class="color-picker" value="#1db954"/>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">Gradient End</label>
+                          <input id="bgGradientEnd" type="color" class="color-picker" value="#191414"/>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Gradient Angle</label>
+                        <div class="range-group">
+                          <input id="bgGradientAngle" class="range-input" type="range" min="0" max="360" step="1" value="45" oninput="bgAngleOut.textContent=this.value"/>
+                          <div class="range-value"><span id="bgAngleOut">45</span>°</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div id="bgImage" class="form-section" style="display: none;">
+                      <div class="form-group">
+                        <label class="form-label">Image URL</label>
+                        <input id="bgImageUrl" class="form-input" type="url" placeholder="https://example.com/image.jpg"/>
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label class="form-label">Blur</label>
+                          <div class="range-group">
+                            <input id="bgImageBlur" class="range-input" type="range" min="0" max="20" step="1" value="0" oninput="bgBlurOut.textContent=this.value"/>
+                            <div class="range-value"><span id="bgBlurOut">0</span>px</div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">Opacity</label>
+                          <div class="range-group">
+                            <input id="bgImageOpacity" class="range-input" type="range" min="0" max="1" step="0.1" value="1" oninput="bgOpacityOut.textContent=this.value"/>
+                            <div class="range-value"><span id="bgOpacityOut">1</span></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
             
+            <!-- Player Links Sub-panel -->
+            <div class="sub-panel" id="player-links">
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="card-title">OBS URLs</h2>
+                  <p class="card-description">Copy these URLs to add as Browser Sources in OBS</p>
+                </div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="form-group">
+                      <label class="form-label">Player URL</label>
+                      <div id="playerUrl" class="url-display"></div>
+                      <div class="badge">Add this URL to OBS → Browser Source</div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Queue URL</label>
+                      <div id="queueUrlLinks" class="url-display"></div>
+                      <div class="badge">Add this URL to OBS → Browser Source</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="card-title">How to Use</h2>
+                  <p class="card-description">Step-by-step setup instructions</p>
+                </div>
+                <div class="card-body">
+                  <div class="form-section">
+                    <div class="form-group">
+                      <ol style="margin: 0; padding-left: 20px; line-height: 1.6;">
+                        <li>Run Queuefy app on streaming PC</li>
+                        <li>Add Player URL to OBS (Browser Source)</li>
+                        <li>Add Queue URL to OBS (Browser Source)</li>
+                        <li>Use chat commands (!sr, !queue, !song, !skip) to test</li>
+                      </ol>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Queue Tab Panel -->
           <div class="tab-panel" id="queue-tab" role="tabpanel">
             <div class="card">
-              <h2 class="card__title">Queue Behavior</h2>
-              <p class="card__desc">Configure how the queue overlay behaves and connects to your server</p>
-              <div class="form-row">
-                <div class="field">
-                  <label for="queueMax">Queue Max (items)</label>
-                  <input id="queueMax" type="number" min="0" max="20" value="5">
-                </div>
-                <div class="field">
-                  <label for="showArtists">Show Artists</label>
-                  <select id="showArtists">
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
-                  </select>
-                </div>
+              <div class="card-header">
+                <h2 class="card-title">Queue Behavior</h2>
+                <p class="card-description">Configure how the queue overlay behaves and connects to your server</p>
               </div>
-              <div class="form-row">
-                <div class="field">
-                  <button id="downloadOverlay" class="btn btn--primary" style="width: 100%; margin-top: 8px;">
-                    📥 Download queue.html
-                  </button>
-                  <div class="help">Exports your current look + SB settings into a single file.</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="card">
-              <h2 class="card__title">🔌 Streamer.bot Connection</h2>
-              <p class="card__desc">Configure WebSocket connection to Streamer.bot for real-time queue updates</p>
-              <div class="form-row">
-                <div class="field">
-                  <label for="sbHost">Host</label>
-                  <input id="sbHost" placeholder="127.0.0.1" value="127.0.0.1">
-                  <div class="help">Streamer.bot WebSocket server host (usually 127.0.0.1)</div>
-                </div>
-                <div class="field">
-                  <label for="sbPort">Port</label>
-                  <input id="sbPort" type="number" min="1" max="65535" placeholder="8080" value="8080">
-                  <div class="help">Streamer.bot WebSocket server port (usually 8080)</div>
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="field">
-                  <label for="sbSsl">Use SSL</label>
-                  <select id="sbSsl">
-                    <option value="0">No (ws://)</option>
-                    <option value="1">Yes (wss://)</option>
-                  </select>
-                  <div class="help">Enable if Streamer.bot WebSocket server uses SSL</div>
-                </div>
-                <div class="field">
-                  <label for="eventType">Event Type</label>
-                  <input id="eventType" placeholder="queue:update" value="queue:update">
-                  <div class="help">Event type to listen for from Streamer.bot</div>
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="field">
-                  <label for="ws">Legacy WebSocket URL</label>
-                  <input id="ws" placeholder="ws://localhost:5173" value="ws://localhost:5173">
-                  <div class="help">Legacy: ws://localhost:5173 - for old Queuefy server (deprecated)</div>
-                </div>
-                <div class="field">
-                  <label for="pollMs">Poll Interval (ms)</label>
-                  <input id="pollMs" type="number" min="3000" value="15000">
-                  <div class="help">HTTP fallback interval if WebSocket fails (legacy)</div>
+              <div class="card-body">
+                <div class="form-section">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label">Queue Max (items)</label>
+                      <input id="queueMax" class="form-input" type="number" min="0" max="20" value="5">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Show Artists</label>
+                      <select id="showArtists" class="form-select">
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label">WebSocket URL</label>
+                      <input id="ws" class="form-input" placeholder="ws://localhost:5173" value="ws://localhost:5173">
+                      <div class="helper-text">Default: ws://localhost:5173 - connects to your local Queuefy server</div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Poll Interval (ms)</label>
+                      <input id="pollMs" class="form-input" type="number" min="3000" value="15000">
+                      <div class="helper-text">HTTP fallback interval if WebSocket fails</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
             <div class="card">
-              <h2 class="card__title">🎨 Queue Colors & Custom</h2>
-              <p class="card__desc">Customize colors and visual appearance of the queue</p>
-              <div class="field">
-                <label for="queueColorMode">Color Mode</label>
-                <select id="queueColorMode">
-                  <option value="custom">Custom Colors</option>
-                  <option value="theme">Theme (Legacy)</option>
-                </select>
+              <div class="card-header">
+                <h2 class="card-title">🎨 Queue Colors & Custom</h2>
+                <p class="card-description">Customize colors and visual appearance of the queue</p>
               </div>
-              
-              <div id="queueColorsBlock">
-                <div class="form-row">
-                  <div class="field">
-                    <label for="queueAccent">🎯 Accent Color</label>
-                    <input id="queueAccent" type="color" class="color-picker" value="#1db954"/>
-                    <div class="help">Primary accent color for highlights</div>
-                  </div>
-                  <div class="field">
-                    <label for="queueText">📝 Text Color</label>
-                    <input id="queueText" type="color" class="color-picker" value="#ffffff"/>
-                    <div class="help">Main text color</div>
-                  </div>
-                </div>
-                <div class="form-row">
-                  <div class="field">
-                    <label for="queueMuted">🔇 Muted Color</label>
-                    <input id="queueMuted" type="color" class="color-picker" value="#cfcfcf"/>
-                    <div class="help">Secondary text and muted elements</div>
-                  </div>
-                  <div class="field">
-                    <label for="queueCard">🎨 Card Color</label>
-                    <input id="queueCard" type="color" class="color-picker" value="#000000"/>
-                    <div class="help">Background color for queue items</div>
-                  </div>
-                </div>
-                <div class="form-row">
-                  <div class="field">
-                    <label for="queueGlowColor">💫 Glow Color</label>
-                    <input id="queueGlowColor" type="color" class="color-picker" value="#00ff00"/>
-                    <div class="help">Glow effect color</div>
-                  </div>
-                  <div class="field">
-                    <label for="queueBorderColor">🔄 Border Color</label>
-                    <input id="queueBorderColor" type="color" class="color-picker" value="#ffffff"/>
-                    <div class="help">Border color for queue items</div>
-                  </div>
-                </div>
-                <div class="form-row">
-                  <div class="field">
-                    <label for="queueBackgroundType">🎭 Background</label>
-                    <select id="queueBackgroundType">
-                      <option value="card">Card Background</option>
-                      <option value="transparent">Transparent</option>
+              <div class="card-body">
+                <div class="form-section">
+                  <div class="form-group">
+                    <label class="form-label">Color Mode</label>
+                    <select id="queueColorMode" class="form-select">
+                      <option value="custom">Custom Colors</option>
+                      <option value="theme">Theme (Legacy)</option>
                     </select>
-                    <div class="help">Choose between card background or transparent</div>
+                  </div>
+                  
+                  <div id="queueColorsBlock" class="form-section">
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">🎯 Accent Color</label>
+                        <input id="queueAccent" type="color" class="color-picker" value="#1db954"/>
+                        <div class="helper-text">Primary accent color for highlights</div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">📝 Text Color</label>
+                        <input id="queueText" type="color" class="color-picker" value="#ffffff"/>
+                        <div class="helper-text">Main text color</div>
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">🔇 Muted Color</label>
+                        <input id="queueMuted" type="color" class="color-picker" value="#cfcfcf"/>
+                        <div class="helper-text">Secondary text and muted elements</div>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">🎨 Card Color</label>
+                        <input id="queueCard" type="color" class="color-picker" value="#000000"/>
+                        <div class="helper-text">Background color for queue items</div>
+                      </div>
+                    </div>
+                                          <div class="form-row">
+                        <div class="form-group">
+                          <label class="form-label">💫 Glow Color</label>
+                          <input id="queueGlowColor" type="color" class="color-picker" value="#00ff00"/>
+                          <div class="helper-text">Glow effect color</div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">🔄 Border Color</label>
+                          <input id="queueBorderColor" type="color" class="color-picker" value="#ffffff"/>
+                          <div class="helper-text">Border color for queue items</div>
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label class="form-label">🎭 Background</label>
+                          <select id="queueBackgroundType" class="form-select">
+                            <option value="card">Card Background</option>
+                            <option value="transparent">Transparent</option>
+                          </select>
+                          <div class="helper-text">Choose between card background or transparent</div>
+                        </div>
+                      </div>
+                  </div>
+                  
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label">Layout</label>
+                      <select id="queueLayout" class="form-select">
+                        <option value="list">List - Standard vertical list</option>
+                        <option value="grid">Grid - Responsive grid layout</option>
+                        <option value="cards">Cards - Card-style layout</option>
+                        <option value="compact">Compact - Minimal spacing</option>
+                        <option value="minimal">Minimal - No background/borders</option>
+                        <option value="slider">Vertical Slider - Scrollable list</option>
+                        <option value="ticker">Horizontal Ticker - Side-scrolling</option>
+                        <option value="masonry">Masonry - Pinterest-style grid</option>
+                        <option value="timeline">Timeline - Timeline with dots</option>
+                        <option value="carousel">Carousel - Horizontal carousel</option>
+                        <option value="stack">Stack - Stacked card effect</option>
+                      </select>
+                    </div>
+                  </div>
+                     <div class="form-row">
+                       <div class="form-group">
+                         <label class="form-label">Card Radius</label>
+                         <div class="range-group">
+                           <input id="queueRadius" class="range-input" type="range" min="4" max="28" step="1" value="12" oninput="queueRadiusOut.textContent=this.value"/>
+                           <div class="range-value"><span id="queueRadiusOut">12</span>px</div>
+                         </div>
+                       </div>
+                       <div class="form-group">
+                         <label class="form-label">Slider Height</label>
+                         <div class="range-group">
+                           <input id="queueSliderHeight" class="range-input" type="range" min="200" max="800" step="50" value="400" oninput="queueSliderHeightOut.textContent=this.value"/>
+                           <div class="range-value"><span id="queueSliderHeightOut">400</span>px</div>
+                         </div>
+                         <div class="helper-text">Only applies to Vertical Slider layout</div>
+                       </div>
+                     </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label">Card Shadow</label>
+                      <select id="queueShadow" class="form-select">
+                        <option value="none">None</option>
+                        <option value="soft">Soft</option>
+                        <option value="medium">Medium</option>
+                        <option value="strong">Strong</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Item Gap</label>
+                      <div class="range-group">
+                        <input id="queueGap" class="range-input" type="range" min="0" max="24" step="1" value="6" oninput="queueGapOut.textContent=this.value"/>
+                        <div class="range-value"><span id="queueGapOut">6</span>px</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-              
-              <div class="form-row">
-                <div class="field">
-                  <label for="queueLayout">Layout</label>
-                  <select id="queueLayout">
-                    <option value="list">List - Standard vertical list</option>
-                    <option value="grid">Grid - Responsive grid layout</option>
-                    <option value="cards">Cards - Card-style layout</option>
-                    <option value="compact">Compact - Minimal spacing</option>
-                    <option value="minimal">Minimal - No background/borders</option>
-                    <option value="slider">Vertical Slider - Scrollable list</option>
-                    <option value="ticker">Horizontal Ticker - Side-scrolling</option>
-                    <option value="masonry">Masonry - Pinterest-style grid</option>
-                    <option value="timeline">Timeline - Timeline with dots</option>
-                    <option value="carousel">Carousel - Horizontal carousel</option>
-                    <option value="stack">Stack - Stacked card effect</option>
-                  </select>
-                </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">Generated Queue URL</h2>
+                <p class="card-description">Copy this URL to add as a Browser Source in OBS</p>
               </div>
-              <div class="form-row">
-                <div class="field">
-                  <label for="queueRadius">Card Radius</label>
-                  <div class="range-group">
-                    <input id="queueRadius" class="range-input" type="range" min="4" max="28" step="1" value="12" oninput="queueRadiusOut.textContent=this.value"/>
-                    <div class="range-value"><span id="queueRadiusOut">12</span>px</div>
-                  </div>
-                </div>
-                <div class="field">
-                  <label for="queueSliderHeight">Slider Height</label>
-                  <div class="range-group">
-                    <input id="queueSliderHeight" class="range-input" type="range" min="200" max="800" step="50" value="400" oninput="queueSliderHeightOut.textContent=this.value"/>
-                    <div class="range-value"><span id="queueSliderHeightOut">400</span>px</div>
-                  </div>
-                  <div class="help">Only applies to Vertical Slider layout</div>
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="field">
-                  <label for="queueShadow">Card Shadow</label>
-                  <select id="queueShadow">
-                    <option value="none">None</option>
-                    <option value="soft">Soft</option>
-                    <option value="medium">Medium</option>
-                    <option value="strong">Strong</option>
-                  </select>
-                </div>
-                <div class="field">
-                  <label for="queueGap">Item Gap</label>
-                  <div class="range-group">
-                    <input id="queueGap" class="range-input" type="range" min="0" max="24" step="1" value="6" oninput="queueGapOut.textContent=this.value"/>
-                    <div class="range-value"><span id="queueGapOut">6</span>px</div>
+              <div class="card-body">
+                <div class="form-section">
+                  <div class="form-group">
+                    <label class="form-label">Queue URL</label>
+                    <div id="queueUrl" class="url-display"></div>
+                    <div style="display: flex; gap: 8px; margin-top: 8px;">
+                      <button id="copyQueueUrl" class="btn btn-sm" style="flex-shrink: 0;">📋 Copy Queue URL</button>
+                      <div class="badge" style="flex: 1; display: flex; align-items: center;">Paste this URL into OBS → Browser Source</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -511,72 +1478,27 @@
         </div>
         <div class="preview-content">
           <!-- Player preview -->
-          <div class="preview-card">
-            <div class="preview-head">
-              <div>Player Preview</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px;margin-bottom:8px;">
+              <div class="preview-title" style="font-size:16px;margin:0;">Player Preview</div>
               <div class="badge" id="demoStatus">Turn off demo mode to connect to Spotify</div>
             </div>
-            <div class="preview-body">
-              <iframe id="preview" src="" allow="clipboard-read; clipboard-write" loading="lazy" style="width:100%;height:250px;border:none;border-radius:10px;background:#000;"></iframe>
-            </div>
+            <iframe id="preview" class="preview-iframe" src="" allow="clipboard-read; clipboard-write" loading="lazy"></iframe>
           </div>
           
           <!-- Queue preview -->
-          <div class="preview-card">
-            <div class="preview-head">
-              <div>Queue Preview</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px;margin-bottom:8px;">
+              <div class="preview-title" style="font-size:16px;margin:0;">Queue Preview</div>
               <div class="badge" id="queuePreviewStatus">🎯 Live preview with demo data - shows exactly how it will look in OBS</div>
             </div>
-            <div class="preview-body">
-              <iframe id="queuePreview" src="" allow="clipboard-read; clipboard-write" loading="lazy" style="width:100%;height:250px;border:none;border-radius:10px;background:#000;"></iframe>
-            </div>
+            <iframe id="queuePreview" class="preview-iframe" src="" allow="clipboard-read; clipboard-write" loading="lazy"></iframe>
           </div>
         </div>
       </section>
     </main>
   </div>
 
-  <!-- URL Modal -->
-  <div id="urlModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title">OBS URLs</h2>
-        <button onclick="document.getElementById('urlModal').style.display='none'" class="modal-close">&times;</button>
-      </div>
-      
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5); margin-bottom: var(--space-5);">
-        <div>
-          <div style="color: var(--muted); margin-bottom: var(--space-2); font-weight: 500; font-size: var(--fs-14);">Player URL</div>
-          <div id="modalPlayerUrl" class="url-display"></div>
-          <button id="copyPlayerBtn" class="btn btn--primary" style="width: 100%;">📋 Copy Player URL</button>
-        </div>
-        <div>
-          <div style="color: var(--muted); margin-bottom: var(--space-2); font-weight: 500; font-size: var(--fs-14);">Queue URL</div>
-          <div id="modalQueueUrl" class="url-display"></div>
-          <button id="copyQueueBtn" class="btn btn--primary" style="width: 100%;">📋 Copy Queue URL</button>
-        </div>
-      </div>
-      
-      <div style="
-        background: var(--panel-2); 
-        border-radius: 10px; 
-        padding: var(--space-4); 
-        border-left: 4px solid var(--accent);
-      ">
-        <h3 style="margin: 0 0 var(--space-2) 0; color: var(--text); font-size: var(--fs-16); font-weight: 600;">How to Use</h3>
-        <ol style="margin: 0; padding-left: 20px; line-height: 1.6; color: var(--muted); font-size: var(--fs-14);">
-          <li>Configure Streamer.bot WebSocket server (Settings → WebSocket Server)</li>
-          <li>Set up Streamer.bot actions to send queue updates</li>
-          <li>Add Player URL to OBS as a Browser Source</li>
-          <li>Add Queue URL to OBS as a Browser Source</li>
-          <li>Use chat commands (!sr, !queue, !song, !skip) to test</li>
-        </ol>
-        <div style="margin-top: var(--space-3); padding: var(--space-3); background: var(--panel-1); border-radius: 6px; border-left: 3px solid var(--accent);">
-          <strong>💡 Streamer.bot Setup:</strong> The Queue URL now includes WebSocket connection parameters. Make sure Streamer.bot is running with WebSocket Server enabled on the configured host/port.
-        </div>
-      </div>
-    </div>
-  </div>
 
   <script>
     // Element references - will be initialized after DOM loads
@@ -587,7 +1509,7 @@
       els = {
         // Player elements
         base: $('base'), layout: $('layout'), align: $('align'), accentstyle: $('accentstyle'),
-        colorMode: $('colorMode'), accent: $('accent'), text: $('text'), muted: $('muted'), panelColor: $('panelColor'), glowColor: $('glowColor'), borderColor: $('borderColor'),
+        colorMode: $('colorMode'), accent: $('accent'), text: $('text'), muted: $('muted'), panel: $('panel'), glowColor: $('glowColor'), borderColor: $('borderColor'), backgroundType: $('backgroundType'),
         disc: $('disc'), bar: $('bar'), progressWidth: $('progressWidth'), textAlign: $('textAlign'),
         radius: $('radius'), blur: $('blur'), pad: $('pad'), outline: $('outline'),
         compact: $('compact'), spin: $('spin'), labelStatic: $('labelStatic'), tonearm: $('tonearm'),
@@ -599,21 +1521,23 @@
         transparent: $('transparent'), panelAlpha: $('panelAlpha'), panelColor: $('panelColor'),
         
         // Queue elements
-        queueMax: $('queueMax'), showArtists: $('showArtists'), 
-        sbHost: $('sbHost'), sbPort: $('sbPort'), sbSsl: $('sbSsl'), eventType: $('eventType'),
-        ws: $('ws'), pollMs: $('pollMs'),
+        queueMax: $('queueMax'), showArtists: $('showArtists'), ws: $('ws'), pollMs: $('pollMs'),
         queueColorMode: $('queueColorMode'), queueAccent: $('queueAccent'), queueText: $('queueText'), queueMuted: $('queueMuted'), queueCard: $('queueCard'), queueGlowColor: $('queueGlowColor'), queueBorderColor: $('queueBorderColor'), queueBackgroundType: $('queueBackgroundType'),
         queueLayout: $('queueLayout'), queueRadius: $('queueRadius'), queueShadow: $('queueShadow'), queueGap: $('queueGap'), queueSliderHeight: $('queueSliderHeight'),
         
         // UI elements
-        demo: $('demo'), url: $('url'), getUrls: $('getUrls'), reset: $('reset'), preview: $('preview'),
-        colorsBlock: $('colorsBlock'), queuePreview: $('queuePreview'),
-        transparentPreset: $('transparentPreset'), downloadOverlay: $('downloadOverlay')
+        demo: $('demo'), url: $('url'), copy: $('copy'), open: $('open'), reset: $('reset'), preview: $('preview'),
+        colorsBlock: $('colorsBlock'), queuePreview: $('queuePreview'), queueUrl: $('queueUrl'),
+        playerUrl: $('playerUrl'), queueUrlLinks: $('queueUrlLinks'), copyQueueUrl: $('copyQueueUrl'),
+        transparentPreset: $('transparentPreset')
       };
       
-      console.log('Elements initialized successfully');
-      console.log('playerUrl element:', els.playerUrl);
-      console.log('queueUrl element:', els.queueUrl);
+      console.log('Elements initialized:', {
+        showStatus: els.showStatus,
+        disc: els.disc,
+        compact: els.compact,
+        scroll: els.scroll
+      });
     }
 
     // Default configuration
@@ -629,6 +1553,7 @@
         panel: '#121212',
         glowColor: '#00ff00',
         borderColor: '#ffffff',
+        backgroundType: 'panel',
       disc: 200,
       progressWidth: 100,
       textAlign: 'auto',
@@ -697,10 +1622,6 @@
         // Queue state
         queueMax: els.queueMax?.value || '5',
         showArtists: els.showArtists?.value || 'true',
-        sbHost: els.sbHost?.value || '127.0.0.1',
-        sbPort: els.sbPort?.value || '8080',
-        sbSsl: els.sbSsl?.value || '0',
-        eventType: els.eventType?.value || 'queue:update',
         ws: els.ws?.value || 'ws://localhost:5173',
         pollMs: els.pollMs?.value || '15000',
   
@@ -762,8 +1683,14 @@
          if(s.accent) q.set('accent', s.accent);
          if(s.text) q.set('text', s.text);
          if(s.muted) q.set('muted', s.muted);
+         if(s.panel) q.set('panel', s.panel);
          if(s.glowColor) q.set('glowColor', s.glowColor);
          if(s.borderColor) q.set('borderColor', s.borderColor);
+       }
+       
+       // Handle background type
+       if(s.backgroundType === 'transparent') {
+         q.set('transparent', '1');
        }
        if(s.transparent) q.set('transparent','1');
        else {
@@ -771,7 +1698,6 @@
            const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex) || [];
            return {r:parseInt(m[1]||'00',16), g:parseInt(m[2]||'00',16), b:parseInt(m[3]||'00',16)};
          };
-
          const {r,g,b} = hexToRgb(s.panelColor);
          const a = Math.max(0,Math.min(100,parseInt(s.panelAlpha||'72',10)))/100;
          q.set('panel', `rgba(${r},${g},${b},${a})`);
@@ -793,19 +1719,6 @@
        const u = new URL(s.base);
        u.pathname = u.pathname.replace(/overlay\.html$/,'queue.html');
        const q = new URLSearchParams();
-       
-       // Streamer.bot connection params - always include these
-       q.set('sb_host', s.sbHost || '127.0.0.1');
-       q.set('sb_port', s.sbPort || '8080');
-       q.set('sb_ssl', s.sbSsl || '0');
-       q.set('event_type', s.eventType || 'queue:update');
-       
-       console.log('Streamer.bot params added:', {
-         sb_host: s.sbHost || '127.0.0.1',
-         sb_port: s.sbPort || '8080',
-         sb_ssl: s.sbSsl || '0',
-         event_type: s.eventType || 'queue:update'
-       });
        
        // Behavior params
        if(s.queueMax && s.queueMax !== '5') q.set('queueMax', s.queueMax);
@@ -834,9 +1747,7 @@
        if(s.queueGap && s.queueGap !== '6') q.set('gap', s.queueGap);
        if(s.queueSliderHeight && s.queueSliderHeight !== '400') q.set('sliderHeight', s.queueSliderHeight);
        
-       const finalUrl = u.origin + u.pathname + (q.toString() ? '?' + q.toString() : '');
-       console.log('Final Queue URL built:', finalUrl);
-       return finalUrl;
+       return u.origin + u.pathname + (q.toString() ? '?' + q.toString() : '');
      }
 
      // Render function
@@ -847,22 +1758,11 @@
        const playerUrl = buildPlayerURL();
        const queueUrl = buildQueueURL();
        
-       // URLs built successfully
-       
        // Update URL displays
        if(els.url) els.url.textContent = playerUrl;
-       if(els.playerUrl) {
-         els.playerUrl.textContent = playerUrl;
-         console.log('Render function - playerUrl set to:', playerUrl);
-       } else {
-         console.error('Render function - els.playerUrl not found!');
-       }
-       if(els.queueUrl) {
-         els.queueUrl.textContent = queueUrl;
-         console.log('Render function - queueUrl set to:', queueUrl);
-       } else {
-         console.error('Render function - els.queueUrl not found!');
-       }
+       if(els.playerUrl) els.playerUrl.textContent = playerUrl;
+       if(els.queueUrl) els.queueUrl.textContent = queueUrl;
+       if(els.queueUrlLinks) els.queueUrlLinks.textContent = queueUrl;
        
        // Update demo status text
        const demoStatus = document.getElementById('demoStatus');
@@ -880,12 +1780,13 @@
            '🔗 Live mode: connecting to Queuefy server (requires local server)';
        }
        
-       // Update player preview - respect demo mode setting
+       // Update player preview - always use demo data for preview
        if(els.preview) {
          if (playerUrl && playerUrl !== '') {
-           const previewUrl = playerUrl + (playerUrl.includes('?') ? '&' : '?') + 'demo=' + (els.demo.checked ? 'true' : 'false') + '&_t=' + Date.now();
+           const previewUrl = playerUrl + (playerUrl.includes('?') ? '&' : '?') + 'demo=true&_t=' + Date.now();
            console.log('Setting player preview URL:', previewUrl);
            
+           // Always use demo data for preview to ensure content shows
            els.preview.src = '';
            setTimeout(() => {
              els.preview.src = previewUrl;
@@ -897,569 +1798,13 @@
            
            els.preview.src = '';
            setTimeout(() => {
-             els.preview.src = localOverlay + '?demo=' + (els.demo.checked ? 'true' : 'false') + '&_t=' + Date.now();
+             els.preview.src = localOverlay + '?demo=true&_t=' + Date.now();
            }, 10);
          }
        }
        
        // Queue preview is now handled separately by updateQueueOnly()
        // This prevents conflicts with player preview updates
-     }
-
-     // Download overlay functionality
-     function downloadOverlay() {
-       const s = getState();
-       
-       // Validate required fields
-       if (!s.sbHost || !s.sbPort) {
-         showToast('❌ Please configure Streamer.bot host and port first', 'error');
-         return;
-       }
-       
-       // Disable button during export
-       const downloadBtn = document.getElementById('downloadOverlay');
-       const originalText = downloadBtn.textContent;
-       downloadBtn.disabled = true;
-       downloadBtn.textContent = '⏳ Exporting...';
-       
-       try {
-         // Generate the HTML content
-         const htmlContent = generateQueueHTML(s);
-         
-         // Create and download the file
-         const blob = new Blob([htmlContent], { type: 'text/html' });
-         const url = URL.createObjectURL(blob);
-         const a = document.createElement('a');
-         a.href = url;
-         a.download = 'queue.html';
-         document.body.appendChild(a);
-         a.click();
-         document.body.removeChild(a);
-         URL.revokeObjectURL(url);
-         
-         // Show success message
-         showToast('✅ Downloaded queue.html successfully!', 'success');
-       } catch (error) {
-         console.error('Error generating overlay:', error);
-         showToast('❌ Failed to generate overlay: ' + error.message, 'error');
-       } finally {
-         // Re-enable button
-         downloadBtn.disabled = false;
-         downloadBtn.textContent = originalText;
-       }
-     }
-     
-     function generateQueueHTML(config) {
-       // Sanitize user input to prevent HTML/JS injection
-       const sanitize = (str) => {
-         if (typeof str !== 'string') return str;
-         return str
-           .replace(/&/g, '&amp;')
-           .replace(/</g, '&lt;')
-           .replace(/>/g, '&gt;')
-           .replace(/"/g, '&quot;')
-           .replace(/'/g, '&#39;');
-       };
-       
-       // Clamp max items to reasonable range
-       const maxItems = Math.max(1, Math.min(10, +(config.queueMax || 5)));
-       
-       // Build WebSocket URL
-       const protocol = config.sbSsl === '1' ? 'wss' : 'ws';
-       const wsUrl = `${protocol}://${sanitize(config.sbHost)}:${sanitize(config.sbPort)}`;
-       
-       // Generate embedded CSS
-       const embeddedCSS = generateEmbeddedCSS(config);
-       
-       // Generate embedded JavaScript
-       const embeddedJS = generateEmbeddedJS(config, wsUrl, maxItems);
-       
-       return `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Queuefy – Queue</title>
-<style>
-${embeddedCSS}
-</style>
-</head>
-<body class="ssq-body">
-  <div class="ssq-wrap">
-    <div class="ssq-heading">Up Next</div>
-    <div id="ssq-list" class="ssq-list"></div>
-  </div>
-  
-  <!-- Connection status indicator -->
-  <div id="connection-status" class="connection-status"></div>
-  
-  <!-- SSL warning banner (if using ws://) -->
-  ${config.sbSsl === '0' ? `
-  <div class="ssl-warning" style="
-    position: fixed; top: 0; left: 0; right: 0; 
-    background: #ff6b6b; color: white; padding: 8px; 
-    text-align: center; font-size: 12px; z-index: 1000;
-    border-bottom: 2px solid #ff5252;
-  ">
-    ⚠️ This file was saved with ws://. Use OBS/file:// or export with SSL enabled and connect via wss://.
-  </div>
-  ` : ''}
-  
-  <!-- Embedded configuration -->
-  <script>
-    window.QUEUEFY_CONFIG = ${JSON.stringify({
-      sb_host: sanitize(config.sbHost),
-      sb_port: sanitize(config.sbPort),
-      sb_ssl: config.sbSsl,
-      event_type: sanitize(config.eventType),
-      max_items: maxItems,
-      show_artists: config.showArtists === 'true',
-      layout: sanitize(config.queueLayout || 'list'),
-      radius: sanitize(config.queueRadius || '12'),
-      shadow: sanitize(config.queueShadow || 'soft'),
-      gap: sanitize(config.queueGap || '6'),
-      slider_height: sanitize(config.queueSliderHeight || '400'),
-      colors: {
-        accent: sanitize(config.queueAccent || '#1db954'),
-        text: sanitize(config.queueText || '#ffffff'),
-        muted: sanitize(config.queueMuted || '#cfcfcf'),
-        card: sanitize(config.queueCard || '#000000'),
-        glow: sanitize(config.queueGlowColor || '#00ff00'),
-        border: sanitize(config.queueBorderColor || '#ffffff')
-      },
-      background_type: sanitize(config.queueBackgroundType || 'card')
-    }, null, 2)};
-  </script>
-  
-  <!-- Embedded JavaScript -->
-  <script>
-${embeddedJS}
-  </script>
-</body>
-</html>`;
-     }
-     
-     function generateEmbeddedCSS(config) {
-       const colors = {
-         accent: config.queueAccent || '#1db954',
-         text: config.queueText || '#ffffff',
-         muted: config.queueMuted || '#cfcfcf',
-         card: config.queueCard || '#000000',
-         glow: config.queueGlowColor || '#00ff00',
-         border: config.queueBorderColor || '#ffffff'
-       };
-       
-       const radius = config.queueRadius || '12';
-       const shadow = config.queueShadow || 'soft';
-       const gap = config.queueGap || '6';
-       const sliderHeight = config.queueSliderHeight || '400';
-       
-       // Generate shadow value
-       let shadowValue = 'none';
-       if (shadow === 'soft') shadowValue = '0 2px 8px rgba(0,0,0,0.15)';
-       else if (shadow === 'medium') shadowValue = '0 4px 16px rgba(0,0,0,0.25)';
-       else if (shadow === 'strong') shadowValue = '0 8px 32px rgba(0,0,0,0.4)';
-       
-       // Handle background type
-       const cardBg = config.queueBackgroundType === 'transparent' ? 'rgba(0,0,0,0.35)' : colors.card;
-       
-       return `
-/* Embedded Queuefy CSS */
-:root {
-  --bg: rgba(0,0,0,0);
-  --card: ${cardBg};
-  --text: ${colors.text};
-  --muted: ${colors.muted};
-  --accent: ${colors.accent};
-  --border-color: ${colors.border};
-  --glow-color: ${colors.glow};
-  --radius: ${radius}px;
-  --shadow: ${shadowValue};
-  --gap: ${gap}px;
-  --slider-height: ${sliderHeight}px;
-  --font: system-ui, -apple-system, Segoe UI, Inter, Arial, sans-serif;
-  --font-weight: 400;
-  --title-size: 15px;
-  --artist-size: 12px;
-  --line-height: 1.4;
-  --padding: 12px;
-  --margin: 4px;
-}
-
-.ssq-body { 
-  margin: 0; 
-  background: var(--bg); 
-  color: var(--text); 
-  font: var(--font-weight) 14px/var(--line-height) var(--font); 
-}
-
-.ssq-wrap { 
-  display: flex; 
-  flex-direction: column; 
-  gap: var(--gap); 
-  padding: var(--padding); 
-}
-
-.ssq-heading { 
-  font-weight: 800; 
-  font-size: 16px; 
-  letter-spacing: 0.25px; 
-  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-}
-
-.ssq-list { 
-  display: flex; 
-  flex-direction: column; 
-  gap: var(--gap);
-}
-
-.ssq-item { 
-  display: flex; 
-  align-items: center; 
-  gap: 12px; 
-  padding: var(--padding);
-  margin: var(--margin);
-  background: var(--card); 
-  border-radius: var(--radius); 
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border-color);
-  backdrop-filter: blur(8px);
-  transition: all 0.2s ease;
-  position: relative;
-}
-
-.ssq-item:hover {
-  transform: scale(1.02);
-  box-shadow: 0 0 8px var(--glow-color);
-}
-
-.ssq-item .title {
-  font-weight: 600;
-  font-size: var(--title-size);
-  color: var(--text);
-  margin: 0;
-}
-
-.ssq-item .artist {
-  font-size: var(--artist-size);
-  color: var(--muted);
-  margin: 0;
-}
-
-.ssq-item .art {
-  width: 40px;
-  height: 40px;
-  border-radius: 6px;
-  object-fit: cover;
-  background: var(--muted);
-}
-
-.connection-status {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 500;
-  z-index: 1000;
-}
-
-.connection-status.connected {
-  background: #28a745;
-  color: white;
-}
-
-.connection-status.disconnected {
-  background: #dc3545;
-  color: white;
-}
-
-.connection-status.connecting {
-  background: #ffc107;
-  color: black;
-}
-
-/* Layout-specific styles */
-.ssq-list[data-layout="grid"] {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-}
-
-.ssq-list[data-layout="cards"] .ssq-item {
-  flex-direction: column;
-  text-align: center;
-}
-
-.ssq-list[data-layout="compact"] .ssq-item {
-  padding: 8px;
-  gap: 8px;
-}
-
-.ssq-list[data-layout="minimal"] .ssq-item {
-  background: transparent;
-  border: none;
-  box-shadow: none;
-}
-
-.ssq-list[data-layout="slider"] {
-  max-height: var(--slider-height);
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--accent) transparent;
-}
-
-.ssq-list[data-layout="slider"]::-webkit-scrollbar {
-  width: 6px;
-}
-
-.ssq-list[data-layout="slider"]::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.ssq-list[data-layout="slider"]::-webkit-scrollbar-thumb {
-  background: var(--accent);
-  border-radius: 3px;
-}
-
-.ssq-list[data-layout="ticker"] {
-  flex-direction: row;
-  overflow-x: auto;
-  white-space: nowrap;
-  scrollbar-width: none;
-}
-
-.ssq-list[data-layout="ticker"]::-webkit-scrollbar {
-  display: none;
-}
-
-.ssq-list[data-layout="masonry"] {
-  columns: 2;
-  column-gap: var(--gap);
-}
-
-.ssq-list[data-layout="masonry"] .ssq-item {
-  break-inside: avoid;
-  margin-bottom: var(--gap);
-}
-
-.ssq-list[data-layout="timeline"] .ssq-item {
-  position: relative;
-  padding-left: 24px;
-}
-
-.ssq-list[data-layout="timeline"] .ssq-item::before {
-  content: '';
-  position: absolute;
-  left: 8px;
-  top: 50%;
-  width: 8px;
-  height: 8px;
-  background: var(--accent);
-  border-radius: 50%;
-  transform: translateY(-50%);
-}
-
-.ssq-list[data-layout="carousel"] {
-  flex-direction: row;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-}
-
-.ssq-list[data-layout="carousel"] .ssq-item {
-  scroll-snap-align: start;
-  min-width: 200px;
-}
-
-.ssq-list[data-layout="stack"] .ssq-item {
-  transform: translateY(0);
-  transition: transform 0.3s ease;
-}
-
-.ssq-list[data-layout="stack"] .ssq-item:nth-child(1) { transform: translateY(0); }
-.ssq-list[data-layout="stack"] .ssq-item:nth-child(2) { transform: translateY(2px); }
-.ssq-list[data-layout="stack"] .ssq-item:nth-child(3) { transform: translateY(4px); }
-.ssq-list[data-layout="stack"] .ssq-item:nth-child(4) { transform: translateY(6px); }
-.ssq-list[data-layout="stack"] .ssq-item:nth-child(5) { transform: translateY(8px); }
-`;
-     }
-     
-     function generateEmbeddedJS(config, wsUrl, maxItems) {
-       return `
-// Embedded Queuefy JavaScript
-(function() {
-  const config = window.QUEUEFY_CONFIG;
-  let ws = null;
-  let reconnectTimer = null;
-  let queue = [];
-  
-  // DOM elements
-  const listEl = document.getElementById('ssq-list');
-  const statusEl = document.getElementById('connection-status');
-  
-  // Update connection status
-  function updateStatus(status, text) {
-    statusEl.className = 'connection-status ' + status;
-    statusEl.textContent = text;
-  }
-  
-  // Render queue
-  function renderQueue() {
-    if (!listEl) return;
-    
-    // Set layout attribute
-    listEl.setAttribute('data-layout', config.layout || 'list');
-    
-    // Limit items
-    const itemsToShow = queue.slice(0, config.max_items);
-    
-    if (itemsToShow.length === 0) {
-      listEl.innerHTML = '<div class="ssq-item" style="text-align: center; color: var(--muted);">No tracks in queue</div>';
-      return;
-    }
-    
-    listEl.innerHTML = itemsToShow.map((item, index) => {
-      const title = item.title || 'Unknown Track';
-      const artist = item.artist || 'Unknown Artist';
-      const art = item.art || item.albumArt || '';
-      
-      return `
-        <div class="ssq-item">
-          ${art ? `<img class="art" src="${art}" alt="Album Art" onerror="this.style.display='none'">` : ''}
-          <div style="flex: 1; min-width: 0;">
-            <div class="title">${title}</div>
-            ${config.show_artists ? `<div class="artist">${artist}</div>` : ''}
-          </div>
-        </div>
-      `;
-    }).join('');
-  }
-  
-  // Connect to Streamer.bot
-  function connect() {
-    if (ws && ws.readyState === WebSocket.OPEN) return;
-    
-    updateStatus('connecting', 'Connecting...');
-    
-    try {
-      ws = new WebSocket('${wsUrl}');
-      
-      ws.onopen = function() {
-        updateStatus('connected', 'Connected');
-        console.log('Connected to Streamer.bot');
-      };
-      
-      ws.onmessage = function(event) {
-        try {
-          const data = JSON.parse(event.data);
-          
-          // Handle General.Custom events
-          if (data.type === 'General.Custom' && data.data && data.data.type === config.event_type) {
-            const queueData = data.data;
-            
-            if (queueData.queue && Array.isArray(queueData.queue)) {
-              queue = queueData.queue;
-              renderQueue();
-            } else if (queueData.tracks && Array.isArray(queueData.tracks)) {
-              queue = queueData.tracks;
-              renderQueue();
-            } else if (queueData.songs && Array.isArray(queueData.songs)) {
-              queue = queueData.songs;
-              renderQueue();
-            }
-          }
-        } catch (error) {
-          console.error('Error parsing message:', error);
-        }
-      };
-      
-      ws.onclose = function() {
-        updateStatus('disconnected', 'Disconnected');
-        console.log('Disconnected from Streamer.bot');
-        
-        // Attempt to reconnect
-        if (reconnectTimer) clearTimeout(reconnectTimer);
-        reconnectTimer = setTimeout(connect, 5000);
-      };
-      
-      ws.onerror = function(error) {
-        console.error('WebSocket error:', error);
-        updateStatus('disconnected', 'Error');
-      };
-      
-    } catch (error) {
-      console.error('Failed to connect:', error);
-      updateStatus('disconnected', 'Failed');
-      
-      // Attempt to reconnect
-      if (reconnectTimer) clearTimeout(reconnectTimer);
-      reconnectTimer = setTimeout(connect, 5000);
-    }
-  }
-  
-  // Initialize
-  function init() {
-    // Show initial state
-    updateStatus('disconnected', 'Initializing...');
-    renderQueue();
-    
-    // Connect to Streamer.bot
-    connect();
-    
-    // Handle page visibility changes
-    document.addEventListener('visibilitychange', function() {
-      if (!document.hidden && ws && ws.readyState !== WebSocket.OPEN) {
-        connect();
-      }
-    });
-  }
-  
-  // Start when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-})();`;
-     }
-     
-     function showToast(message, type = 'info') {
-       // Remove existing toast
-       const existingToast = document.querySelector('.toast');
-       if (existingToast) existingToast.remove();
-       
-       // Create toast element
-       const toast = document.createElement('div');
-       toast.className = 'toast';
-       toast.textContent = message;
-       
-       // Style based on type
-       const styles = {
-         success: 'background: #28a745; color: white;',
-         error: 'background: #dc3545; color: white;',
-         info: 'background: #17a2b8; color: white;'
-       };
-       
-       toast.style.cssText = `
-         position: fixed;
-         top: 20px;
-         right: 20px;
-         padding: 12px 16px;
-         border-radius: 6px;
-         font-weight: 500;
-         z-index: 10000;
-         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-         ${styles[type] || styles.info}
-       `;
-       
-       document.body.appendChild(toast);
-       
-       // Auto-remove after 3 seconds
-       setTimeout(() => {
-         if (toast.parentNode) {
-           toast.remove();
-         }
-       }, 3000);
      }
 
      // Event handlers
@@ -1475,23 +1820,24 @@ ${embeddedJS}
          document.querySelectorAll('.tab-panel').forEach(c => c.classList.remove('active'));
          tab.classList.add('active');
          tab.setAttribute('aria-selected', 'true');
-         
-         const targetPanel = document.getElementById(tab.dataset.tab + '-tab');
-         console.log('Target panel for tab', tab.dataset.tab, ':', targetPanel);
-         if (targetPanel) {
-           targetPanel.classList.add('active');
-           console.log('Added active class to panel:', targetPanel.id);
-           console.log('Panel classes after adding active:', targetPanel.className);
-           console.log('Panel display style:', window.getComputedStyle(targetPanel).display);
-         } else {
-           console.error('Target panel not found for tab:', tab.dataset.tab);
-         }
-         
-                  console.log('Tab dataset.tab value:', tab.dataset.tab);
+         document.getElementById(tab.dataset.tab + '-tab').classList.add('active');
        });
      });
 
-
+     // Sub-tab switching
+     document.querySelectorAll('.sub-tab').forEach(tab => {
+       tab.addEventListener('click', () => {
+         const parentPanel = tab.closest('.tab-panel');
+         parentPanel.querySelectorAll('.sub-tab').forEach(t => {
+           t.classList.remove('active');
+           t.setAttribute('aria-selected', 'false');
+         });
+         parentPanel.querySelectorAll('.sub-panel').forEach(c => c.classList.remove('active'));
+         tab.classList.add('active');
+         tab.setAttribute('aria-selected', 'true');
+         document.getElementById('player-' + tab.dataset.subtab).classList.add('active');
+       });
+     });
 
 
 
@@ -1602,6 +1948,7 @@ ${embeddedJS}
        
        // Update queue URL displays
        if(els.queueUrl) els.queueUrl.textContent = queueUrl;
+       if(els.queueUrlLinks) els.queueUrlLinks.textContent = queueUrl;
        
        // Update queue preview only
        if(els.queuePreview) {
@@ -1610,12 +1957,6 @@ ${embeddedJS}
          
          // Always include demo mode for preview
          queuePreviewParams.set('demo', 'true');
-         
-                   // Apply Streamer.bot connection params to preview - always include these
-          queuePreviewParams.set('sb_host', s.sbHost || '127.0.0.1');
-          queuePreviewParams.set('sb_port', s.sbPort || '8080');
-          queuePreviewParams.set('sb_ssl', s.sbSsl || '0');
-          queuePreviewParams.set('event_type', s.eventType || 'queue:update');
          
          // Apply current queue settings to preview
          if(s.queueMax && s.queueMax !== '5') queuePreviewParams.set('queueMax', s.queueMax);
@@ -1725,13 +2066,6 @@ ${embeddedJS}
            els.base.value = overlayUrl.toString();
          }
        }
-       
-       // Always update base URL to current server for local development
-       if (location.hostname === 'localhost') {
-         const overlayUrl = new URL('overlay.html', location.origin);
-         els.base.value = overlayUrl.toString();
-         console.log('Updated base URL for localhost:', els.base.value);
-       }
      }
 
      // Color mode toggle function
@@ -1761,7 +2095,7 @@ ${embeddedJS}
          if(!n) continue;
          if(n.tagName === 'INPUT' || n.tagName === 'SELECT') { 
            // Special handling for queue-specific elements to avoid player preview conflicts
-           if (k.startsWith('queue') || k.startsWith('sb') || k === 'eventType') {
+           if (k.startsWith('queue')) {
              n.addEventListener('input', updateQueueOnly);
              n.addEventListener('change', updateQueueOnly);
            } else {
@@ -1774,71 +2108,39 @@ ${embeddedJS}
        // Note: Event listeners are already added in the loop above for all form elements
        
        // Button handlers
-       if(els.downloadOverlay) {
-         els.downloadOverlay.onclick = downloadOverlay;
+       if(els.copy) {
+         els.copy.onclick = async () => { 
+           try { 
+             const activeTab = document.querySelector('.nav-tab.active').dataset.tab;
+             let urlToCopy = '';
+             
+             if(activeTab === 'player' || activeTab === 'links') {
+               urlToCopy = els.playerUrl?.textContent || els.url?.textContent || '';
+             } else if(activeTab === 'queue') {
+               urlToCopy = els.queueUrl?.textContent || '';
+             }
+             
+             if(urlToCopy) {
+               await navigator.clipboard.writeText(urlToCopy); 
+               els.copy.textContent = 'Copied!'; 
+               setTimeout(() => els.copy.textContent = 'Copy URL', 1200);
+             }
+           } catch(e) {} 
+         };
        }
        
-       if(els.getUrls) {
-         els.getUrls.onclick = () => {
-           const playerUrl = buildPlayerURL();
-           const queueUrl = buildQueueURL();
+       if(els.open) {
+         els.open.onclick = () => { 
+           const activeTab = document.querySelector('.nav-tab.active').dataset.tab;
+           let urlToOpen = '';
            
-           // Update modal content
-           const modalPlayerUrl = document.getElementById('modalPlayerUrl');
-           const modalQueueUrl = document.getElementById('modalQueueUrl');
-           const copyPlayerBtn = document.getElementById('copyPlayerBtn');
-           const copyQueueBtn = document.getElementById('copyQueueBtn');
-           
-           if (modalPlayerUrl && modalQueueUrl) {
-             modalPlayerUrl.textContent = playerUrl;
-             modalQueueUrl.textContent = queueUrl;
-             
-             // Set up copy button handlers
-             if (copyPlayerBtn) {
-               copyPlayerBtn.onclick = async () => {
-                 try {
-                   await navigator.clipboard.writeText(playerUrl);
-                   copyPlayerBtn.textContent = '✅ Copied!';
-                   copyPlayerBtn.style.background = '#28a745';
-                   setTimeout(() => {
-                     copyPlayerBtn.textContent = '📋 Copy Player URL';
-                     copyPlayerBtn.style.background = 'var(--accent)';
-                   }, 2000);
-                 } catch(e) {
-                   copyPlayerBtn.textContent = '❌ Failed';
-                   copyPlayerBtn.style.background = '#dc3545';
-                   setTimeout(() => {
-                     copyPlayerBtn.textContent = '📋 Copy Player URL';
-                     copyPlayerBtn.style.background = 'var(--accent)';
-                   }, 2000);
-                 }
-               };
-             }
-             
-             if (copyQueueBtn) {
-               copyQueueBtn.onclick = async () => {
-                 try {
-                   await navigator.clipboard.writeText(queueUrl);
-                   copyQueueBtn.textContent = '✅ Copied!';
-                   copyQueueBtn.style.background = '#28a745';
-                   setTimeout(() => {
-                     copyQueueBtn.textContent = '📋 Copy Queue URL';
-                     copyQueueBtn.style.background = 'var(--accent)';
-                   }, 2000);
-                 } catch(e) {
-                   copyQueueBtn.textContent = '❌ Failed';
-                   copyQueueBtn.style.background = '#dc3545';
-                   setTimeout(() => {
-                     copyQueueBtn.textContent = '📋 Copy Queue URL';
-                     copyQueueBtn.style.background = 'var(--accent)';
-                   }, 2000);
-                 }
-               };
-             }
-             
-             // Show modal
-             document.getElementById('urlModal').style.display = 'block';
+           if(activeTab === 'player' || activeTab === 'links') {
+             urlToOpen = els.playerUrl?.textContent || els.url?.textContent || '';
+           } else if(activeTab === 'queue') {
+             urlToOpen = els.queueUrl?.textContent || '';
            }
+           
+           if(urlToOpen) window.open(urlToOpen,'_blank'); 
          };
        }
        
@@ -1861,33 +2163,6 @@ ${embeddedJS}
          };
        }
        
-       // Copy button handlers for Links tab
-       if(els.copyPlayerUrl) {
-         els.copyPlayerUrl.onclick = async () => { 
-           try { 
-             const urlToCopy = els.playerUrl?.textContent || '';
-             if(urlToCopy) {
-               await navigator.clipboard.writeText(urlToCopy); 
-               els.copyPlayerUrl.textContent = 'Copied!'; 
-               setTimeout(() => els.copyPlayerUrl.textContent = '📋 Copy Player URL', 1200);
-             }
-           } catch(e) {} 
-         };
-       }
-       
-       if(els.copyQueueUrl) {
-         els.copyQueueUrl.onclick = async () => { 
-           try { 
-             const urlToCopy = els.queueUrl?.textContent || '';
-             if(urlToCopy) {
-               await navigator.clipboard.writeText(urlToCopy); 
-               els.copyQueueUrl.textContent = 'Copied!'; 
-               setTimeout(() => els.copyQueueUrl.textContent = '📋 Copy Queue URL', 1200);
-             }
-           } catch(e) {} 
-         };
-       }
-       
        // Color mode toggle
        if(els.colorMode) {
          els.colorMode.addEventListener('change', toggleColorsBlock);
@@ -1897,11 +2172,6 @@ ${embeddedJS}
        if(els.queueColorMode) {
          els.queueColorMode.addEventListener('change', toggleQueueColorsBlock);
          toggleQueueColorsBlock();
-       }
-       
-       // Demo mode toggle - refresh preview when changed
-       if(els.demo) {
-         els.demo.addEventListener('change', render);
        }
        
        // Layout change handler
@@ -1918,27 +2188,6 @@ ${embeddedJS}
        // Initialize queue preview on page load
        updateQueueOnly();
        
-       // Ensure URLs are populated for Links tab on page load
-       setTimeout(() => {
-         render();
-         
-         // Also force populate the Links tab URLs directly
-         const playerUrl = buildPlayerURL();
-         const queueUrl = buildQueueURL();
-         
-         const playerUrlEl = document.getElementById('playerUrl');
-         const queueUrlEl = document.getElementById('queueUrl');
-         
-         if (playerUrlEl) {
-           playerUrlEl.textContent = playerUrl;
-           console.log('Initial population - playerUrl:', playerUrl);
-         }
-         if (queueUrlEl) {
-           queueUrlEl.textContent = queueUrl;
-           console.log('Initial population - queueUrl:', queueUrl);
-         }
-       }, 100);
-       
 
      }
      
@@ -1951,4 +2200,3 @@ ${embeddedJS}
   </script>
 </body>
 </html> 
-  
