@@ -359,15 +359,37 @@
                   </select>
                 </div>
               </div>
-              <div class="field">
-                <label for="ws">WebSocket URL</label>
-                <input id="ws" placeholder="ws://localhost:5173" value="ws://localhost:5173">
-                <div class="help">Default: ws://localhost:5173 - connects to your local Queuefy server</div>
+              <div class="grid-2">
+                <div class="field">
+                  <label for="sbHost">🤖 Streamer.bot Host</label>
+                  <input id="sbHost" placeholder="127.0.0.1" value="127.0.0.1">
+                  <div class="help">Streamer.bot WebSocket server host</div>
+                </div>
+                <div class="field">
+                  <label for="sbPort">🔌 Streamer.bot Port</label>
+                  <input id="sbPort" type="number" min="1" max="65535" placeholder="8080" value="8080">
+                  <div class="help">Streamer.bot WebSocket server port</div>
+                </div>
+              </div>
+              <div class="grid-2">
+                <div class="field">
+                  <label for="sbSsl">🔒 Use SSL</label>
+                  <select id="sbSsl">
+                    <option value="0">No (ws://)</option>
+                    <option value="1">Yes (wss://)</option>
+                  </select>
+                  <div class="help">Use secure WebSocket connection</div>
+                </div>
+                <div class="field">
+                  <label for="eventType">📡 Event Type</label>
+                  <input id="eventType" placeholder="queue:update" value="queue:update">
+                  <div class="help">Custom event type to listen for</div>
+                </div>
               </div>
               <div class="field">
-                <label for="pollMs">Poll Interval (ms)</label>
-                <input id="pollMs" type="number" min="3000" value="15000">
-                <div class="help">HTTP fallback interval if WebSocket fails</div>
+                <label for="maxItems">📋 Max Items</label>
+                <input id="maxItems" type="number" min="1" max="10" value="5">
+                <div class="help">Maximum number of queue items to display</div>
               </div>
             </div>
           </section>

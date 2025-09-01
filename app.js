@@ -33,7 +33,8 @@ function initializeElements() {
     transparent: $('transparent'), panelAlpha: $('panelAlpha'),
     
     // Queue elements
-    queueMax: $('queueMax'), showArtists: $('showArtists'), ws: $('ws'), pollMs: $('pollMs'),
+    queueMax: $('queueMax'), showArtists: $('showArtists'), 
+    sbHost: $('sbHost'), sbPort: $('sbPort'), sbSsl: $('sbSsl'), eventType: $('eventType'), maxItems: $('maxItems'),
     queueColorMode: $('queueColorMode'), queueAccent: $('queueAccent'), queueText: $('queueText'), 
     queueMuted: $('queueMuted'), queueCard: $('queueCard'), queueGlowColor: $('queueGlowColor'), 
     queueBorderColor: $('queueBorderColor'), queueBackgroundType: $('queueBackgroundType'),
@@ -98,8 +99,11 @@ function getState() {
     // Queue state
     queueMax: els.queueMax?.value || '5',
     showArtists: els.showArtists?.value || 'true',
-    ws: els.ws?.value || 'ws://localhost:5173',
-    pollMs: els.pollMs?.value || '15000',
+    sbHost: els.sbHost?.value || '127.0.0.1',
+    sbPort: els.sbPort?.value || '8080',
+    sbSsl: els.sbSsl?.value || '0',
+    eventType: els.eventType?.value || 'queue:update',
+    maxItems: els.maxItems?.value || '5',
     queueLayout: els.queueLayout?.value || 'list',
     queueColorMode: els.queueColorMode?.value || 'custom',
     queueAccent: els.queueAccent?.value || '#1db954',
@@ -206,8 +210,11 @@ function buildQueueURL() {
   // Behavior params
   if(s.queueMax && s.queueMax !== '5') q.set('queueMax', s.queueMax);
   if(s.showArtists === 'false') q.set('showArtists', 'false');
-  if(s.ws && s.ws !== 'ws://localhost:5173') q.set('ws', s.ws);
-  if(s.pollMs && s.pollMs !== '15000') q.set('pollMs', s.pollMs);
+  if(s.sbHost && s.sbHost !== '127.0.0.1') q.set('sb_host', s.sbHost);
+  if(s.sbPort && s.sbPort !== '8080') q.set('sb_port', s.sbPort);
+  if(s.sbSsl && s.sbSsl !== '0') q.set('sb_ssl', s.sbSsl);
+  if(s.eventType && s.eventType !== 'queue:update') q.set('event_type', s.eventType);
+  if(s.maxItems && s.maxItems !== '5') q.set('max_items', s.maxItems);
   
   // Styling params
   if(s.queueColorMode === 'custom'){
@@ -270,7 +277,7 @@ function render() {
   if(queuePreviewStatus) {
     queuePreviewStatus.textContent = els.demo.checked ? 
       '🎯 Demo mode: showing sample queue data' : 
-      '🔗 Live mode: connecting to Queuefy server (requires local server)';
+      '🤖 Live mode: connecting to Streamer.bot WebSocket';
   }
   
   // Update player preview - always use demo data for preview
@@ -351,6 +358,11 @@ function updateQueuePreview() {
   
   // Apply current queue settings to preview
   if(s.queueMax && s.queueMax !== '5') queuePreviewParams.set('queueMax', s.queueMax);
+  if(s.sbHost && s.sbHost !== '127.0.0.1') queuePreviewParams.set('sb_host', s.sbHost);
+  if(s.sbPort && s.sbPort !== '8080') queuePreviewParams.set('sb_port', s.sbPort);
+  if(s.sbSsl && s.sbSsl !== '0') queuePreviewParams.set('sb_ssl', s.sbSsl);
+  if(s.eventType && s.eventType !== 'queue:update') queuePreviewParams.set('event_type', s.eventType);
+  if(s.maxItems && s.maxItems !== '5') queuePreviewParams.set('max_items', s.maxItems);
   if(s.showArtists === 'false') queuePreviewParams.set('showArtists', 'false');
   
   // Apply queue colors to preview

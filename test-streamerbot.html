@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Queuefy Streamer.bot Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .connected { background: #28a745; }
+        .disconnected { background: #dc3545; }
+        .connecting { background: #ffc107; color: #000; }
+        .error { background: #dc3545; }
+        .demo { background: #17a2b8; }
+        
+        .test-panel {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .test-button:hover {
+            background: #0056b3;
+        }
+        
+        .log {
+            background: #000;
+            color: #0f0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        
+        .queue-display {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .track {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: #333;
+            border-radius: 5px;
+        }
+        
+        .track img {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            margin-right: 15px;
+        }
+        
+        .track-info h3 {
+            margin: 0 0 5px 0;
+            color: #fff;
+        }
+        
+        .track-info p {
+            margin: 0;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Queuefy Streamer.bot Connection Test</h1>
+    
+    <div id="status" class="status disconnected">Disconnected</div>
+    
+    <div class="test-panel">
+        <h3>Connection Settings</h3>
+        <label>Host: <input type="text" id="host" value="127.0.0.1"></label><br>
+        <label>Port: <input type="number" id="port" value="8080"></label><br>
+        <label>SSL: <input type="checkbox" id="ssl"></label><br>
+        <button class="test-button" onclick="connect()">Connect</button>
+        <button class="test-button" onclick="disconnect()">Disconnect</button>
+    </div>
+    
+    <div class="test-panel">
+        <h3>Test Payloads</h3>
+        <button class="test-button" onclick="sendTestPayload()">Send Test Queue Update</button>
+        <button class="test-button" onclick="sendEmptyQueue()">Send Empty Queue</button>
+        <button class="test-button" onclick="sendNowPlayingOnly()">Send Now Playing Only</button>
+    </div>
+    
+    <div class="test-panel">
+        <h3>Connection Log</h3>
+        <div id="log" class="log"></div>
+    </div>
+    
+    <div class="test-panel">
+        <h3>Queue Display</h3>
+        <div id="queue-display" class="queue-display">
+            <p>No data received yet...</p>
+        </div>
+    </div>
+
+    <script>
+        let webSocket = null;
+        let connectionStatus = 'disconnected';
+        
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${timestamp}] ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        function updateStatus(status, message = '') {
+            connectionStatus = status;
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `status ${status}`;
+            
+            const statusMap = {
+                'connecting': 'Connecting...',
+                'connected': 'Connected',
+                'disconnected': 'Disconnected',
+                'error': 'Error',
+                'demo': 'Demo Mode'
+            };
+            
+            statusDiv.textContent = statusMap[status] || status;
+            
+            if (message) {
+                log(`${status}: ${message}`);
+            }
+        }
+        
+        function connect() {
+            const host = document.getElementById('host').value;
+            const port = document.getElementById('port').value;
+            const ssl = document.getElementById('ssl').checked;
+            
+            const protocol = ssl ? 'wss' : 'ws';
+            const wsUrl = `${protocol}://${host}:${port}`;
+            
+            log(`Attempting to connect to ${wsUrl}`);
+            updateStatus('connecting');
+            
+            try {
+                webSocket = new WebSocket(wsUrl);
+                
+                webSocket.onopen = function() {
+                    log('WebSocket connection established');
+                    updateStatus('connected');
+                    
+                    // Subscribe to General.Custom events
+                    const subscribeMessage = {
+                        request: 'Subscribe',
+                        events: {
+                            General: ['Custom']
+                        }
+                    };
+                    webSocket.send(JSON.stringify(subscribeMessage));
+                    log('Subscribed to General.Custom events');
+                };
+                
+                webSocket.onmessage = function(event) {
+                    try {
+                        const message = JSON.parse(event.data);
+                        log(`Received message: ${JSON.stringify(message, null, 2)}`);
+                        
+                        // Handle General.Custom events
+                        if (message.event && message.event.source === 'General' && message.event.type === 'Custom') {
+                            const customData = message.event.data;
+                            log(`Processing custom data: ${JSON.stringify(customData, null, 2)}`);
+                            
+                            if (customData && typeof customData === 'object') {
+                                displayQueueData(customData);
+                            }
+                        }
+                    } catch (error) {
+                        log(`Failed to parse message: ${error.message}`);
+                    }
+                };
+                
+                webSocket.onclose = function(event) {
+                    log(`WebSocket connection closed: ${event.code} ${event.reason}`);
+                    updateStatus('disconnected');
+                };
+                
+                webSocket.onerror = function(error) {
+                    log(`WebSocket error: ${error}`);
+                    updateStatus('error', 'Connection failed');
+                };
+                
+            } catch (error) {
+                log(`Failed to create WebSocket: ${error.message}`);
+                updateStatus('error', 'Connection setup failed');
+            }
+        }
+        
+        function disconnect() {
+            if (webSocket) {
+                webSocket.close();
+                webSocket = null;
+            }
+            updateStatus('disconnected');
+        }
+        
+        function sendTestPayload() {
+            if (!webSocket || webSocket.readyState !== WebSocket.OPEN) {
+                log('WebSocket not connected');
+                return;
+            }
+            
+            const testPayload = {
+                type: "queue:update",
+                nowPlaying: {
+                    id: "spotify:track:4iV5W9uYEdYUVa79Axb7Rh",
+                    title: "Midnight City",
+                    artists: ["M83"],
+                    album: "Hurry Up, We're Dreaming",
+                    artUrl: "https://i.scdn.co/image/ab67616d0000b2734e5e11d48c8ac47587c883d5",
+                    durationMs: 243000,
+                    progressMs: 45000,
+                    requestedBy: "testuser",
+                    isExplicit: false
+                },
+                upNext: [
+                    {
+                        id: "spotify:track:5QO79kh1waicV47BqGRL3g",
+                        title: "Electric Feel",
+                        artists: ["MGMT"],
+                        album: "Oracular Spectacular",
+                        artUrl: "https://i.scdn.co/image/ab67616d0000b273c8a11e48c91a1c30ea9c8c8f",
+                        durationMs: 200000,
+                        requestedBy: "testuser2",
+                        isExplicit: false
+                    },
+                    {
+                        id: "spotify:track:6F5c58TMEs1byxUstkzVeM",
+                        title: "Kids",
+                        artists: ["MGMT"],
+                        album: "Oracular Spectacular",
+                        artUrl: "https://i.scdn.co/image/ab67616d0000b273c8a11e48c91a1c30ea9c8c8f",
+                        durationMs: 300000,
+                        requestedBy: "testuser3",
+                        isExplicit: false
+                    }
+                ],
+                generatedAt: new Date().toISOString()
+            };
+            
+            // Send as a test message (this won't actually broadcast to other clients)
+            log('Sending test payload to self...');
+            displayQueueData(testPayload);
+        }
+        
+        function sendEmptyQueue() {
+            const emptyPayload = {
+                type: "queue:update",
+                nowPlaying: null,
+                upNext: [],
+                generatedAt: new Date().toISOString()
+            };
+            
+            log('Sending empty queue payload...');
+            displayQueueData(emptyPayload);
+        }
+        
+        function sendNowPlayingOnly() {
+            const nowPlayingPayload = {
+                type: "queue:update",
+                nowPlaying: {
+                    id: "spotify:track:4iV5W9uYEdYUVa79Axb7Rh",
+                    title: "Midnight City",
+                    artists: ["M83"],
+                    album: "Hurry Up, We're Dreaming",
+                    artUrl: "https://i.scdn.co/image/ab67616d0000b2734e5e11d48c8ac47587c883d5",
+                    durationMs: 243000,
+                    progressMs: 45000,
+                    requestedBy: "testuser",
+                    isExplicit: false
+                },
+                upNext: [],
+                generatedAt: new Date().toISOString()
+            };
+            
+            log('Sending now playing only payload...');
+            displayQueueData(nowPlayingPayload);
+        }
+        
+        function displayQueueData(data) {
+            const displayDiv = document.getElementById('queue-display');
+            let html = '';
+            
+            if (data.type !== 'queue:update') {
+                html = '<p style="color: #ff6b6b;">Invalid payload type</p>';
+                displayDiv.innerHTML = html;
+                return;
+            }
+            
+            // Display now playing
+            if (data.nowPlaying) {
+                html += '<h4>🎵 Now Playing:</h4>';
+                html += createTrackHTML(data.nowPlaying, true);
+            } else {
+                html += '<h4>🎵 Now Playing:</h4><p>Nothing playing</p>';
+            }
+            
+            // Display queue
+            if (data.upNext && data.upNext.length > 0) {
+                html += '<h4>📋 Up Next:</h4>';
+                data.upNext.forEach((track, index) => {
+                    html += createTrackHTML(track, false, index + 1);
+                });
+            } else {
+                html += '<h4>📋 Up Next:</h4><p>Queue is empty</p>';
+            }
+            
+            displayDiv.innerHTML = html;
+        }
+        
+        function createTrackHTML(track, isNowPlaying, queuePosition = null) {
+            const prefix = isNowPlaying ? '▶' : queuePosition ? `${queuePosition}.` : '';
+            const title = track.title || 'Unknown Track';
+            const artists = track.artists ? track.artists.join(', ') : 'Unknown Artist';
+            const album = track.album || '';
+            const artUrl = track.artUrl || '';
+            const requestedBy = track.requestedBy ? ` (Requested by: ${track.requestedBy})` : '';
+            
+            return `
+                <div class="track">
+                    ${artUrl ? `<img src="${artUrl}" alt="Album Art" onerror="this.style.display='none'">` : ''}
+                    <div class="track-info">
+                        <h3>${prefix} ${title}</h3>
+                        <p>${artists}</p>
+                        ${album ? `<p>${album}</p>` : ''}
+                        ${requestedBy ? `<p style="color: #888;">${requestedBy}</p>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Auto-connect on page load
+        window.addEventListener('load', function() {
+            log('Page loaded, ready to test Streamer.bot connection');
+        });
+    </script>
+</body>
+</html>

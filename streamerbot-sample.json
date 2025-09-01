@@ -1,0 +1,37 @@
+{
+  "type": "queue:update",
+  "nowPlaying": {
+    "id": "spotify:track:4iV5W9uYEdYUVa79Axb7Rh",
+    "title": "Midnight City",
+    "artists": ["M83"],
+    "album": "Hurry Up, We're Dreaming",
+    "artUrl": "https://i.scdn.co/image/ab67616d0000b2734e5e11d48c8ac47587c883d5",
+    "durationMs": 243000,
+    "progressMs": 45000,
+    "requestedBy": "viewer123",
+    "isExplicit": false
+  },
+  "upNext": [
+    {
+      "id": "spotify:track:5QO79kh1waicV47BqGRL3g",
+      "title": "Electric Feel",
+      "artists": ["MGMT"],
+      "album": "Oracular Spectacular",
+      "artUrl": "https://i.scdn.co/image/ab67616d0000b273c8a11e48c91a1c30ea9c8c8f",
+      "durationMs": 200000,
+      "requestedBy": "viewer456",
+      "isExplicit": false
+    },
+    {
+      "id": "spotify:track:6F5c58TMEs1byxUstkzVeM",
+      "title": "Kids",
+      "artists": ["MGMT"],
+      "album": "Oracular Spectacular",
+      "artUrl": "https://i.scdn.co/image/ab67616d0000b273c8a11e48c91a1c30ea9c8c8f",
+      "durationMs": 300000,
+      "requestedBy": "viewer789",
+      "isExplicit": false
+    }
+  ],
+  "generatedAt": "2024-01-01T12:00:00.000Z"
+}
