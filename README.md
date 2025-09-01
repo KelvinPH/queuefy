@@ -29,6 +29,7 @@ A modern, user-friendly dashboard for configuring Queuefy overlays for OBS strea
 - **Copy to Clipboard**: One-click URL copying
 - **Modal Interface**: Clean URL display with instructions
 - **Open Preview**: Direct preview in new tab
+- **Download Overlay**: Export self-contained queue.html with embedded settings
 
 ### 🤖 **Streamer.bot Integration**
 - **Native WebSocket**: Direct connection to Streamer.bot WebSocket server
@@ -36,6 +37,13 @@ A modern, user-friendly dashboard for configuring Queuefy overlays for OBS strea
 - **Robust Connection**: Automatic reconnection with exponential backoff
 - **No Server Required**: Fully static overlay - no local server needed
 - **Connection Status**: Visual feedback for connection state and data freshness
+
+### 📥 **Download Overlay Feature**
+- **Self-contained Export**: Single HTML file with embedded CSS, JS, and configuration
+- **Preserved Settings**: All visual presets and Streamer.bot connection settings included
+- **No External Dependencies**: Works offline as local OBS Browser Source
+- **SSL Support**: Automatic ws:// vs wss:// handling based on settings
+- **Layout Preservation**: Maintains all queue styling, colors, and layout options
 
 ## Using Queuefy with Streamer.bot
 
@@ -98,6 +106,31 @@ Set up triggers for the action on:
 - **Track change events** (from Spotify integration)
 - **Song request added/accepted**
 - **Skip/previous commands**
+
+## Download a Single-File Overlay
+
+### How to Use
+1. **Configure Settings**: Set up your desired queue appearance and Streamer.bot connection
+2. **Click Download**: Use the "📥 Download queue.html" button in the Queue Behavior section
+3. **Save File**: The browser will download a self-contained `queue.html` file
+4. **Use in OBS**: Add as a Browser Source with "Local File" option
+
+### What's Included
+- **Visual Settings**: All colors, layouts, spacing, and styling options
+- **Streamer.bot Config**: Host, port, SSL, event type, and connection parameters
+- **Embedded Assets**: CSS and JavaScript are inlined for offline use
+- **Connection Logic**: WebSocket client with automatic reconnection
+
+### Important Notes
+- **Local/OBS Usage**: Works perfectly with `ws://` connections in OBS or local file://
+- **HTTPS Limitations**: If opened from `https://`, `ws://` connections will be blocked
+- **SSL Recommendation**: Use `wss://` (SSL enabled) for web-hosted overlays
+- **No Build Required**: The exported file is ready to use immediately
+
+### Customization After Export
+- **Edit Embedded Config**: Modify the `window.QUEUEFY_CONFIG` object in the HTML
+- **Re-export**: Generate a new file with updated settings from the configurator
+- **Manual Edits**: Directly edit colors, layout, or connection parameters in the HTML
 - **Periodic timer** (3-5 seconds as fallback)
 
 ### Overlay Configuration

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Test Download Overlay</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+    button { padding: 10px 20px; margin: 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    button:disabled { background: #6c757d; cursor: not-allowed; }
+    .toast { position: fixed; top: 20px; right: 20px; padding: 12px 16px; border-radius: 6px; color: white; z-index: 10000; }
+    .toast.success { background: #28a745; }
+    .toast.error { background: #dc3545; }
+  </style>
+</head>
+<body>
+  <h1>Test Download Overlay Functionality</h1>
+  
+  <div class="test-section">
+    <h2>Test Configuration</h2>
+    <p>This tests the download overlay functionality with sample configuration data.</p>
+    
+    <button id="testDownload">Test Download Overlay</button>
+    <button id="testValidation">Test Validation (Empty Fields)</button>
+  </div>
+  
+  <div class="test-section">
+    <h2>Sample Configuration</h2>
+    <pre id="configDisplay">Click a test button to see the configuration...</pre>
+  </div>
+
+  <script>
+    // Sample configuration for testing
+    const sampleConfig = {
+      sbHost: '127.0.0.1',
+      sbPort: '8080',
+      sbSsl: '0',
+      eventType: 'queue:update',
+      queueMax: '5',
+      showArtists: 'true',
+      queueLayout: 'list',
+      queueRadius: '12',
+      queueShadow: 'soft',
+      queueGap: '6',
+      queueSliderHeight: '400',
+      queueAccent: '#1db954',
+      queueText: '#ffffff',
+      queueMuted: '#cfcfcf',
+      queueCard: '#000000',
+      queueGlowColor: '#00ff00',
+      queueBorderColor: '#ffffff',
+      queueBackgroundType: 'card'
+    };
+
+    // Mock getState function
+    function getState() {
+      return sampleConfig;
+    }
+
+    // Download overlay functionality (copied from config.html)
+    function downloadOverlay() {
+      const s = getState();
+      
+      // Validate required fields
+      if (!s.sbHost || !s.sbPort) {
+        showToast('❌ Please configure Streamer.bot host and port first', 'error');
+        return;
+      }
+      
+      // Disable button during export
+      const downloadBtn = document.getElementById('testDownload');
+      const originalText = downloadBtn.textContent;
+      downloadBtn.disabled = true;
+      downloadBtn.textContent = '⏳ Exporting...';
+      
+      try {
+        // Generate the HTML content
+        const htmlContent = generateQueueHTML(s);
+        
+        // Create and download the file
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'queue.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        // Show success message
+        showToast('✅ Downloaded queue.html successfully!', 'success');
+      } catch (error) {
+        console.error('Error generating overlay:', error);
+        showToast('❌ Failed to generate overlay: ' + error.message, 'error');
+      } finally {
+        // Re-enable button
+        downloadBtn.disabled = false;
+        downloadBtn.textContent = originalText;
+      }
+    }
+
+    function generateQueueHTML(config) {
+      // Sanitize user input to prevent HTML/JS injection
+      const sanitize = (str) => {
+        if (typeof str !== 'string') return str;
+        return str
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      };
+      
+      // Clamp max items to reasonable range
+      const maxItems = Math.max(1, Math.min(10, +(config.queueMax || 5)));
+      
+      // Build WebSocket URL
+      const protocol = config.sbSsl === '1' ? 'wss' : 'ws';
+      const wsUrl = `${protocol}://${sanitize(config.sbHost)}:${sanitize(config.sbPort)}`;
+      
+      // Generate embedded CSS
+      const embeddedCSS = generateEmbeddedCSS(config);
+      
+      // Generate embedded JavaScript
+      const embeddedJS = generateEmbeddedJS(config, wsUrl, maxItems);
+      
+      return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Queuefy – Queue</title>
+<style>
+${embeddedCSS}
+</style>
+</head>
+<body class="ssq-body">
+  <div class="ssq-wrap">
+    <div class="ssq-heading">Up Next</div>
+    <div id="ssq-list" class="ssq-list"></div>
+  </div>
+  
+  <!-- Connection status indicator -->
+  <div id="connection-status" class="connection-status"></div>
+  
+  <!-- SSL warning banner (if using ws://) -->
+  ${config.sbSsl === '0' ? `
+  <div class="ssl-warning" style="
+    position: fixed; top: 0; left: 0; right: 0; 
+    background: #ff6b6b; color: white; padding: 8px; 
+    text-align: center; font-size: 12px; z-index: 1000;
+    border-bottom: 2px solid #ff5252;
+  ">
+    ⚠️ This file was saved with ws://. Use OBS/file:// or export with SSL enabled and connect via wss://.
+  </div>
+  ` : ''}
+  
+  <!-- Embedded configuration -->
+  <script>
+    window.QUEUEFY_CONFIG = ${JSON.stringify({
+      sb_host: sanitize(config.sbHost),
+      sb_port: sanitize(config.sbPort),
+      sb_ssl: config.sbSsl,
+      event_type: sanitize(config.eventType),
+      max_items: maxItems,
+      show_artists: config.showArtists === 'true',
+      layout: sanitize(config.queueLayout || 'list'),
+      radius: sanitize(config.queueRadius || '12'),
+      shadow: sanitize(config.queueShadow || 'soft'),
+      gap: sanitize(config.queueGap || '6'),
+      slider_height: sanitize(config.queueSliderHeight || '400'),
+      colors: {
+        accent: sanitize(config.queueAccent || '#1db954'),
+        text: sanitize(config.queueText || '#ffffff'),
+        muted: sanitize(config.queueMuted || '#cfcfcf'),
+        card: sanitize(config.queueCard || '#000000'),
+        glow: sanitize(config.queueGlowColor || '#00ff00'),
+        border: sanitize(config.queueBorderColor || '#ffffff')
+      },
+      background_type: sanitize(config.queueBackgroundType || 'card')
+    }, null, 2)};
+  </script>
+  
+  <!-- Embedded JavaScript -->
+  <script>
+${embeddedJS}
+  </script>
+</body>
+</html>`;
+    }
+
+    function generateEmbeddedCSS(config) {
+      const colors = {
+        accent: config.queueAccent || '#1db954',
+        text: config.queueText || '#ffffff',
+        muted: config.queueMuted || '#cfcfcf',
+        card: config.queueCard || '#000000',
+        glow: config.queueGlowColor || '#00ff00',
+        border: config.queueBorderColor || '#ffffff'
+      };
+      
+      const radius = config.queueRadius || '12';
+      const shadow = config.queueShadow || 'soft';
+      const gap = config.queueGap || '6';
+      const sliderHeight = config.queueSliderHeight || '400';
+      
+      // Generate shadow value
+      let shadowValue = 'none';
+      if (shadow === 'soft') shadowValue = '0 2px 8px rgba(0,0,0,0.15)';
+      else if (shadow === 'medium') shadowValue = '0 4px 16px rgba(0,0,0,0.25)';
+      else if (shadow === 'strong') shadowValue = '0 8px 32px rgba(0,0,0,0.4)';
+      
+      // Handle background type
+      const cardBg = config.queueBackgroundType === 'transparent' ? 'rgba(0,0,0,0.35)' : colors.card;
+      
+      return `
+/* Embedded Queuefy CSS */
+:root {
+  --bg: rgba(0,0,0,0);
+  --card: ${cardBg};
+  --text: ${colors.text};
+  --muted: ${colors.muted};
+  --accent: ${colors.accent};
+  --border-color: ${colors.border};
+  --glow-color: ${colors.glow};
+  --radius: ${radius}px;
+  --shadow: ${shadowValue};
+  --gap: ${gap}px;
+  --slider-height: ${sliderHeight}px;
+  --font: system-ui, -apple-system, Segoe UI, Inter, Arial, sans-serif;
+  --font-weight: 400;
+  --title-size: 15px;
+  --artist-size: 12px;
+  --line-height: 1.4;
+  --padding: 12px;
+  --margin: 4px;
+}
+
+.ssq-body { 
+  margin: 0; 
+  background: var(--bg); 
+  color: var(--text); 
+  font: var(--font-weight) 14px/var(--line-height) var(--font); 
+}
+
+.ssq-wrap { 
+  display: flex; 
+  flex-direction: column; 
+  gap: var(--gap); 
+  padding: var(--padding); 
+}
+
+.ssq-heading { 
+  font-weight: 800; 
+  font-size: 16px; 
+  letter-spacing: 0.25px; 
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.ssq-list { 
+  display: flex; 
+  flex-direction: column; 
+  gap: var(--gap);
+}
+
+.ssq-item { 
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+  padding: var(--padding);
+  margin: var(--margin);
+  background: var(--card); 
+  border-radius: var(--radius); 
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.ssq-item:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 8px var(--glow-color);
+}
+
+.ssq-item .title {
+  font-weight: 600;
+  font-size: var(--title-size);
+  color: var(--text);
+  margin: 0;
+}
+
+.ssq-item .artist {
+  font-size: var(--artist-size);
+  color: var(--muted);
+  margin: 0;
+}
+
+.ssq-item .art {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: var(--muted);
+}
+
+.connection-status {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  z-index: 1000;
+}
+
+.connection-status.connected {
+  background: #28a745;
+  color: white;
+}
+
+.connection-status.disconnected {
+  background: #dc3545;
+  color: white;
+}
+
+.connection-status.connecting {
+  background: #ffc107;
+  color: black;
+}`;
+    }
+
+    function generateEmbeddedJS(config, wsUrl, maxItems) {
+      return `
+// Embedded Queuefy JavaScript
+(function() {
+  const config = window.QUEUEFY_CONFIG;
+  let ws = null;
+  let reconnectTimer = null;
+  let queue = [];
+  
+  // DOM elements
+  const listEl = document.getElementById('ssq-list');
+  const statusEl = document.getElementById('connection-status');
+  
+  // Update connection status
+  function updateStatus(status, text) {
+    statusEl.className = 'connection-status ' + status;
+    statusEl.textContent = text;
+  }
+  
+  // Render queue
+  function renderQueue() {
+    if (!listEl) return;
+    
+    // Set layout attribute
+    listEl.setAttribute('data-layout', config.layout || 'list');
+    
+    // Limit items
+    const itemsToShow = queue.slice(0, config.max_items);
+    
+    if (itemsToShow.length === 0) {
+      listEl.innerHTML = '<div class="ssq-item" style="text-align: center; color: var(--muted);">No tracks in queue</div>';
+      return;
+    }
+    
+    listEl.innerHTML = itemsToShow.map((item, index) => {
+      const title = item.title || 'Unknown Track';
+      const artist = item.artist || 'Unknown Artist';
+      const art = item.art || item.albumArt || '';
+      
+      return \`
+        <div class="ssq-item">
+          \${art ? \`<img class="art" src="\${art}" alt="Album Art" onerror="this.style.display='none'">\` : ''}
+          <div style="flex: 1; min-width: 0;">
+            <div class="title">\${title}</div>
+            \${config.show_artists ? \`<div class="artist">\${artist}</div>\` : ''}
+          </div>
+        </div>
+      \`;
+    }).join('');
+  }
+  
+  // Connect to Streamer.bot
+  function connect() {
+    if (ws && ws.readyState === WebSocket.OPEN) return;
+    
+    updateStatus('connecting', 'Connecting...');
+    
+    try {
+      ws = new WebSocket('\${wsUrl}');
+      
+      ws.onopen = function() {
+        updateStatus('connected', 'Connected');
+        console.log('Connected to Streamer.bot');
+      };
+      
+      ws.onmessage = function(event) {
+        try {
+          const data = JSON.parse(event.data);
+          
+          // Handle General.Custom events
+          if (data.type === 'General.Custom' && data.data && data.data.type === config.event_type) {
+            const queueData = data.data;
+            
+            if (queueData.queue && Array.isArray(queueData.queue)) {
+              queue = queueData.queue;
+              renderQueue();
+            } else if (queueData.tracks && Array.isArray(queueData.tracks)) {
+              queue = queueData.tracks;
+              renderQueue();
+            } else if (queueData.songs && Array.isArray(queueData.songs)) {
+              queue = queueData.songs;
+              renderQueue();
+            }
+          }
+        } catch (error) {
+          console.error('Error parsing message:', error);
+        }
+      };
+      
+      ws.onclose = function() {
+        updateStatus('disconnected', 'Disconnected');
+        console.log('Disconnected from Streamer.bot');
+        
+        // Attempt to reconnect
+        if (reconnectTimer) clearTimeout(reconnectTimer);
+        reconnectTimer = setTimeout(connect, 5000);
+      };
+      
+      ws.onerror = function(error) {
+        console.error('WebSocket error:', error);
+        updateStatus('disconnected', 'Error');
+      };
+      
+    } catch (error) {
+      console.error('Failed to connect:', error);
+      updateStatus('disconnected', 'Failed');
+      
+      // Attempt to reconnect
+      if (reconnectTimer) clearTimeout(reconnectTimer);
+      reconnectTimer = setTimeout(connect, 5000);
+    }
+  }
+  
+  // Initialize
+  function init() {
+    // Show initial state
+    updateStatus('disconnected', 'Initializing...');
+    renderQueue();
+    
+    // Connect to Streamer.bot
+    connect();
+    
+    // Handle page visibility changes
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden && ws && ws.readyState !== WebSocket.OPEN) {
+        connect();
+      }
+    });
+  }
+  
+  // Start when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();`;
+    }
+
+    function showToast(message, type = 'info') {
+      // Remove existing toast
+      const existingToast = document.querySelector('.toast');
+      if (existingToast) existingToast.remove();
+      
+      // Create toast element
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = message;
+      
+      // Style based on type
+      const styles = {
+        success: 'background: #28a745; color: white;',
+        error: 'background: #dc3545; color: white;',
+        info: 'background: #17a2b8; color: white;'
+      };
+      
+      toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 16px;
+        border-radius: 6px;
+        font-weight: 500;
+        z-index: 10000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        ${styles[type] || styles.info}
+      `;
+      
+      document.body.appendChild(toast);
+      
+      // Auto-remove after 3 seconds
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.remove();
+        }
+      }, 3000);
+    }
+
+    // Test validation with empty fields
+    function testValidation() {
+      const emptyConfig = { ...sampleConfig, sbHost: '', sbPort: '' };
+      const s = emptyConfig;
+      
+      if (!s.sbHost || !s.sbPort) {
+        showToast('❌ Please configure Streamer.bot host and port first', 'error');
+        return;
+      }
+    }
+
+    // Event handlers
+    document.getElementById('testDownload').onclick = downloadOverlay;
+    document.getElementById('testValidation').onclick = testValidation;
+
+    // Display current config
+    document.getElementById('configDisplay').textContent = JSON.stringify(sampleConfig, null, 2);
+  </script>
+</body>
+</html>
